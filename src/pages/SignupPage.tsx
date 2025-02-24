@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { storage } from "../firebase";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { v4 as uuidv4 } from "uuid";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { FiUploadCloud } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
@@ -72,28 +69,13 @@ const SignupPage = () => {
     }
   };
 
-  const handlePictureUpload = async (file: File): Promise<string> => {
-    const storageRef = ref(storage, `profile_pictures/${uuidv4()}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    return new Promise<string>((resolve, reject) => {
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress = Math.round(
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          );
-          setUploadProgress(progress);
-        },
-        (error) => {
-          console.error("Upload failed:", error);
-          reject("Image upload failed");
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          resolve(downloadURL);
-        }
-      );
+  // Function to convert image to base64
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
     });
   };
 
@@ -104,12 +86,12 @@ const SignupPage = () => {
     try {
       let profilePictureUrl = "";
       if (formData.profilePicture) {
-        profilePictureUrl = await handlePictureUpload(formData.profilePicture);
+        profilePictureUrl = await convertToBase64(formData.profilePicture);
       }
 
       const professionalData = {
         ...formData,
-        profilePicture: profilePictureUrl,
+        profilePicture: profilePictureUrl,  // store base64 string
         userType: "professional",
         experience: Number(formData.experience),
         projectsCompleted: Number(formData.projectsCompleted),
@@ -141,7 +123,7 @@ const SignupPage = () => {
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-        Inscription Professionnelle
+          Inscription Professionnelle
         </h2>
 
         <form
@@ -210,11 +192,6 @@ const SignupPage = () => {
                   accept="image/*"
                 />
               </label>
-              {uploadProgress > 0 && (
-                <p className="text-sm text-gray-600">
-                  Upload progress: {uploadProgress}%
-                </p>
-              )}
             </div>
           </div>
 
@@ -233,7 +210,6 @@ const SignupPage = () => {
                 required
               />
             </div>
-            {/* Site web field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Site web (si disponible) :
@@ -247,7 +223,6 @@ const SignupPage = () => {
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
-            {/* Zone de couverture */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Zone de couverture *
@@ -316,7 +291,7 @@ const SignupPage = () => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Expérience (années)*
+                  Années d'expérience
                 </label>
                 <input
                   type="number"
@@ -324,13 +299,11 @@ const SignupPage = () => {
                   value={formData.experience}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  min="0"
-                  required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Projets réalisés *
+                  Projets réalisés
                 </label>
                 <input
                   type="number"
