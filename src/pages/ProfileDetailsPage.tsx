@@ -1,15 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { db, doc, getDoc } from "../firebase";
 import { useParams } from "react-router-dom";
 import {
   FiUser, FiMail, FiPhone, FiMapPin, FiBriefcase, FiClock, FiInfo,
-  FiGlobe, FiMap, FiFlag, FiCalendar, FiCheckCircle
+  FiGlobe, FiMap, FiFlag, FiCalendar, FiCheckCircle, FiStar
 } from "react-icons/fi";
+import { runTransaction, collection } from "firebase/firestore";
+import {Rating} from "../components/rating";
 
 const ProfileDetailsPage = () => {
   const { userId } = useParams();
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const [submittingRating, setSubmittingRating] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,6 +35,48 @@ const ProfileDetailsPage = () => {
 
     if (userId) fetchUserData();
   }, [userId]);
+
+  const handleRate = async (rating: number) => {
+    setSubmittingRating(true);
+    
+    try {
+      const professionalRef = doc(db, "users", userId!);
+      const ratingsRef = collection(db, `users/${userId}/ratings`);
+
+      await runTransaction(db, async (transaction) => {
+        const professionalDoc = await transaction.get(professionalRef);
+        
+        if (!professionalDoc.exists()) throw new Error("Professional not found");
+
+        const data = professionalDoc.data();
+        const currentTotal = data.totalRatings || 0;
+        const currentCount = data.numberOfRatings || 0;
+        
+        transaction.update(professionalRef, {
+          totalRatings: currentTotal + rating,
+          numberOfRatings: currentCount + 1
+        });
+
+        transaction.set(doc(ratingsRef), {
+          rating,
+          timestamp: new Date(),
+          userAgent: navigator.userAgent
+        });
+      });
+
+      // Refresh user data
+      const userRef = doc(db, "users", userId!);
+      const docSnap = await getDoc(userRef);
+      if (docSnap.exists()) {
+        setUser({ id: docSnap.id, ...docSnap.data() });
+      }
+    } catch (error) {
+      console.error("Rating error:", error);
+      alert("Erreur lors de la notation");
+    } finally {
+      setSubmittingRating(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -65,12 +111,43 @@ const ProfileDetailsPage = () => {
           </div>
           <h1 className="mt-4 text-3xl font-bold text-white">{user.name}</h1>
           {user.userType === "professional" && (
-            <p className="text-indigo-100 mt-2">{user.expertise}</p>
+            <div className="mt-4">
+              <p className="text-indigo-100">{user.expertise}</p>
+              <div className="mt-2 flex justify-center items-center gap-2">
+                <FiStar className="text-yellow-400" />
+                <span className="text-white font-medium">
+                  {user.numberOfRatings > 0 
+                    ? (user.totalRatings / user.numberOfRatings).toFixed(1)
+                    : "Nouveau"}
+                </span>
+                <span className="text-indigo-200 text-sm">
+                  ({user.numberOfRatings} avis)
+                </span>
+              </div>
+            </div>
           )}
         </div>
 
         {/* Profile Content */}
         <div className="p-8 space-y-6">
+          {/* Rating Section */}
+          {user.userType === "professional" && (
+            <div className="bg-gray-50 rounded-lg p-6 border-l-4 border-indigo-500">
+              <div className="flex items-center gap-2 mb-4">
+                <FiStar className="w-6 h-6 text-indigo-600" />
+                <h3 className="text-xl font-semibold text-gray-800">Évaluation</h3>
+              </div>
+              <Rating
+                initialRating={user.numberOfRatings > 0 
+                  ? user.totalRatings / user.numberOfRatings 
+                  : 0}
+                numberOfRatings={user.numberOfRatings || 0}
+                onRate={handleRate}
+                isSubmitting={submittingRating}
+              />
+            </div>
+          )}
+
           {/* Core Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InfoCard icon={<FiUser className="w-5 h-5" />} title="Nom" value={user.name} />

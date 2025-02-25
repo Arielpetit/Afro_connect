@@ -33,6 +33,8 @@ const coverageZones = [
   "Yukon"
 ];
 
+const languages = ["Français", "Anglais", "Espagnol", "Allemand", "Italien", "Portugais", "Arabe", "Chinois", "Russe", "Japonais", "Néerlandais"];
+
 const SignupPage = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -46,13 +48,14 @@ const SignupPage = () => {
     experience: "",
     projectsCompleted: "",
     company: "",
-    services: "",
+    rate: 0,
     expertise: "",
     bio: "",
+    status: "pending",
     profilePicture: null as File | null,
   });
   const [loading, setLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  // const [uploadProgress, setUploadProgress] = useState(0);
 
   const navigate = useNavigate();
   const db = getFirestore();
@@ -247,14 +250,20 @@ const SignupPage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Langues parlées :
               </label>
-              <input
-                type="text"
+              <select
                 name="languages"
                 value={formData.languages}
                 onChange={handleChange}
-                placeholder="Ex: Français, Anglais, Espagnol"
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+                required
+              >
+                <option value="">Sélectionnez votre Langue</option>
+                {languages.map((lang) => (
+                  <option key={lang} value={lang}>
+                    {lang}
+                  </option>
+                ))}
+              </select>
             </div>
             {/* Disponibilité */}
             <div>

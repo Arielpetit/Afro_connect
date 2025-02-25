@@ -1,4 +1,3 @@
-import React from 'react';
 import { Home, MapPin, Shield, CreditCard, Clock, Phone, Heart, User, Building } from 'lucide-react';
 
 const features = [
