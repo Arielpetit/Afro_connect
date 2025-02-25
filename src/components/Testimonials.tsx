@@ -7,7 +7,7 @@ const testimonials = [
     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80',
     text: 'Travailler avec Afro Immobilier Connect a été une expérience incroyable. Ils m\'ont aidé à trouver la propriété parfaite avec facilité et professionnalisme.',
     rating: 5,
-    location: 'Douala, Cameroun',
+    location: 'Ottawa, Canada',
     orderCount: '3+ propriétés achetées'
   },
   {
@@ -15,7 +15,7 @@ const testimonials = [
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80',
     text: 'J\'ai trouvé l\'appartement idéal dans mon quartier de rêve grâce à Afro Immobilier Connect. L\'équipe a veillé à ce que tout se passe sans accroc !',
     rating: 5,
-    location: 'Yaoundé, Cameroun',
+    location: 'Toronto, Canada',
     orderCount: '1+ propriétés louées'
   },
   {
@@ -23,7 +23,7 @@ const testimonials = [
     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80',
     text: 'Le service client chez Afro Immobilier Connect était fantastique ! Ils m\'ont guidé tout au long du processus d\'achat et ont répondu à toutes mes questions.',
     rating: 5,
-    location: 'Buea, Cameroun',
+    location: 'Vancouver, Canada',
     orderCount: '2+ propriétés vendues'
   }
 ];

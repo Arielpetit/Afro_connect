@@ -14,7 +14,7 @@ export function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo Section */}
-          <NavLink to="/" className="text-2xl font-bold text-blue-600">Afro Immobilier Connect</NavLink>
+          <NavLink to="/" className="text-2xl font-bold text-blue-600">Afro Immobilier Connect Canada </NavLink>
 
           {/* Desktop Right Section */}
           <div className="hidden md:flex items-center gap-4">
