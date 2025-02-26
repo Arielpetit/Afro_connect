@@ -6,13 +6,13 @@ import { getAnalytics } from "firebase/analytics";
 
 // New Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC30CPo1ctct0wVZJ59EeFI6GBp3mSRjnE",
-  authDomain: "afro-fc306.firebaseapp.com",
-  projectId: "afro-fc306",
-  storageBucket: "afro-fc306.firebasestorage.app",
-  messagingSenderId: "815243166575",
-  appId: "1:815243166575:web:e3eb9174288d19a9cf9e9a",
-  measurementId: "G-7MRD9N466L"
+  apiKey: "AIzaSyAcTAiYpNwD4pIgZfyYWOEafro-fc306kljw1eF0WYzI",
+  authDomain: "test-e1430.firebaseapp.com",
+  projectId: "test-e1430",
+  storageBucket: "test-e1430.firebasestorage.app",
+  messagingSenderId: "62828098931",
+  appId: "1:62828098931:web:43f3ec8f5dd6423bb08106",
+  measurementId: "G-N33RZ9RPH0"
 };
 
 // Initialize Firebase

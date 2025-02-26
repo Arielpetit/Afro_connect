@@ -42,7 +42,7 @@ const Sidebar = () => {
               icon={<FilePlus size={18} className="flex-shrink-0" />} 
               label="Add Resource" 
               isOpen={isOpen} 
-              onClick={() => navigate("/resource")} 
+              onClick={() => navigate("/resource/new")} 
               active 
             />
             <SidebarItem 

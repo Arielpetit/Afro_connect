@@ -1,19 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { db, doc, getDoc } from "../firebase";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   FiUser, FiMail, FiPhone, FiMapPin, FiBriefcase, FiClock, FiInfo,
-  FiGlobe, FiMap, FiFlag, FiCalendar, FiCheckCircle, FiStar
+  FiGlobe, FiMap, FiFlag, FiCalendar, FiCheckCircle, FiStar,
+  FiSend, FiTrash2, FiFile, FiFileText, FiDownload
 } from "react-icons/fi";
-import { runTransaction, collection } from "firebase/firestore";
+import { runTransaction, collection, deleteDoc, updateDoc } from "firebase/firestore";
 import {Rating} from "../components/rating";
+import { toast } from "react-toastify";
 
 const ProfileDetailsPage = () => {
   const { userId } = useParams();
+  const location = useLocation();
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [submittingRating, setSubmittingRating] = useState(false);
+  const [isAdminView] = useState(location.state?.fromAdmin || false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -22,7 +27,13 @@ const ProfileDetailsPage = () => {
         const docSnap = await getDoc(userRef);
         
         if (docSnap.exists()) {
-          setUser({ id: docSnap.id, ...docSnap.data() });
+          const userData = docSnap.data();
+          // Redirect non-admin users trying to view pending profiles
+          if (!isAdminView && userData.status !== 'approved') {
+            navigate('/');
+            return;
+          }
+          setUser({ id: docSnap.id, ...userData });
         } else {
           console.log("Aucun utilisateur trouvé!");
         }
@@ -32,10 +43,34 @@ const ProfileDetailsPage = () => {
         setLoading(false);
       }
     };
-
+  
     if (userId) fetchUserData();
-  }, [userId]);
+  }, [userId, navigate, isAdminView]);
 
+   // Add approval and deletion handlers
+   const handleApprove = async () => {
+    try {
+      const userRef = doc(db, "users", userId!);
+      await updateDoc(userRef, { status: 'approved' });
+      toast.success("Professional approved successfully");
+      navigate('/admin'); // Redirect back to admin dashboard
+    } catch (error) {
+      console.error("Error approving professional: ", error);
+      toast.error("Failed to approve professional");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteDoc(doc(db, "users", userId!));
+      toast.success("Professional deleted successfully");
+      navigate('/admin'); // Redirect back to admin dashboard
+    } catch (error) {
+      console.error("Error deleting professional: ", error);
+      toast.error("Failed to delete professional");
+    }
+  };
+  
   const handleRate = async (rating: number) => {
     setSubmittingRating(true);
     
@@ -127,6 +162,110 @@ const ProfileDetailsPage = () => {
             </div>
           )}
         </div>
+          {/* Add admin controls */}
+          {isAdminView && (
+        <div className="bg-gray-50 p-6 border-t border-b border-gray-200">
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={handleApprove}
+              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+            >
+              <FiCheckCircle className="w-5 h-5" />
+              Approve Professional
+            </button>
+            <button
+              onClick={handleDelete}
+              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+            >
+              <FiTrash2 className="w-5 h-5" />
+              Delete Professional
+            </button>
+          </div>
+          <div className="bg-gray-50 rounded-lg p-6 border-l-4 border-indigo-500">
+        <div className="flex items-center gap-2 mb-4">
+          <FiFile className="w-6 h-6 text-indigo-600" />
+          <h3 className="text-xl font-semibold text-gray-800">Verification Documents</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InfoCard 
+            icon={<FiFile className="w-5 h-5" />}
+            title="Business Card"
+            value={user.businessCard ? (
+              <div className="flex items-center gap-3">
+                <a 
+                  href={user.businessCard} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline"
+                >
+                  View Business Card
+                </a>
+                <a 
+                  href={user.businessCard} 
+                  download 
+                  className="flex items-center gap-1 text-blue-500 hover:text-blue-700 text-sm font-medium"
+                >
+                  <FiDownload className="w-4 h-4" /> Download
+                </a>
+              </div>
+            ) : "Not uploaded"}
+          />
+          <InfoCard 
+            icon={<FiFile className="w-5 h-5" />}
+            title="License/Certification"
+            value={user.licenseCertification ? (
+              <div className="flex items-center gap-3">
+                <a 
+                  href={user.licenseCertification} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline"
+                >
+                  View License
+                </a>
+                <a 
+                  href={user.licenseCertification} 
+                  download 
+                  className="flex items-center gap-1 text-blue-500 hover:text-blue-700 text-sm font-medium"
+                >
+                  <FiDownload className="w-4 h-4" /> Download
+                </a>
+              </div>
+            ) : "Not uploaded"}
+          />
+          <InfoCard 
+            icon={<FiFileText className="w-5 h-5" />}
+            title="Professional Permit Number"
+            value={user.professionalPermitNumber || "Not provided"}
+          />
+          <InfoCard 
+            icon={<FiFile className="w-5 h-5" />}
+            title="Identity Card"
+            value={user.identityCard ? (
+              <div className="flex items-center gap-3">
+                <a 
+                  href={user.identityCard} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline"
+                >
+                  View ID Card
+                </a>
+                <a 
+                  href={user.identityCard} 
+                  download 
+                  className="flex items-center gap-1 text-blue-500 hover:text-blue-700 text-sm font-medium"
+                >
+                  <FiDownload className="w-4 h-4" /> Download
+                </a>
+              </div>
+            ) : "Not uploaded"}
+          />
+        </div>
+      </div>
+  </div>
+  
+)}
 
         {/* Profile Content */}
         <div className="p-8 space-y-6">
@@ -228,6 +367,15 @@ const ProfileDetailsPage = () => {
                   <h3 className="text-xl font-semibold text-gray-800">À propos de moi</h3>
                 </div>
                 <p className="text-gray-600 leading-relaxed">{user.bio || "Aucune bio fournie"}</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-6 border-l-4 border-indigo-500 ">
+                <button
+                  onClick={() => navigate("/contacts/:{userId}", { state: { userId: user.id } })}
+                  className="bg-white text-indigo-600 px-6 py-2 rounded-full hover:bg-indigo-50 transition-colors flex items-center gap-2 shadow-sm"
+                >
+                  <FiSend className="w-5 h-5" />
+                  Contact
+                </button>
               </div>
             </>
           )}

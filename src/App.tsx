@@ -18,6 +18,7 @@ import ContactPage from "./pages/ContactPage";
 import FAQ from "./pages/FaqsPage";
 import ResourcesPage from "./pages/ResourcePage";
 import ResourceFormPage from "./pages/ResourceForm";
+import ContactForm from "./pages/ContactForm";
 
 // PrivateRoute Component to protect Admin route
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
@@ -58,8 +59,10 @@ function App() {
               <Route path="/faqs" element={<FAQ />} />
               <Route path="/resources" element={<ResourcesPage />} />
               // In your router configuration
-              <Route path="/resource/new" element={<ResourceFormPage />} />
+              <Route path="/resource/new" element={<ResourceFormPage />} />ContactForm
               <Route path="/resource/:resourceId" element={<ResourceFormPage />} />
+              <Route path="/contacts/:userId" element={<ContactForm />} />
+
 
 
 

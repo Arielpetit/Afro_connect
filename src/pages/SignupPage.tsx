@@ -53,9 +53,12 @@ const SignupPage = () => {
     bio: "",
     status: "pending",
     profilePicture: null as File | null,
+    businessCard: null as File | null,
+    licenseCertification: null as File | null,
+    professionalPermitNumber: "",
+    identityCard: null as File | null,
   });
   const [loading, setLoading] = useState(false);
-  // const [uploadProgress, setUploadProgress] = useState(0);
 
   const navigate = useNavigate();
   const db = getFirestore();
@@ -72,7 +75,6 @@ const SignupPage = () => {
     }
   };
 
-  // Function to convert image to base64
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -88,13 +90,29 @@ const SignupPage = () => {
 
     try {
       let profilePictureUrl = "";
+      let businessCardUrl = "";
+      let licenseCertificationUrl = "";
+      let identityCardUrl = "";
+
       if (formData.profilePicture) {
         profilePictureUrl = await convertToBase64(formData.profilePicture);
+      }
+      if (formData.businessCard) {
+        businessCardUrl = await convertToBase64(formData.businessCard);
+      }
+      if (formData.licenseCertification) {
+        licenseCertificationUrl = await convertToBase64(formData.licenseCertification);
+      }
+      if (formData.identityCard) {
+        identityCardUrl = await convertToBase64(formData.identityCard);
       }
 
       const professionalData = {
         ...formData,
-        profilePicture: profilePictureUrl,  // store base64 string
+        profilePicture: profilePictureUrl,
+        businessCard: businessCardUrl,
+        licenseCertification: licenseCertificationUrl,
+        identityCard: identityCardUrl,
         userType: "professional",
         experience: Number(formData.experience),
         projectsCompleted: Number(formData.projectsCompleted),
@@ -180,11 +198,11 @@ const SignupPage = () => {
               </label>
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-indigo-500 transition-colors">
                 {formData.profilePicture ? (
-                  <span className="text-indigo-600">Image selected</span>
+                  <span className="text-indigo-600">Image sélectionnée: {formData.profilePicture.name}</span>
                 ) : (
                   <div className="flex flex-col items-center">
                     <FiUploadCloud className="w-6 h-6 text-gray-400 mb-2" />
-                    <span className="text-gray-500">Click to upload</span>
+                    <span className="text-gray-500">Cliquez pour télécharger</span>
                   </div>
                 )}
                 <input
@@ -215,7 +233,7 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Site web (si disponible) :
+                Site web (si disponible)
               </label>
               <input
                 type="text"
@@ -245,10 +263,9 @@ const SignupPage = () => {
                 ))}
               </select>
             </div>
-            {/* Langues parlées */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Langues parlées :
+                Langues parlées
               </label>
               <select
                 name="languages"
@@ -265,10 +282,9 @@ const SignupPage = () => {
                 ))}
               </select>
             </div>
-            {/* Disponibilité */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Disponibilité (jours et heures de service) :
+                Disponibilité (jours et heures de service)
               </label>
               <textarea
                 name="availability"
@@ -337,14 +353,103 @@ const SignupPage = () => {
                 required
               />
             </div>
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors mt-4"
-              disabled={loading}
-            >
-              {loading ? "Registering..." : "Complete Registration"}
-            </button>
           </div>
+
+          {/* Documents Section */}
+          <div className="md:col-span-2 space-y-6">
+            <h3 className="text-xl font-semibold text-gray-800">Documents et références</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Carte d’affaires (PDF/JPG/PNG)
+                </label>
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-indigo-500 transition-colors">
+                  {formData.businessCard ? (
+                    <span className="text-indigo-600">Fichier sélectionné: {formData.businessCard.name}</span>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <FiUploadCloud className="w-6 h-6 text-gray-400 mb-2" />
+                      <span className="text-gray-500">Cliquez pour télécharger</span>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    name="businessCard"
+                    onChange={handleChange}
+                    className="hidden"
+                    accept=".pdf,.jpg,.png"
+                  />
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Licence / Certification 
+                </label>
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-indigo-500 transition-colors">
+                  {formData.licenseCertification ? (
+                    <span className="text-indigo-600">Fichier sélectionné: {formData.licenseCertification.name}</span>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <FiUploadCloud className="w-6 h-6 text-gray-400 mb-2" />
+                      <span className="text-gray-500">Cliquez pour télécharger</span>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    name="licenseCertification"
+                    onChange={handleChange}
+                    className="hidden"
+                    accept=".pdf,.jpg,.png"
+                  />
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Numéro de permis professionnel (si applicable)
+                </label>
+                <input
+                  type="text"
+                  name="professionalPermitNumber"
+                  value={formData.professionalPermitNumber}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Carte d'identité (PDF/JPG/PNG)
+                </label>
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-indigo-500 transition-colors">
+                  {formData.identityCard ? (
+                    <span className="text-indigo-600">Fichier sélectionné: {formData.identityCard.name}</span>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <FiUploadCloud className="w-6 h-6 text-gray-400 mb-2" />
+                      <span className="text-gray-500">Cliquez pour télécharger</span>
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    name="identityCard"
+                    onChange={handleChange}
+                    className="hidden"
+                    accept=".pdf,.jpg,.png"
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="md:col-span-2 w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors mt-4"
+            disabled={loading}
+          >
+            {loading ? "Enregistrement..." : "Finaliser l'inscription"}
+          </button>
         </form>
       </motion.div>
       <ToastContainer />

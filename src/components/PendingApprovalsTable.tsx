@@ -1,0 +1,59 @@
+export const PendingApprovalsTable = ({ 
+    users, 
+    onApprove, 
+    onDelete,
+    onRowClick 
+  }: { 
+    users: any[], 
+    onApprove: (userId: string) => void, 
+    onDelete: (userId: string) => void,
+    onRowClick: (userId: string) => void 
+  }) => (
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden mt-8">
+      <div className="p-4 md:p-6">
+        <h3 className="text-base md:text-lg font-semibold mb-4">Pending Approvals</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[800px] md:min-w-0">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expertise</th>
+                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zone</th>
+                <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {users.map((user) => (
+                <tr 
+                  key={user.id}
+                  onClick={() => onRowClick(user.id)}
+                  className="cursor-pointer hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.name}</td>
+                  <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.expertise}</td>
+                  <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.coverageZone}</td>
+                  <td 
+                    className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm space-x-2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => onApprove(user.id)}
+                      className="text-green-600 hover:text-green-900 text-xs md:text-sm px-3 py-1.5 rounded-md bg-green-50 hover:bg-green-100"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => onDelete(user.id)}
+                      className="text-red-600 hover:text-red-900 text-xs md:text-sm px-3 py-1.5 rounded-md bg-red-50 hover:bg-red-100"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );

@@ -1,46 +1,41 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, doc, deleteDoc, updateDoc, query, where } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import { PendingApprovalsTable } from "../components/PendingApprovalsTable";
+import { ProfessionalsTable } from "../components/ProfessionalsTable";
+import { ResourcesTable } from "../components/ResourcesTable";
+import { StatsGrid, RegistrationChart, ExpertiseChart, CoverageChart } from "../components/StatsGrid";
+
+
 const AdminDashboardPage = () => {
-  const [users, setUsers] = useState<any[]>([]);
   const [stats, setStats] = useState<any>({});
   const navigate = useNavigate();
+  const location = useLocation();
   const [resources, setResources] = useState<any[]>([]);
   const [pendingUsers, setPendingUsers] = useState<any[]>([]);
   const [approvedUsers, setApprovedUsers] = useState<any[]>([]);
 
-
-  const resourceCategories = [
-    { id: 'market-trends', name: 'Market Trends' },
-    { id: 'buying-guides', name: 'Buying Guides' },
-    { id: 'legal-advice', name: 'Legal Advice' },
-    { id: 'investment-strategies', name: 'Investment Strategies' },
-  ];
-
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28FD0', '#FF6666'];
-
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "users"));
-        const usersList = querySnapshot.docs.map((doc) => ({
+        // Fetch users
+        const usersSnapshot = await getDocs(collection(db, "users"));
+        const usersList = usersSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
         }));
         
+        // Separate pending and approved users
         const pending = usersList.filter(user => user.status === 'pending');
-        const approved = usersList.filter(user => user.status === 'approved' || !user.status);
-        setUsers(approved);
-        
+        const approved = usersList.filter(user => user.status !== 'pending');
         setPendingUsers(pending);
         setApprovedUsers(approved);
 
-        // Update stats calculations with approved users
+        // Calculate registration data
         const registrationData = Array.from({ length: 7 }, (_, i) => {
           const date = new Date();
           date.setDate(date.getDate() - i);
@@ -54,328 +49,154 @@ const AdminDashboardPage = () => {
 
         // Fetch resources
         const resourcesSnapshot = await getDocs(collection(db, "resources"));
-        const resourcesList = resourcesSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
-        setResources(resourcesList);
-        
+        setResources(resourcesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })));
 
+        // Calculate expertise distribution
         const expertiseData = [
-            "Courtier hypothécaire",
-            "Agent immobilier",
-            "Notaire",
-            "Inspecteur en bâtiment",
-            "Opérateur agréé",
-            "Entreprise de déménagement",
-            "Entrepreneur général",
-            "Autre (préciser)"
+          "Courtier hypothécaire",
+          "Agent immobilier",
+          "Notaire",
+          "Inspecteur en bâtiment",
+          "Opérateur agréé",
+          "Entreprise de déménagement",
+          "Entrepreneur général",
+          "Autre (préciser)"
         ].map(expertise => ({
-            name: expertise,
-            value: usersList.filter(user => user.expertise === expertise).length
+          name: expertise,
+          value: usersList.filter(user => user.expertise === expertise).length
         }));
 
+        // Calculate coverage zones
         const coverageData = [
-            "Alberta", "Colombie-Britannique", "Île-du-Prince-Édouard",
-            "Manitoba", "Nouveau-Brunswick", "Nouvelle-Écosse", "Nunavut",
-            "Ontario", "Québec", "Saskatchewan", "Terre-Neuve-et-Labrador",
-            "Territoires du Nord-Ouest", "Yukon"
+          "Alberta", "Colombie-Britannique", "Île-du-Prince-Édouard",
+          "Manitoba", "Nouveau-Brunswick", "Nouvelle-Écosse", "Nunavut",
+          "Ontario", "Québec", "Saskatchewan", "Terre-Neuve-et-Labrador",
+          "Territoires du Nord-Ouest", "Yukon"
         ].map(zone => ({
-            zone,
-            count: usersList.filter(user => user.coverageZone === zone).length
+          zone,
+          count: usersList.filter(user => user.coverageZone === zone).length
         }));
 
-        const totalExperience = usersList.reduce((sum, user) => sum + (Number(user.experience) || 0), 0);
-        const totalProjects = usersList.reduce((sum, user) => sum + (Number(user.projectsCompleted) || 0), 0);
+        // Calculate statistics
+        const totalExperience = approved.reduce((sum, user) => sum + (Number(user.experience) || 0), 0);
+        const totalProjects = approved.reduce((sum, user) => sum + (Number(user.projectsCompleted) || 0), 0);
 
         setStats({
-            totalUsers: usersList.length,
-            newThisWeek: usersList.filter(user => 
-                new Date(user.createdAt?.seconds * 1000).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000
-            ).length,
-            averageExperience: usersList.length ? (totalExperience / usersList.length).toFixed(1) : 0,
-            averageProjects: usersList.length ? (totalProjects / usersList.length).toFixed(1) : 0,
-            registrationData,
-            expertiseData,
-            coverageData
+          totalUsers: approved.length,
+          newThisWeek: approved.filter(user => 
+            new Date(user.createdAt?.seconds * 1000).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000
+          ).length,
+          averageExperience: approved.length ? (totalExperience / approved.length).toFixed(1) : 0,
+          averageProjects: approved.length ? (totalProjects / approved.length).toFixed(1) : 0,
+          registrationData,
+          expertiseData,
+          coverageData
         });
 
       } catch (error) {
-        console.error("Error fetching users: ", error);
-        toast.error("Failed to load users");
+        console.error("Error fetching data: ", error);
+        toast.error("Failed to load data");
       }
     };
 
-    fetchUsers();
-  }, []);
-  // Add resource submission handler
-  const handleDelete = async (userId: string) => {
-    try {
-      await deleteDoc(doc(db, "users", userId));
-      toast.success("User deleted successfully");
-      setUsers(users.filter((user) => user.id !== userId));
-    } catch (error) {
-      console.error("Error deleting user: ", error);
-      toast.error("Failed to delete user");
-    }
+    fetchData();
+  }, [location.key]);
+  // Add row click handler
+  const handleRowClick = (userId: string) => {
+    navigate(`/profile/${userId}`, { 
+      state: { 
+        fromAdmin: true,
+        userId: userId 
+      } 
+    });
   };
+
   const handleApprove = async (userId: string) => {
     try {
       const userRef = doc(db, "users", userId);
       await updateDoc(userRef, { status: 'approved' });
+      
       const userToApprove = pendingUsers.find(user => user.id === userId);
       setPendingUsers(pendingUsers.filter(user => user.id !== userId));
       setApprovedUsers([...approvedUsers, userToApprove]);
-      toast.success("User approved successfully");
+      
+      toast.success("Professional approved successfully");
     } catch (error) {
-      console.error("Error approving user: ", error);
-      toast.error("Failed to approve user");
+      console.error("Error approving professional: ", error);
+      toast.error("Failed to approve professional");
     }
   };
-  const handleDeleteUser = async (userId: string) => {
+
+  const handleDeleteUser = async (userId: string, isApproved: boolean) => {
     try {
       await deleteDoc(doc(db, "users", userId));
-      toast.success("User deleted successfully");
-      setUsers(users.filter((user) => user.id !== userId));
+      
+      if (isApproved) {
+        setApprovedUsers(approvedUsers.filter(user => user.id !== userId));
+      } else {
+        setPendingUsers(pendingUsers.filter(user => user.id !== userId));
+      }
+      
+      toast.success("Professional deleted successfully");
     } catch (error) {
-      console.error("Error deleting user: ", error);
-      toast.error("Failed to delete user");
+      console.error("Error deleting professional: ", error);
+      toast.error("Failed to delete professional");
     }
+  };
+
+  const handleEditResource = (resourceId: string) => {
+    navigate(`/edit-resource/${resourceId}`);
   };
 
   const handleDeleteResource = async (resourceId: string) => {
     try {
       await deleteDoc(doc(db, "resources", resourceId));
+      setResources(resources.filter(resource => resource.id !== resourceId));
       toast.success("Resource deleted successfully");
-      setResources(resources.filter((resource) => resource.id !== resourceId));
     } catch (error) {
       console.error("Error deleting resource: ", error);
       toast.error("Failed to delete resource");
     }
   };
 
-  const handleEditResource = (resourceId: string) => {
-    navigate(`/resource/${resourceId}`);
-  };
-
-
-  const handleSignOut = () => {
-    localStorage.removeItem("isAuthenticated");
-    navigate("/");
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-        {/* Sidebar */}
-      <Sidebar />
-      <div className="flex-1 p-4 md:p-8">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6 md:mb-8 gap-4">
-          <h1 className="text-xl md:text-2xl font-bold text-gray-800">Dashboard Overview</h1>
-          <button
-            onClick={handleSignOut}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm md:text-base"
-          >
-            Sign Out
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-            <h3 className="text-xs md:text-sm text-gray-500 mb-1 md:mb-2">Total Professionals</h3>
-            <p className="text-xl md:text-3xl font-bold text-gray-800">{stats.totalUsers || 0}</p>
-          </div>
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-            <h3 className="text-xs md:text-sm text-gray-500 mb-1 md:mb-2">New This Week</h3>
-            <p className="text-xl md:text-3xl font-bold text-gray-800">{stats.newThisWeek || 0}</p>
-          </div>
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-            <h3 className="text-xs md:text-sm text-gray-500 mb-1 md:mb-2">Avg Experience (Years)</h3>
-            <p className="text-xl md:text-3xl font-bold text-gray-800">{stats.averageExperience || 0}</p>
-          </div>
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-            <h3 className="text-xs md:text-sm text-gray-500 mb-1 md:mb-2">Avg Projects Completed</h3>
-            <p className="text-xl md:text-3xl font-bold text-gray-800">{stats.averageProjects || 0}</p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-100">
+      <div className="flex">
+        <Sidebar />
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Registrations Last 7 Days</h3>
-            <div className="h-64 md:h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={stats.registrationData || []}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="count" stroke="#8884d8" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+        <main className="flex-1 p-4 md:p-8">
+          <StatsGrid stats={stats} />
           
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Expertise Distribution</h3>
-            <div className="h-64 md:h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={stats.expertiseData || []}
-                    innerRadius="40%"
-                    outerRadius="60%"
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {stats.expertiseData?.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend layout="vertical" align="right" verticalAlign="middle" />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <RegistrationChart data={stats.registrationData || []} />
+            <ExpertiseChart data={stats.expertiseData || []} />
+            <CoverageChart data={stats.coverageData || []} />
           </div>
 
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Coverage Zones</h3>
-            <div className="h-64 md:h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={stats.coverageData || []}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="zone" angle={-45} textAnchor="end" interval={0} />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="count" fill="#82ca9d" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
+          <ProfessionalsTable
+            users={approvedUsers}
+            onDelete={(userId) => handleDeleteUser(userId, true)}
+            onRowClick={handleRowClick}
+          />
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="p-4 md:p-6">
-            <h3 className="text-base md:text-lg font-semibold mb-4">Professional Management</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[800px] md:min-w-0">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expertise</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zone</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exp.</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projects</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {users.map((user) => (
-                    <tr key={user.id}>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.name}</td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.expertise}</td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.coverageZone}</td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.experience} yrs</td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.projectsCompleted}</td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">
-                        <button
-                          onClick={() => handleDelete(user.id)}
-                          className="text-red-600 hover:text-red-900 text-xs md:text-sm"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-          </div>
-        </div>
-                {/* Pending Approvals Table */}
-                <div className="bg-white rounded-xl shadow-sm overflow-hidden mt-8">
-          <div className="p-4 md:p-6">
-            <h3 className="text-base md:text-lg font-semibold mb-4">Pending Approvals</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[800px] md:min-w-0">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expertise</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zone</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {pendingUsers.map((user) => (
-                    <tr key={user.id}>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.name}</td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.expertise}</td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.coverageZone}</td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm space-x-2">
-                        <button
-                          onClick={() => handleApprove(user.id)}
-                          className="text-green-600 hover:text-green-900 text-xs md:text-sm"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-red-600 hover:text-red-900 text-xs md:text-sm"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+          {pendingUsers.length > 0 && (
+            <PendingApprovalsTable
+              users={pendingUsers}
+              onApprove={handleApprove}
+              onDelete={(userId) => handleDeleteUser(userId, false)}
+              onRowClick={handleRowClick}
+            />
+          )}
 
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden mt-8">
-          <div className="p-4 md:p-6">
-            <h3 className="text-base md:text-lg font-semibold mb-4">Resource Management</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[800px] md:min-w-0">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
-                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {resources.map((resource) => (
-                    <tr key={resource.id}>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{resource.title}</td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">
-                        {resourceCategories.find(c => c.id === resource.category)?.name}
-                      </td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{resource.source}</td>
-                      <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm space-x-3">
-                        <button
-                          onClick={() => handleEditResource(resource.id)}
-                          className="text-blue-600 hover:text-blue-900 text-xs md:text-sm"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteResource(resource.id)}
-                          className="text-red-600 hover:text-red-900 text-xs md:text-sm"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+          <ResourcesTable
+            resources={resources}
+            onEdit={handleEditResource}
+            onDelete={handleDeleteResource}
+          />
+        </main>
       </div>
     </div>
   );
