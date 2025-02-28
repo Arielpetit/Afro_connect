@@ -8,8 +8,8 @@ import Sidebar from "../components/Sidebar";
 import { PendingApprovalsTable } from "../components/PendingApprovalsTable";
 import { ProfessionalsTable } from "../components/ProfessionalsTable";
 import { ResourcesTable } from "../components/ResourcesTable";
+import ApprovalStatusChart from "../components/ApprovalStatusChart";
 import { StatsGrid, RegistrationChart, ExpertiseChart, CoverageChart } from "../components/StatsGrid";
-
 
 const AdminDashboardPage = () => {
   const [stats, setStats] = useState<any>({});
@@ -101,10 +101,10 @@ const AdminDashboardPage = () => {
         toast.error("Failed to load data");
       }
     };
-
+    
     fetchData();
   }, [location.key]);
-  // Add row click handler
+
   const handleRowClick = (userId: string) => {
     navigate(`/profile/${userId}`, { 
       state: { 
@@ -167,35 +167,52 @@ const AdminDashboardPage = () => {
       <div className="flex">
         <Sidebar />
         
-        <main className="flex-1 p-4 md:p-8">
+        <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
           <StatsGrid stats={stats} />
           
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <RegistrationChart data={stats.registrationData || []} />
-            <ExpertiseChart data={stats.expertiseData || []} />
-            <CoverageChart data={stats.coverageData || []} />
+          <div className="grid md:grid-cols-2 gap-3 md:gap-6 mb-8">
+            <div className="chart-container">
+              <RegistrationChart data={stats.registrationData || []} />
+            </div>
+            <div className="chart-container">
+              <ExpertiseChart data={stats.expertiseData || []} />
+            </div>
+            <div className="chart-container">
+              <CoverageChart data={stats.coverageData || []} />
+            </div>
+              <ApprovalStatusChart 
+                approved={approvedUsers.length} 
+                pending={pendingUsers.length} 
+              />
+           
           </div>
 
-          <ProfessionalsTable
-            users={approvedUsers}
-            onDelete={(userId) => handleDeleteUser(userId, true)}
-            onRowClick={handleRowClick}
-          />
-
-          {pendingUsers.length > 0 && (
-            <PendingApprovalsTable
-              users={pendingUsers}
-              onApprove={handleApprove}
-              onDelete={(userId) => handleDeleteUser(userId, false)}
+          <div className="overflow-x-auto mb-8">
+            <ProfessionalsTable
+              users={approvedUsers}
+              onDelete={(userId) => handleDeleteUser(userId, true)}
               onRowClick={handleRowClick}
             />
+          </div>
+
+          {pendingUsers.length > 0 && (
+            <div className="overflow-x-auto mb-8">
+              <PendingApprovalsTable
+                users={pendingUsers}
+                onApprove={handleApprove}
+                onDelete={(userId) => handleDeleteUser(userId, false)}
+                onRowClick={handleRowClick}
+              />
+            </div>
           )}
 
-          <ResourcesTable
-            resources={resources}
-            onEdit={handleEditResource}
-            onDelete={handleDeleteResource}
-          />
+          <div className="overflow-x-auto">
+            <ResourcesTable
+              resources={resources}
+              onEdit={handleEditResource}
+              onDelete={handleDeleteResource}
+            />
+          </div>
         </main>
       </div>
     </div>

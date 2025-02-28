@@ -1,3 +1,6 @@
+import DeleteButton from "./DeleteButton";
+import EditButton from "./EditButton";
+
 const resourceCategories = [
     { id: 'market-trends', name: 'Market Trends' },
     { id: 'buying-guides', name: 'Buying Guides' },
@@ -32,18 +35,10 @@ const resourceCategories = [
                   </td>
                   <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{resource.source}</td>
                   <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm space-x-3">
-                    <button
-                      onClick={() => onEdit(resource.id)}
-                      className="text-blue-600 hover:text-blue-900 text-xs md:text-sm"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => onDelete(resource.id)}
-                      className="text-red-600 hover:text-red-900 text-xs md:text-sm"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <EditButton onEdit={onEdit} resource={resource} />
+                        <DeleteButton onDelete={onDelete} user={resource} />
+                    </div>
                   </td>
                 </tr>
               ))}

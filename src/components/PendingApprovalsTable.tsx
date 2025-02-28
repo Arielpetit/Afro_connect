@@ -1,3 +1,6 @@
+import ApproveButton from "./ApproveButton";
+import DeleteButton from "./DeleteButton";
+
 export const PendingApprovalsTable = ({ 
     users, 
     onApprove, 
@@ -36,18 +39,10 @@ export const PendingApprovalsTable = ({
                     className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm space-x-2"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <button
-                      onClick={() => onApprove(user.id)}
-                      className="text-green-600 hover:text-green-900 text-xs md:text-sm px-3 py-1.5 rounded-md bg-green-50 hover:bg-green-100"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => onDelete(user.id)}
-                      className="text-red-600 hover:text-red-900 text-xs md:text-sm px-3 py-1.5 rounded-md bg-red-50 hover:bg-red-100"
-                    >
-                      Delete
-                    </button>
+                  <div className="flex items-center gap-2">
+                  <ApproveButton onApprove={onApprove} user={user} />
+                  <DeleteButton onDelete={onDelete} user={user} />
+                </div>
                   </td>
                 </tr>
               ))}

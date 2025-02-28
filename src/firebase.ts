@@ -3,24 +3,27 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, setDoc, getDocs,getDoc, collection } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAnalytics } from "firebase/analytics";
+import { getAuth,   GoogleAuthProvider,
+  signInWithPopup,} from "firebase/auth";
 
 // New Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAcTAiYpNwD4pIgZfyYWOEafro-fc306kljw1eF0WYzI",
-  authDomain: "test-e1430.firebaseapp.com",
-  projectId: "test-e1430",
-  storageBucket: "test-e1430.firebasestorage.app",
-  messagingSenderId: "62828098931",
-  appId: "1:62828098931:web:43f3ec8f5dd6423bb08106",
-  measurementId: "G-N33RZ9RPH0"
+  apiKey: "AIzaSyCJMLOmNloI5q0Rj9qsigc5a9x6hE1fHgY",
+  authDomain: "connect-223c0.firebaseapp.com",
+  projectId: "connect-223c0",
+  storageBucket: "connect-223c0.firebasestorage.app",
+  messagingSenderId: "464388333785",
+  appId: "1:464388333785:web:28c8fb0e5a056eaefedec8",
+  measurementId: "G-9ZPS7C5ENS"
 };
 
-// Initialize Firebase
+// Initialize Firebase62828098931
 const app = initializeApp(firebaseConfig);
 
 // Firebase services
+const auth = getAuth(app);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { db, storage, ref, uploadBytes, getDownloadURL, doc, setDoc, getDocs, getDoc, collection, analytics };
+export {   GoogleAuthProvider, signInWithPopup, auth, db, storage, ref, uploadBytes, getDownloadURL, doc, setDoc, getDocs, getDoc, collection, analytics };

@@ -1,13 +1,35 @@
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { Menu, X, User, Phone, DollarSign, Home as HomeIcon, HelpCircle, BookOpen } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Menu, X, User, Phone, DollarSign, Home as HomeIcon, HelpCircle, BookOpen, UserPlus } from 'lucide-react';
+import { auth } from '../firebase';
+import { signOut } from 'firebase/auth';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState(auth.currentUser);
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return unsubscribe;
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+    const handleLogout = async () => {
+      try {
+        await signOut(auth);
+        navigate("/"); // Redirect to the home page
+      } catch (error) {
+        console.error("Logout failed:", error);
+      }
+    };
+  
 
   return (
     <nav className="bg-white shadow-sm fixed w-full z-50">
@@ -30,16 +52,55 @@ export function Navbar() {
             >
               Home
             </NavLink>
+            {!user && (
+              
             <NavLink 
-              to="/pricing" 
+              to="/signup" 
               className={({ isActive }) => 
                 `px-4 py-2 font-medium transition-all duration-300 text-gray-700 hover:bg-blue-500 hover:text-white rounded-full ${
                   isActive ? 'bg-blue-500 text-white' : ''
                 }`
               }
             >
-              Tarification
+              Signup/Login
             </NavLink>
+            )}
+
+            {user && (
+              <>
+                <NavLink 
+                  to="/pricing" 
+                  className={({ isActive }) => 
+                    `px-4 py-2 font-medium transition-all duration-300 text-gray-700 hover:bg-blue-500 hover:text-white rounded-full ${
+                      isActive ? 'bg-blue-500 text-white' : ''
+                    }`
+                  }
+                >
+                  Tarification
+                </NavLink>
+                <NavLink 
+                  to="/resources" 
+                  className={({ isActive }) => 
+                    `px-4 py-2 font-medium transition-all duration-300 text-gray-700 hover:bg-blue-500 hover:text-white rounded-full ${
+                      isActive ? 'bg-blue-500 text-white' : ''
+                    }`
+                  }
+                >
+                  Resources
+                </NavLink>
+              </>
+            )}
+            <NavLink 
+            
+                  to="/contact" 
+                  className={({ isActive }) => 
+                    `px-4 py-2 font-medium transition-all duration-300 text-gray-700 hover:bg-blue-500 hover:text-white rounded-full ${
+                      isActive ? 'bg-blue-500 text-white' : ''
+                    }`
+                  }
+                >
+                  Contact
+                </NavLink>
             <NavLink 
               to="/faqs" 
               className={({ isActive }) => 
@@ -50,26 +111,17 @@ export function Navbar() {
             >
               FAQs
             </NavLink>
-            <NavLink 
-              to="/resources" 
-              className={({ isActive }) => 
-                `px-4 py-2 font-medium transition-all duration-300 text-gray-700 hover:bg-blue-500 hover:text-white rounded-full ${
-                  isActive ? 'bg-blue-500 text-white' : ''
-                }`
-              }
+
+            {user && (
+              <button
+              onClick={handleLogout}
+              className="px-4 py-2 font-medium transition-all duration-300 text-gray-700 hover:bg-red-600 hover:text-white rounded-full"
             >
-              Resources
-            </NavLink>
-            <NavLink 
-              to="/contact" 
-              className={({ isActive }) => 
-                `px-4 py-2 font-medium transition-all duration-300 text-gray-700 hover:bg-blue-500 hover:text-white rounded-full ${
-                  isActive ? 'bg-blue-500 text-white' : ''
-                }`
-              }
-            >
-              Contact
-            </NavLink>
+              Déconnexion
+            </button>
+            )}
+            {user && (
+
             <NavLink 
               to="/profile" 
               className={({ isActive }) => 
@@ -80,10 +132,14 @@ export function Navbar() {
             >
               <User className="w-6 h-6" />
             </NavLink>
-            <NavLink to="/register" className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-blue-700 transition-colors">
-              Enregistrez-vous
-            </NavLink>
-            <NavLink to="/login" className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors">
+            )}
+
+            {user && (
+              <NavLink to="/register" className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-blue-700 transition-colors">
+                Enregistrez-vous
+              </NavLink>
+            )}
+            <NavLink to="/admin-login" className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors">
               Admin
             </NavLink>
           </div>
@@ -123,16 +179,43 @@ export function Navbar() {
           >
             <HomeIcon className="inline-block w-5 h-5 mr-2" /> Home
           </NavLink>
+          {user && (
+            <>
+              <NavLink 
+                to="/pricing" 
+                className={({ isActive }) => 
+                  `px-4 py-2 rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-colors ${
+                    isActive ? 'bg-blue-500 text-white' : ''
+                  }`
+                }
+                onClick={toggleMenu}
+              >
+                <DollarSign className="inline-block w-5 h-5 mr-2" /> Tarification
+              </NavLink>
+              <NavLink 
+                to="/resources" 
+                className={({ isActive }) => 
+                  `px-4 py-2 rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-colors ${
+                    isActive ? 'bg-blue-500 text-white' : ''
+                  }`
+                }
+                onClick={toggleMenu}
+              >
+                <BookOpen className="inline-block w-5 h-5 mr-2" /> Resources
+              </NavLink>
+              
+            </>
+          )}
           <NavLink 
-            to="/pricing" 
-            className={({ isActive }) => 
-              `px-4 py-2 rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-colors ${
-                isActive ? 'bg-blue-500 text-white' : ''
-              }`
-            }
-            onClick={toggleMenu}
-          >
-            <DollarSign className="inline-block w-5 h-5 mr-2" /> Tarification
+                to="/contact" 
+                className={({ isActive }) => 
+                  `px-4 py-2 rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-colors ${
+                    isActive ? 'bg-blue-500 text-white' : ''
+                  }`
+                }
+                onClick={toggleMenu}
+              >
+                <Phone className="inline-block w-5 h-5 mr-2" /> Contact
           </NavLink>
           <NavLink 
             to="/faqs" 
@@ -145,28 +228,20 @@ export function Navbar() {
           >
             <HelpCircle className="inline-block w-5 h-5 mr-2" /> FAQs
           </NavLink>
+          {!user && (
           <NavLink 
-            to="/resources" 
+            to="/signup" 
             className={({ isActive }) => 
-              `px-4 py-2 rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-colors ${
+              `px-4 py-2 rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-colors flex items-center ${
                 isActive ? 'bg-blue-500 text-white' : ''
               }`
             }
             onClick={toggleMenu}
           >
-            <BookOpen className="inline-block w-5 h-5 mr-2" /> Resources
+            <UserPlus className="inline-block w-5 h-5 mr-2" /> Signup
           </NavLink>
-          <NavLink 
-            to="/contact" 
-            className={({ isActive }) => 
-              `px-4 py-2 rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-colors ${
-                isActive ? 'bg-blue-500 text-white' : ''
-              }`
-            }
-            onClick={toggleMenu}
-          >
-            <Phone className="inline-block w-5 h-5 mr-2" /> Contact
-          </NavLink>
+          )}
+          {user && (
           <NavLink 
             to="/profile" 
             className={({ isActive }) => 
@@ -178,12 +253,23 @@ export function Navbar() {
           >
             <User className="inline-block w-5 h-5 mr-2" /> Trouver des experts
           </NavLink>
-          <NavLink to="/register" className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-blue-700 transition-colors text-center" onClick={toggleMenu}>
-            Enregistrez-vous
-          </NavLink>
-          <NavLink to="/login" className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors text-center" onClick={toggleMenu}>
+          )}
+          {user && (
+            <NavLink to="/register" className="bg-blue-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-blue-700 transition-colors text-center" onClick={toggleMenu}>
+              Enregistrez-vous
+            </NavLink>
+          )}
+          <NavLink to="/admin-login" className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors text-center" onClick={toggleMenu}>
             Admin
           </NavLink>
+          {user && (
+              <button
+              onClick={handleLogout}
+              className="px-4 py-2 font-medium transition-all duration-300 text-gray-700 hover:bg-red-600 hover:text-white rounded-full"
+            >
+              Déconnexion
+            </button>
+            )}
         </div>
       </div>
     </nav>

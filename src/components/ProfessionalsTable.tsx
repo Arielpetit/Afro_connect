@@ -1,3 +1,5 @@
+import DeleteButton from "./DeleteButton";
+
     export const ProfessionalsTable = ({ users, onDelete, onRowClick }: { 
       users: any[], onDelete: (userId: string) => void ,
       onRowClick: (userId: string) => void 
@@ -31,12 +33,7 @@
                 <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.experience} yrs</td>
                 <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">{user.projectsCompleted}</td>
                 <td className="px-3 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm">
-                  <button
-                    onClick={() => onDelete(user.id)}
-                    className="text-red-600 hover:text-red-900 text-xs md:text-sm"
-                  >
-                    Delete
-                  </button>
+                <DeleteButton onDelete={onDelete} user={user} />
                 </td>
               </tr>
             ))}

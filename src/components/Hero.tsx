@@ -17,7 +17,7 @@ export function Hero() {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/40 z-10" />
         <img
-          src="https://th.bing.com/th/id/OIP.MMsYZP7G5DqKd6Pa0IyU2QHaFD?rs=1&pid=ImgDetMain"
+          src="hero.jpeg"
           alt="Illustration de conseil immobilier"
           className="w-full h-full object-cover object-center"
           loading="lazy"
@@ -52,14 +52,15 @@ export function Hero() {
             className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
           >
             <button
-              onClick={() => navigate('/register')}
+              onClick={() => navigate('/signup')}
+
               className="px-6 py-3.5 sm:px-8 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-blue-600/30"
             >
               Enregistrez-vous en tant que professionnel
               <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
             </button>
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/contact')}
               className="px-6 py-3.5 sm:px-8 sm:py-4 bg-transparent border-2 border-white/20 hover:border-white/40 text-white rounded-lg font-semibold transition-all duration-300 backdrop-blur-sm hover:backdrop-blur"
             >
               Contact immédiat
