@@ -24,6 +24,7 @@ import ResourceFormPage from "./pages/ResourceForm";
 import ContactForm from "./pages/ContactForm";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import SendEmailForm from "./components/SendEmailForm";
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -102,6 +103,10 @@ const AppContent = () => {
             path="/admin"
             element={<ProtectedRoute element={<AdminDashboardPage />} />}
           />
+          <Route
+            path="/SendEmail"
+            element={<ProtectedRoute element={< SendEmailForm/>} />}
+          />
 
           <Route path="*" element={<div>404 Page Not Found</div>} />
         </Routes>
@@ -123,3 +128,4 @@ function App() {
 }
 
 export default App;
+

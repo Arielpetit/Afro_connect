@@ -19,7 +19,7 @@ const LoginPage = () => {
       
     } catch (error) {
       toast.error('Invalid email or password');
-      console.error('Login error:', error.message);
+      console.error('Login error:', error);
     }
   };
   

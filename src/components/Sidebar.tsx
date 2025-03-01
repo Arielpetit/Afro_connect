@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Home, FilePlus, Settings, Menu, X } from "lucide-react";
+import { FiMail } from "react-icons/fi";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -45,6 +46,13 @@ const Sidebar = () => {
               onClick={() => navigate("/resource/new")} 
               active 
             />
+            <SidebarItem 
+              icon={<FiMail size={18} className="flex-shrink-0" />} 
+              label="Send Email" 
+              isOpen={isOpen} 
+              onClick={() => navigate("/SendEmail")} 
+            />
+
             <SidebarItem 
               icon={<Settings size={18} className="flex-shrink-0" />} 
               label="Settings" 
@@ -95,6 +103,7 @@ const SidebarItem = ({
       </span>
       {isOpen && <span className="text-sm font-medium">{label}</span>}
     </button>
+    
   );
 };
 
