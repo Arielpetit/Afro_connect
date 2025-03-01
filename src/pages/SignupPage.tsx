@@ -8,14 +8,35 @@ import { toast, ToastContainer } from "react-toastify";
 // Updated expertise options in French
 const expertiseOptions = [
   "Courtier hypothécaire",
-  "Agent immobilier",
+  "Courtier immobilier",
   "Notaire",
   "Inspecteur en bâtiment",
   "Opérateur agréé",
   "Entreprise de déménagement",
   "Entrepreneur général",
+  "Avocat",
+  "Architecte",
+  "Comptable",
+  "Conseiller financier",
+  "Évaluateur immobilier agréé",
+  "Gestionnaire de propriété",
+  "Entrepreneur en rénovation",
+  "Développeur de logiciels",
+  "Plombier",
+  "Électricien",
+  "Installateur de fenêtres",
+  "Technicien en chauffage, ventilation et climatisation (CVC)",
+  "Designer d'intérieur",
+  "Spécialiste en marketing immobilier",
+  "Agent de location",
+  "Consultant en stratégie immobilière",
+  "Gestionnaire de projet immobilier",
+  "Fournisseur de matériaux de construction",
+  "Planificateur financier",
   "Autre (préciser)"
+
 ];
+
 
 const coverageZones = [
   "Alberta",
