@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const AdminLoginPage = () => {
   const [username, setUsername] = useState("");
@@ -13,7 +13,10 @@ const AdminLoginPage = () => {
   const handleLogin = () => {
     if (username === validUsername && password === validPassword) {
       localStorage.setItem("isAuthenticated", "true");
+      toast.success("Login as admin successful");
+      setTimeout(() => {
       navigate("/admin");
+      }, 2000);
     } else {
       toast.error("Invalid username or password");
     }
@@ -91,6 +94,8 @@ const AdminLoginPage = () => {
           </button>
         </div>
       </div>
+      <ToastContainer />
+
     </div>
   );
 };

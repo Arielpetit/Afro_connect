@@ -62,7 +62,7 @@ export function Navbar() {
                 }`
               }
             >
-              Signup/Login
+              Signup
             </NavLink>
             )}
 
@@ -142,6 +142,23 @@ export function Navbar() {
             <NavLink to="/admin-login" className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors">
               Admin
             </NavLink>
+            {user && (
+            <NavLink 
+              to="/personal-profile" 
+              className={({ isActive }) => 
+                `px-4 py-2 rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-colors ${
+                  isActive ? 'bg-blue-500 text-white' : ''
+                }`
+              }
+            >
+              <img 
+                src="bussiness-man.png" 
+                alt="Profile" 
+                className="inline-block w-8 h-8 rounded-full mr-2"
+              />
+            </NavLink>
+
+          )}
           </div>
 
           {/* Mobile Menu Toggle Button */}
@@ -270,6 +287,19 @@ export function Navbar() {
               Déconnexion
             </button>
             )}
+          {user && (
+          <NavLink 
+            to="/personal-profile" 
+            className={({ isActive }) => 
+              `px-4 py-2 rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-colors ${
+                isActive ? 'bg-blue-500 text-white' : ''
+              }`
+            }
+            onClick={toggleMenu}
+          >
+            <User className="inline-block w-5 h-5 mr-2" /> profile personelle
+          </NavLink>
+          )}
         </div>
       </div>
     </nav>

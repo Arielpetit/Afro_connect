@@ -25,6 +25,9 @@ import ContactForm from "./pages/ContactForm";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import SendEmailForm from "./components/SendEmailForm";
+import { Profile } from "./components/Profile";
+import ReviewListPage from "./pages/ReviewListPage";
+import ReviewFormPage from "./pages/ReviewFormPage";
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -61,6 +64,9 @@ const AppContent = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/faqs" element={<FAQ />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/personal-profile" element={<Profile />} />
+          <Route path="/profiles/:userId/reviews" element={<ReviewListPage />} />
+          <Route path="/profiles/:userId/review" element={<ReviewFormPage />} />
 
           {/* Protected Routes */}
           <Route

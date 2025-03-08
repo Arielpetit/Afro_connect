@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { useNavigate, useLocation } from "react-router-dom";
+import { getFirestore, collection, addDoc, doc, updateDoc, getDocs, query, where } from "firebase/firestore";
 import { FiUploadCloud } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
+import { auth } from '../firebase';
 
-// Updated expertise options in French
 const expertiseOptions = [
   "Courtier hypothécaire",
   "Agent immobilier",
@@ -36,6 +36,9 @@ const coverageZones = [
 const languages = ["Français", "Anglais", "Espagnol", "Allemand", "Italien", "Portugais", "Arabe", "Chinois", "Russe", "Japonais", "Néerlandais"];
 
 const RegisterPage = () => {
+  const location = useLocation();
+  const [editMode, setEditMode] = useState(false);
+  const [docId, setDocId] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -52,17 +55,47 @@ const RegisterPage = () => {
     expertise: "",
     bio: "",
     status: "pending",
-    profilePicture: null as File | null,
-    businessCard: null as File | null,
-    licenseCertification: null as File | null,
+    profilePicture: null as File | string | null,
+    businessCard: null as File | string | null,
+    licenseCertification: null as File | string | null,
     professionalPermitNumber: "",
-    identityCard: null as File | null,
+    identityCard: null as File | string | null,
+    userId: "",
   });
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const db = getFirestore();
 
+// Update the useEffect to preserve existing files
+useEffect(() => {
+  const checkExistingRegistration = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const q = query(collection(db, "users"), where("userId", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      const docData = querySnapshot.docs[0].data();
+      setDocId(querySnapshot.docs[0].id);
+      setEditMode(true);
+      setFormData(prev => ({
+        ...prev,
+        ...docData,
+        userId: user.uid,
+        status: "pending", // Always reset to pending when editing
+        // Convert string URLs back to file objects if needed
+        profilePicture: docData.profilePicture || null,
+        businessCard: docData.businessCard || null,
+        licenseCertification: docData.licenseCertification || null,
+        identityCard: docData.identityCard || null
+      }));
+    }
+  };
+
+  checkExistingRegistration();
+}, [db]);
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -89,21 +122,21 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      let profilePictureUrl = "";
-      let businessCardUrl = "";
-      let licenseCertificationUrl = "";
-      let identityCardUrl = "";
+      let profilePictureUrl = typeof formData.profilePicture === 'string' ? formData.profilePicture : "";
+      let businessCardUrl = typeof formData.businessCard === 'string' ? formData.businessCard : "";
+      let licenseCertificationUrl = typeof formData.licenseCertification === 'string' ? formData.licenseCertification : "";
+      let identityCardUrl = typeof formData.identityCard === 'string' ? formData.identityCard : "";
 
-      if (formData.profilePicture) {
+      if (formData.profilePicture instanceof File) {
         profilePictureUrl = await convertToBase64(formData.profilePicture);
       }
-      if (formData.businessCard) {
+      if (formData.businessCard instanceof File) {
         businessCardUrl = await convertToBase64(formData.businessCard);
       }
-      if (formData.licenseCertification) {
+      if (formData.licenseCertification instanceof File) {
         licenseCertificationUrl = await convertToBase64(formData.licenseCertification);
       }
-      if (formData.identityCard) {
+      if (formData.identityCard instanceof File) {
         identityCardUrl = await convertToBase64(formData.identityCard);
       }
 
@@ -116,21 +149,28 @@ const RegisterPage = () => {
         userType: "professional",
         experience: Number(formData.experience),
         projectsCompleted: Number(formData.projectsCompleted),
-        createdAt: new Date(),
+        userId: auth.currentUser?.uid,
+        status: "pending", // Force status to pending on every submission
+        updatedAt: new Date(),
       };
+  
 
-      await addDoc(collection(db, "users"), professionalData);
-
-      toast.success("Registration successful");
+      if (editMode && docId) {
+        await updateDoc(doc(db, "users", docId), professionalData);
+      } else {
+        await addDoc(collection(db, "users"), professionalData);
+      }
+  
+      toast.success(editMode 
+        ? "Profile updated! Waiting for admin approval." 
+        : "Registration successful! Waiting for approval");
       setTimeout(() => {
         navigate('/profile');
-      }, 4000);
+      }, 2000);
       
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error(
-        `Registration failed`
-      );
+      toast.error("Registration failed");
     } finally {
       setLoading(false);
     }
@@ -145,9 +185,10 @@ const RegisterPage = () => {
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-          Inscription Professionnelle
+          {editMode ? "Modifier l'inscription" : "Inscription Professionnelle"}
         </h2>
 
+        {/* Rest of the form remains the same */}
         <form
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
           onSubmit={handleSubmit}
@@ -444,12 +485,13 @@ const RegisterPage = () => {
             </div>
           </div>
 
-          <button
+ {/* Submit Button */}
+ <button
             type="submit"
             className="md:col-span-2 w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors mt-4"
             disabled={loading}
           >
-            {loading ? "Enregistrement..." : "Finaliser l'inscription"}
+            {loading ? "Enregistrement..." : editMode ? "Mettre à jour" : "Finaliser l'inscription"}
           </button>
         </form>
       </motion.div>

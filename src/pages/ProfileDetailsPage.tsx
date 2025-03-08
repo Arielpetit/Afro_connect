@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-import { db, doc, getDoc } from "../firebase";
+import { db, doc, getDoc, getDocs } from "../firebase";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   FiUser, FiMail, FiPhone, FiMapPin, FiBriefcase, FiClock, FiInfo,
   FiGlobe, FiMap, FiFlag, FiCalendar, FiCheckCircle, FiStar,
-  FiSend, FiTrash2, FiFile, FiFileText, FiDownload
+  FiSend, FiTrash2, FiFile, FiFileText, FiDownload, FiMessageSquare
 } from "react-icons/fi";
-import { runTransaction, collection, deleteDoc, updateDoc } from "firebase/firestore";
+import { runTransaction, collection, deleteDoc, updateDoc, orderBy, limit, query } from "firebase/firestore";
 import {Rating} from "../components/rating";
 import { toast } from "react-toastify";
 
@@ -17,6 +17,7 @@ const ProfileDetailsPage = () => {
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [submittingRating, setSubmittingRating] = useState(false);
+  const [reviews, setReviews] = useState<any[]>([]);
   const [isAdminView] = useState(location.state?.fromAdmin || false);
   const navigate = useNavigate();
 
@@ -42,8 +43,34 @@ const ProfileDetailsPage = () => {
         setLoading(false);
       }
     };
+
+    const fetchReviews = async () => {
+      try {
+        const ratingsRef = collection(db, `users/${userId}/ratings`);
+        const q = query(ratingsRef, orderBy('timestamp', 'desc'), limit(3));
+        const querySnapshot = await getDocs(q);
+        const reviewsData = querySnapshot.docs
+          .filter(doc => {
+            const data = doc.data();
+            return data.comment && data.comment.trim() !== '';
+          })
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            timestamp: doc.data().timestamp?.toDate()
+          }));
+        setReviews(reviewsData);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+
   
-    if (userId) fetchUserData();
+    if (userId) {
+      fetchUserData();
+      fetchReviews();
+    }
+
   }, [userId, navigate, isAdminView]);
 
   const handleApprove = async () => {
@@ -382,6 +409,43 @@ const ProfileDetailsPage = () => {
                   Contact
                 </button>
               </div>
+              <div className="flex items-center gap-2 mb-3">
+      <FiMessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
+      <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Client Reviews</h3>
+    </div>
+    {reviews.length === 0 ? (
+      <p className="text-gray-600">No reviews yet.</p>
+    ) : (
+      <>
+        {reviews.map((review) => (
+          <div key={review.id} className="mb-4 last:mb-0 p-4 bg-white rounded-lg border border-gray-100">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="font-medium">{review.clientName || 'Anonymous'}</span>
+              <FiStar className="text-yellow-400" />
+              <span>{review.rating}</span>
+              <span className="text-sm text-gray-500">
+                {review.timestamp?.toLocaleDateString()}
+              </span>
+            </div>
+            <p className="text-gray-600">{review.comment}</p>
+          </div>
+        ))}
+        <div className="mt-4 flex gap-4">
+          <button
+            onClick={() => navigate(`/profiles/${userId}/reviews`)}
+            className="text-indigo-600 hover:underline font-medium"
+          >
+            View All Reviews
+          </button>
+          <button
+            onClick={() => navigate(`/profiles/${userId}/review`)}
+            className="text-indigo-600 hover:underline font-medium"
+          >
+            Write a Review
+          </button>
+        </div>
+      </>
+    )}
             </>
           )}
         </div>
