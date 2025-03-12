@@ -1,167 +1,216 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { FiUser, FiMail, FiBriefcase, FiClock, FiUsers } from "react-icons/fi";
+import { FiUser, FiMail, FiBriefcase, FiClock, FiArrowLeft, FiUsers } from "react-icons/fi";
+
+const categories = [
+  {
+    name: "Courtier hypothécaire",
+    image: "/courtier-hypothecaire.jpg",
+  },
+  {
+    name: "Courtier immobilier",
+    image: "/Agent_immobilier.jpg",
+  },
+  {
+    name: "Notaire",
+    image: "/notaire.jpg",
+  },
+  {
+    name: "Constructeur",
+    image: "/constructeur.jpg",
+  },
+  {
+    name: "Évaluateurs agréés",
+    image: "/Evaluateur_agree.jpg",
+  },
+  {
+    name: "Inspecteur en bâtiment",
+    image: "/Inspecteur_en_batiment.jpg",
+  },
+  {
+    name: "Entrepreneur général",
+    image: "/intrepreneur_general.jpg",
+  },
+  {
+    name: "Métiers spécialisés de la construction et de l'immobilier",
+    image: "/Other.jpg",
+  },
+];
+
+interface User {
+  id: string;
+  name?: string;
+  email?: string;
+  expertise?: string;
+  experience?: number;
+  projectsCompleted?: number;
+  profilePicture?: string;
+}
+
+interface ProfessionalBadgeProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}
 
 const ProfilePage = () => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const navigate = useNavigate();
   const db = getFirestore();
+
+  const mainCategories = categories.slice(0, -1).map(c => c.name);
 
   useEffect(() => {
     const fetchUsersData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "users"));
-        const usersList: any[] = [];
+        const usersList: User[] = [];
         querySnapshot.forEach((doc) => {
           usersList.push({ id: doc.id, ...doc.data() });
         });
         setUsers(usersList);
       } catch (err) {
         setError("Échec du chargement des profils. Veuillez réessayer plus tard.");
-        console.error("Erreur lors de la récupération des utilisateurs:", err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchUsersData();
   }, [db]);
 
-  const handleProfileClick = (userId: string) => {
-    navigate(`/profile/${userId}`);
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white flex items-center justify-center">
-        <div className="text-center p-8 max-w-md">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            Oups ! Quelque chose s'est mal passé
-          </h1>
-          <p className="text-gray-600">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (users.length === 0) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white flex items-center justify-center">
-        <div className="text-center p-8 max-w-md">
-          <FiUsers className="w-16 h-16 text-indigo-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            Aucun professionnel trouvé
-          </h1>
-          <p className="text-gray-600">
-            Nous n'avons trouvé aucun professionnel enregistré pour le moment.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const filteredUsers = selectedCategory
+    ? users.filter(user => {
+        if (selectedCategory === "Métiers spécialisés de la construction et de l'immobilier") {
+          return user.expertise && !mainCategories.includes(user.expertise);
+        }
+        return user.expertise?.toLowerCase() === selectedCategory.toLowerCase();
+      })
+    : users;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4 relative inline-block">
-            <span className="relative z-10 px-4 bg-gradient-to-br from-indigo-50 to-white">
-              Rencontrez nos professionnels
-            </span>
-            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-indigo-100 transform -translate-y-1/2"></div>
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Découvrez des professionnels qualifiés prêts à vous aider pour votre prochain projet
-          </p>
-        </div>
-
-        {/* Professionals Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {users.map((user) => (
-            <div
-              key={user.id}
-              onClick={() => handleProfileClick(user.id)}
-              className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden"
-            >
-              {/* Profile Image */}
-              <div className="relative h-48 bg-indigo-50">
-                <img
-                  src={user.profilePicture || "https://avatar.vercel.sh/placeholder"}
-                  alt={user.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                {user.userType === "professional" && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <h3 className="text-lg font-semibold text-white">{user.name}</h3>
-                    <p className="text-sm text-indigo-200">{user.expertise}</p>
+        {!selectedCategory && (
+          <div className="mb-12 md:mb-16 text-center">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+              Trouvez votre expert
+            </h1>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categories.map(({ name, image }) => (
+                <div
+                  key={name}
+                  onClick={() => handleCategoryClick(name)}
+                  className="group cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 p-6 border border-gray-100"
+                >
+                  <div className="aspect-video w-full overflow-hidden rounded-lg">
+                    <img
+                      src={image}
+                      alt={name}
+                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
-                )}
-              </div>
-
-              {/* Profile Details */}
-              <div className="p-6 space-y-4">
-                {user.userType !== "professional" && (
-                  <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <FiUser className="text-indigo-600" /> {user.name}
+                  <h3 className="text-lg font-semibold text-gray-800 mt-6 text-center group-hover:text-blue-600 transition-colors">
+                    {name}
                   </h3>
-                )}
-                <div className="flex items-center gap-2 text-gray-600">
-                  <FiMail className="flex-shrink-0" />
-                  <span className="truncate">{user.email}</span>
                 </div>
-                {user.userType === "professional" && (
-                  <div className="space-y-2">
-                    <ProfessionalBadge
-                      icon={<FiBriefcase />}
-                      label="Expérience"
-                      value={`${user.experience} années`}
-                    />
-                    <ProfessionalBadge
-                      icon={<FiClock />}
-                      label="Projets réalisés"
-                      value={
-                        user.projectsCompleted
-                          ? String(user.projectsCompleted)
-                          : "N/A"
-                      }
-                    />
-                  </div>
-                )}
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {selectedCategory && (
+          <>
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-8 sm:mb-12 gap-4">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className="flex items-center text-blue-600 hover:text-blue-800 transition-colors text-sm sm:text-base"
+              >
+                <FiArrowLeft className="mr-2" /> Retour aux catégories
+              </button>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">
+                Professionnels en {selectedCategory}
+              </h2>
+            </div>
+
+            {/* Professionals Grid */}
+            {loading ? (
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>
+              </div>
+            ) : error ? (
+              <div className="text-center text-red-500">{error}</div>
+            ) : filteredUsers.length === 0 ? (
+              <div className="text-center text-gray-600 text-lg">
+                <FiUsers className="w-16 h-16 text-indigo-500 mx-auto mb-4" />
+                <p className="mb-2">Aucun profil trouvé </p>
+                <p className="text-sm">Soyez le premier à vous inscrire dans cette catégorie!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {filteredUsers.map((user) => (
+                  <div
+                    key={user.id}
+                    onClick={() => navigate(`/profile/${user.id}`)}
+                    className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden"
+                  >
+                    <div className="relative h-48 bg-indigo-50">
+                      <img
+                        src={user.profilePicture || "https://avatar.vercel.sh/placeholder"}
+                        alt={user.name || "Professional"}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+                        <h3 className="text-lg font-semibold text-white">{user.name}</h3>
+                        <p className="text-sm text-indigo-200">{user.expertise}</p>
+                      </div>
+                    </div>
+
+                    <div className="p-6 space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                        <FiUser className="text-indigo-600" /> {user.name}
+                      </h3>
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <FiMail className="flex-shrink-0" />
+                        <span className="truncate">{user.email}</span>
+                      </div>
+                      <div className="space-y-2">
+                        <ProfessionalBadge
+                          icon={<FiBriefcase />}
+                          label="Expérience"
+                          value={`${user.experience ?? "N/A"} années`}
+                        />
+                        <ProfessionalBadge
+                          icon={<FiClock />}
+                          label="Projets réalisés"
+                          value={user.projectsCompleted ? String(user.projectsCompleted) : "N/A"}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
 };
 
-const ProfessionalBadge = ({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) => (
-  <div className="flex items-center gap-3 text-sm">
-    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">{icon}</div>
+const ProfessionalBadge: React.FC<ProfessionalBadgeProps> = ({ icon, label, value }) => (
+  <div className="flex items-start gap-3 text-sm">
+    <div className="p-2 bg-blue-50 rounded-lg text-blue-600">{icon}</div>
     <div>
-      <p className="font-medium text-gray-600">{label}</p>
-      <p className="text-gray-800">{value}</p>
+      <p className="font-medium text-gray-500">{label}</p>
+      <p className="text-gray-900 font-semibold">{value}</p>
     </div>
   </div>
 );

@@ -1,3 +1,4 @@
+// SignupPage.tsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -5,7 +6,6 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { FiUploadCloud } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 
-// Updated expertise options in French
 const expertiseOptions = [
   "Courtier hypothécaire",
   "Courtier immobilier",
@@ -29,9 +29,7 @@ const expertiseOptions = [
   "Avocat spécialisé en droit immobilier",
   "Gestionnaire d'actifs immobiliers",
   "Autre (préciser)"
-
 ];
-
 
 const coverageZones = [
   "Alberta",
@@ -65,6 +63,7 @@ const SignupPage = () => {
     services: "",
     expertise: "",
     bio: "",
+    numeroPermis: "",
     profilePicture: null as File | null,
   });
   const [loading, setLoading] = useState(false);
@@ -85,7 +84,6 @@ const SignupPage = () => {
     }
   };
 
-  // Function to convert image to base64
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -107,7 +105,7 @@ const SignupPage = () => {
 
       const professionalData = {
         ...formData,
-        profilePicture: profilePictureUrl,  // store base64 string
+        profilePicture: profilePictureUrl,
         userType: "professional",
         experience: Number(formData.experience),
         projectsCompleted: Number(formData.projectsCompleted),
@@ -146,7 +144,6 @@ const SignupPage = () => {
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
           onSubmit={handleSubmit}
         >
-          {/* Personal Information Column */}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -189,6 +186,19 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
+                Numéro de permis
+              </label>
+              <input
+                type="text"
+                name="numeroPermis"
+                value={formData.numeroPermis}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Entrez votre numéro de permis professionnel"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Photo de Profil
               </label>
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-indigo-500 transition-colors">
@@ -211,7 +221,6 @@ const SignupPage = () => {
             </div>
           </div>
 
-          {/* Professional Information Column */}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -258,7 +267,6 @@ const SignupPage = () => {
                 ))}
               </select>
             </div>
-            {/* Langues parlées */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Langues parlées :
@@ -272,7 +280,6 @@ const SignupPage = () => {
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
-            {/* Disponibilité */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Disponibilité (jours et heures de service) :

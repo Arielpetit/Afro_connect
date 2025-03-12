@@ -1,3 +1,4 @@
+// ProfileDetailsPage.tsx
 import React, { useEffect, useState } from "react";
 import { db, doc, getDoc } from "../firebase";
 import { useParams } from "react-router-dom";
@@ -54,7 +55,6 @@ const ProfileDetailsPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-        {/* Profile Header */}
         <div className="bg-indigo-600 p-8 text-center">
           <div className="relative inline-block group">
             <img
@@ -69,9 +69,7 @@ const ProfileDetailsPage = () => {
           )}
         </div>
 
-        {/* Profile Content */}
         <div className="p-8 space-y-6">
-          {/* Core Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InfoCard icon={<FiUser className="w-5 h-5" />} title="Nom" value={user.name} />
             <InfoCard icon={<FiMail className="w-5 h-5" />} title="Email" value={user.email} />
@@ -85,7 +83,6 @@ const ProfileDetailsPage = () => {
             )}
           </div>
 
-          {/* Professional Details */}
           {user.userType === "professional" && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -103,6 +100,11 @@ const ProfileDetailsPage = () => {
                   icon={<FiCheckCircle className="w-5 h-5" />} 
                   title="Projets terminés" 
                   value={user.projectsCompleted} 
+                />
+                <InfoCard 
+                  icon={<FiCheckCircle className="w-5 h-5" />} 
+                  title="Numéro de permis" 
+                  value={user.numeroPermis || "-"} 
                 />
               </div>
 
@@ -144,7 +146,6 @@ const ProfileDetailsPage = () => {
                 />
               </div>
 
-              {/* Bio Section */}
               <div className="bg-gray-50 rounded-lg p-6 border-l-4 border-indigo-500">
                 <div className="flex items-center gap-2 mb-4">
                   <FiInfo className="w-6 h-6 text-indigo-600" />
