@@ -11,7 +11,7 @@ import { Testimonials } from "./components/Testimonials";
 import { Footer } from "./components/Footer";
 
 import SignupPage from "./pages/SignupPage";
-import ProfilePage from "./pages/ProfilePage";
+import {ProfilePage} from "./pages/ProfilePage";
 import ProfileDetailsPage from "./pages/ProfileDetailsPage";
 import ScrollToTop from "./components/ScrollToTop";
 import AdminDashboardPage from "./pages/AdminDashboardPage";

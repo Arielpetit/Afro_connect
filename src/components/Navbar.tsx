@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Menu, X, User, Phone, DollarSign, Home as HomeIcon, HelpCircle, BookOpen, UserPlus } from 'lucide-react';
+import { Menu, X, User, Phone, DollarSign, Home as HomeIcon, HelpCircle, BookOpen, UserPlus, Download } from 'lucide-react';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState(auth.currentUser);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const navigate = useNavigate();
 
 
@@ -14,8 +15,17 @@ export function Navbar() {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
     });
-    return unsubscribe;
-  }, []);
+ // Handle PWA installation prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('beforeinstallprompt', () => {});
+    };
+    }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -29,7 +39,19 @@ export function Navbar() {
         console.error("Logout failed:", error);
       }
     };
-  
+    const handleInstallClick = () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult: any) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted install');
+          } else {
+            console.log('User dismissed install');
+          }
+          setDeferredPrompt(null);
+        });
+      }
+    };
 
   return (
     <nav className="bg-white shadow-sm fixed w-full z-50">
@@ -42,6 +64,17 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4">
+            {/* Add Install Button */}
+            {deferredPrompt && (
+              <button
+                onClick={handleInstallClick}
+                className="bg-purple-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-purple-700 transition-colors flex items-center gap-2"
+              >
+                <Download className="w-5 h-5" />
+                Installer
+              </button>
+            )}
+
             <NavLink 
               to="/" 
               className={({ isActive }) => 
@@ -184,6 +217,15 @@ export function Navbar() {
             <X className="w-6 h-6" />
           </button>
         </div>
+        {deferredPrompt && (
+              <button
+                onClick={handleInstallClick}
+                className="bg-purple-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-purple-700 transition-colors flex items-center gap-2"
+              >
+                <Download className="w-5 h-5" />
+                Installer
+              </button>
+            )}
         <div className="flex flex-col p-4 space-y-4">
           <NavLink 
             to="/" 
