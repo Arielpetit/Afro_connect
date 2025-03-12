@@ -19,7 +19,7 @@ const categories = [
     image: "/courtier-hypothecaire.jpg",
   },
   {
-    name: "Agent immobilier",
+    name: "Courtier immobilier",
     image: "/Agent_immobilier.jpg",
   },
   {
