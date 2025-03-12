@@ -199,7 +199,7 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Photo de Profil
+                Photo de Profil *
               </label>
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-indigo-500 transition-colors">
                 {formData.profilePicture ? (
@@ -216,6 +216,7 @@ const SignupPage = () => {
                   onChange={handleChange}
                   className="hidden"
                   accept="image/*"
+                  required
                 />
               </label>
             </div>
