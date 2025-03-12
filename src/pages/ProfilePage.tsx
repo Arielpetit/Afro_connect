@@ -3,13 +3,23 @@ import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { FiUser, FiMail, FiBriefcase, FiClock, FiArrowLeft, FiUsers } from "react-icons/fi";
 
+// Specialist configuration
+const financialSpecialties = [
+  "Consultant en stratégie immobilière",
+  "Architecte spécialisé en immobilier",
+  "Expert en valorisation immobilière",
+  "Avocat spécialisé en droit immobilier",
+  "Gestionnaire d'actifs immobiliers",
+  "Conseil en sécurité financière"
+];
+
 const categories = [
   {
     name: "Courtier hypothécaire",
     image: "/courtier-hypothecaire.jpg",
   },
   {
-    name: "Courtier immobilier",
+    name: "Agent immobilier",
     image: "/Agent_immobilier.jpg",
   },
   {
@@ -35,6 +45,10 @@ const categories = [
   {
     name: "Métiers spécialisés de la construction et de l'immobilier",
     image: "/Other.jpg",
+  },
+  {
+    name: "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé",
+    image: "/cpa.jpg", 
   },
 ];
 
@@ -62,7 +76,7 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const db = getFirestore();
 
-  const mainCategories = categories.slice(0, -1).map(c => c.name);
+  const mainCategories = categories.slice(0, -2).map(c => c.name);
 
   useEffect(() => {
     const fetchUsersData = async () => {
@@ -89,7 +103,12 @@ const ProfilePage = () => {
   const filteredUsers = selectedCategory
     ? users.filter(user => {
         if (selectedCategory === "Métiers spécialisés de la construction et de l'immobilier") {
-          return user.expertise && !mainCategories.includes(user.expertise);
+          return user.expertise && 
+            !mainCategories.includes(user.expertise) &&
+            !financialSpecialties.includes(user.expertise);
+        }
+        if (selectedCategory === "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé") {
+          return user.expertise && financialSpecialties.includes(user.expertise);
         }
         return user.expertise?.toLowerCase() === selectedCategory.toLowerCase();
       })
@@ -140,7 +159,6 @@ const ProfilePage = () => {
               </h2>
             </div>
 
-            {/* Professionals Grid */}
             {loading ? (
               <div className="flex justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>

@@ -28,6 +28,7 @@ const expertiseOptions = [
   "Expert en valorisation immobilière",
   "Avocat spécialisé en droit immobilier",
   "Gestionnaire d'actifs immobiliers",
+  "Conseil en sécurité financière",
   "Autre (préciser)"
 ];
 
