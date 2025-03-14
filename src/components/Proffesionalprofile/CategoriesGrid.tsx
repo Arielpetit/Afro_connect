@@ -1,4 +1,5 @@
 interface CategoriesGridProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     categories: any[];
     onCategoryClick: (categoryName: string) => void;
   }

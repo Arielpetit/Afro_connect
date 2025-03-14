@@ -1,24 +1,24 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
-
+import { toast, ToastContainer } from 'react-toastify';
 
 interface AuthFormProps {
-    type: 'login' | 'signup';
-    onSubmit: (email: string, password: string) => Promise<void>;
-    onGoogleSignIn: () => Promise<void>;
-  }
-  
-  const AuthForm = ({ type, onSubmit, onGoogleSignIn }: AuthFormProps) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [googleLoading, setGoogleLoading] = useState(false);
+  type: 'login' | 'signup';
+  onSubmit: (email: string, password: string) => Promise<void>;
+  onGoogleSignIn: () => Promise<void>;
+  onForgotPassword?: (email: string) => Promise<void>;
+}
 
+const AuthForm = ({ type, onSubmit, onGoogleSignIn, onForgotPassword }: AuthFormProps) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
+      toast.dismiss();
       toast.error('Please fill in all fields');
       return;
     }
@@ -27,17 +27,21 @@ interface AuthFormProps {
       setLoading(true);
       await onSubmit(email, password);
     } catch (error) {
+      toast.dismiss();
       toast.error(error instanceof Error ? error.message : 'Authentication failed');
     } finally {
       setLoading(false);
     }
   };
+
   const handleGoogleLogin = async () => {
     try {
       setGoogleLoading(true);
       await onGoogleSignIn();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Google login failed');
+      console.error('Google login error:', error);
+      toast.dismiss();
+      toast.error('Google login failed. Please try again.');
     } finally {
       setGoogleLoading(false);
     }
@@ -50,9 +54,7 @@ interface AuthFormProps {
           {type === 'login' ? 'Welcome Back' : 'Create Account'}
         </h2>
         <p className="mt-2 text-sm text-gray-600">
-          {type === 'login' 
-            ? "Don't have an account? "
-            : "Already have an account? "}
+          {type === 'login' ? "Don't have an account? " : "Already have an account? "}
           <Link 
             to={type === 'login' ? '/signup' : '/login'} 
             className="text-indigo-600 hover:text-indigo-500 font-medium"
@@ -105,39 +107,50 @@ interface AuthFormProps {
           {loading ? 'Processing...' : type === 'login' ? 'Sign In' : 'Sign Up'}
         </button>
       </form>
-      <div className="mt-8">
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">
-              Or continue with
-            </span>
-          </div>
-        </div>
 
-        <div className="mt-6">
-          <button
+      <div className="mt-6">
+      <button
             type="button"
             onClick={handleGoogleLogin}
             disabled={googleLoading || loading}
-            className="w-full inline-flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-opacity duration-200"
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50"
           >
-            <svg 
-              className="w-5 h-5 mr-2" 
-              fill="currentColor" 
+            <svg
+              className="w-5 h-5"
               viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/>
+              <path
+                d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"
+                fill="#EA4335"
+              />
             </svg>
-            {googleLoading ? 'Signing In...' : 'Continue with Google'}
+            <span className="text-sm font-medium">
+              {googleLoading ? 'Signing In...' : 'Continue with Google'}
+            </span>
           </button>
-        </div>
       </div>
+
+      {/* Show "Forgot Password?" only on the login page */}
+      {type === 'login' && onForgotPassword && (
+        <button 
+          type="button" 
+          className="text-indigo-600 hover:underline mt-2"
+          onClick={() => {
+            if (!email) {
+              toast.dismiss();
+              toast.error('Please enter your email to reset password');
+              return;
+            }
+            onForgotPassword(email);
+          }}
+        >
+          Forgot Password?
+        </button>
+      )}
+
+      <ToastContainer />
     </div>
-    
-    
   );
 };
 

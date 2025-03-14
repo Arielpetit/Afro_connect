@@ -59,10 +59,10 @@ export function Hero() {
               <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" />
             </button>
             <button
-              onClick={() => navigate('/contact')}
+              onClick={() => navigate('/profile')}
               className="px-6 py-3.5 sm:px-8 sm:py-4 bg-transparent border-2 border-white/20 hover:border-white/40 text-white rounded-lg font-semibold transition-all duration-300 backdrop-blur-sm hover:backdrop-blur"
             >
-              Contact immédiat
+              Trouvez des experts
             </button>
           </motion.div>
         </motion.div>

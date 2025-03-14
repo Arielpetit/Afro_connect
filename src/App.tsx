@@ -3,11 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "r
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 
-import { Navbar } from "./components/Navbar";
-import { Hero } from "./components/Hero";
-import { Features } from "./components/Features";
-import { HowItWorks } from "./components/HowItWorks";
-import { Testimonials } from "./components/Testimonials";
+import { Navbar } from "./components/HomePage/Navbar";
 import { Footer } from "./components/Footer";
 
 import SignupPage from "./pages/SignupPage";
@@ -24,10 +20,11 @@ import ResourceFormPage from "./pages/ResourceForm";
 import ContactForm from "./pages/ContactForm";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import SendEmailForm from "./components/SendEmailForm";
-import { Profile } from "./components/Profile";
+import SendEmailForm from "./components/AdminDashboard/SendEmailForm";
+import { Profile } from "./components/PersonalProfile/Profile";
 import ReviewListPage from "./pages/ReviewListPage";
 import ReviewFormPage from "./pages/ReviewFormPage";
+import Home from "./pages/Home";
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -56,10 +53,7 @@ const AppContent = () => {
       <main className="pt-16">
         <Routes>
           {/* Public routes */}
-          <Route
-            path="/"
-            element={<><Hero /><Features /><HowItWorks /><Testimonials /></>}
-          />
+          <Route path="/" element={<Home />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/faqs" element={<FAQ />} />

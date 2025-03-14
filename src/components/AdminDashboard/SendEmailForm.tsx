@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import emailjs from '@emailjs/browser';
 import { toast, ToastContainer } from "react-toastify";
 import { TailSpin } from 'react-loader-spinner';

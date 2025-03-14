@@ -1,25 +1,40 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../firebase";
 import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
-import { useLocation, useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import { PendingApprovalsTable } from "../components/PendingApprovalsTable";
-import { ProfessionalsTable } from "../components/ProfessionalsTable";
-import { ResourcesTable } from "../components/ResourcesTable";
-import ApprovalStatusChart from "../components/ApprovalStatusChart";
-import { StatsGrid, RegistrationChart, ExpertiseChart, CoverageChart } from "../components/StatsGrid";
+import { useNavigate } from "react-router-dom";
+import Sidebar from "../components/AdminDashboard/Sidebar";
+import { PendingApprovalsTable } from "../components/AdminDashboard/PendingApprovalsTable";
+import { ProfessionalsTable } from "../components/AdminDashboard/ProfessionalsTable";
+import { ResourcesTable } from "../components/AdminDashboard/ResourcesTable";
+import ApprovalStatusChart from "../components/AdminDashboard/ApprovalStatusChart";
+import { StatsGrid, RegistrationChart, ExpertiseChart, CoverageChart } from "../components/AdminDashboard/StatsGrid";
 
 const AdminDashboardPage = () => {
   const [stats, setStats] = useState<any>({});
   const navigate = useNavigate();
-  const location = useLocation();
   const [resources, setResources] = useState<any[]>([]);
   const [pendingUsers, setPendingUsers] = useState<any[]>([]);
   const [approvedUsers, setApprovedUsers] = useState<any[]>([]);
+  const [totalAccounts, setTotalAccounts] = useState<number>(0);
 
   useEffect(() => {
+    const fetchTotalAccounts = async () => {
+      try {
+        const auth = getAuth();
+        onAuthStateChanged(auth, async (user) => {
+          if (user) {
+            const usersResult = await getDocs(collection(db, "users"));
+            setTotalAccounts(usersResult.size);
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching total accounts:", error);
+        toast.error("Failed to fetch total accounts.");
+      }
+    };
     const fetchData = async () => {
       try {
         // Fetch users
@@ -85,6 +100,7 @@ const AdminDashboardPage = () => {
         const totalProjects = approved.reduce((sum, user) => sum + (Number(user.projectsCompleted) || 0), 0);
 
         setStats({
+          totalAccounts,
           totalUsers: approved.length,
           newThisWeek: approved.filter(user => 
             new Date(user.createdAt?.seconds * 1000).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000
@@ -103,7 +119,8 @@ const AdminDashboardPage = () => {
     };
     
     fetchData();
-  }, [location.key]);
+    fetchTotalAccounts();
+  },[totalAccounts]);
 
   const handleRowClick = (userId: string) => {
     navigate(`/profile/${userId}`, { 

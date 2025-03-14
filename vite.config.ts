@@ -30,8 +30,8 @@ export default defineConfig({
       injectRegister: false,
 
       manifest: {
-        name: 'Webank',
-        short_name: 'Webank',
+        name: 'Afro immobilier connect canada',
+        short_name: 'Afro immo',
         description: 'For regular users of Webank!',
         theme_color: 'white',
         background_color: 'white',
@@ -61,26 +61,26 @@ export default defineConfig({
 
         screenshots: [
           {
-            src: '/Screenshot_otp.png',
+            src: '/Screenshot_home.png',
             type: 'image/png',
             sizes: '472x923',
             form_factor: 'wide',
           },
           {
-            src: '/Screenshot_dashboard.png',
+            src: '/Screenshot_profile.png',
             type: 'image/png',
             sizes: '472x923',
             form_factor: 'wide',
           },
           {
-            src: '/Screenshot_register.png',
+            src: '/Screenshot_sidebar.png',
             type: 'image/png',
             sizes: '472x923',
 
             form_factor: 'wide',
           },
           {
-            src: '/Screenshot_register.png',
+            src: '/Screenshot_expert.png',
             type: 'image/png',
             sizes: '472x923',
             form_factor: 'narrow',

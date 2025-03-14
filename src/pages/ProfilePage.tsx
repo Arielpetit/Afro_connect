@@ -8,6 +8,7 @@ import { FiltersSection } from "../components/Proffesionalprofile/FiltersSection
 import { ProfessionalCard } from "../components/Proffesionalprofile/ProfessionalCard";
 
 
+
 const financialSpecialties = [
   "Consultant en stratégie immobilière",
   "Architecte spécialisé en immobilier",
@@ -44,7 +45,7 @@ const categories = [
   },
   {
     name: "Entrepreneur général",
-    image: "/entrepreneur_general.jpg",
+    image: "/intrepreneur_general.jpg",
   },
   {
     name: "Métiers spécialisés de la construction et de l'immobilier",
@@ -52,7 +53,7 @@ const categories = [
   },
   {
     name: "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé",
-    image: "/notaire.jpg",
+    image: "/cpa.jpg",
   },
 ];
 
@@ -150,6 +151,8 @@ export const ProfilePage = () => {
     }));
     setShowCategories(false);
     applyFilters({ ...filters, expertise: categoryName });
+      // Scroll to top when a category is clicked
+    window.scrollTo(0, 0);
   };
 
   const handleProfileClick = (userId: string) => {
@@ -188,22 +191,23 @@ export const ProfilePage = () => {
         ) : (
           <>
             <div className="text-center mb-12">
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex flex-wrap items-center justify-center sm:justify-between gap-4 mb-8">
                 <button
                   onClick={() => setShowCategories(true)}
                   className="flex items-center text-blue-600 hover:text-blue-800 transition-colors text-sm sm:text-base"
                 >
                   <FiArrowLeft className="mr-2" /> Retour aux catégories
                 </button>
-                <h1 className="text-4xl font-bold text-gray-900">
+                <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 text-center sm:text-left">
                   Professionnels en {filters.expertise}
                 </h1>
-                <div className="w-24"></div>
+                <div className="w-24 hidden sm:block"></div>
               </div>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
                 Connectez-vous avec des professionnels qualifiés dans votre région
               </p>
             </div>
+
 
             <FiltersSection
               filters={filters}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../firebase';
+import { auth } from '../../firebase';
 import { signOut } from 'firebase/auth';
 import { User, ShieldCheck, Clock, CalendarDays, MailCheck, LogOut } from 'lucide-react';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';

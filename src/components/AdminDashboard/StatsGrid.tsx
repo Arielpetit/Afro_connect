@@ -11,8 +11,10 @@ export const StatsCard = ({ title, value }: { title: string; value: string | num
 );
 
 export const StatsGrid = ({ stats }: { stats: any }) => (
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-    <StatsCard title="Total Professionals" value={stats.totalUsers || 0} />
+  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 mb-6 md:mb-8">
+    <StatsCard title="Total Accounts" value={stats.totalAccounts || 0} />
+    <StatsCard title="Active Professionals" value={stats.totalUsers || 0} />
+    <StatsCard title="Website Visits" value={stats.totalVisits || 0} />
     <StatsCard title="New This Week" value={stats.newThisWeek || 0} />
     <StatsCard title="Avg Experience (Years)" value={stats.averageExperience || 0} />
     <StatsCard title="Avg Projects Completed" value={stats.averageProjects || 0} />
