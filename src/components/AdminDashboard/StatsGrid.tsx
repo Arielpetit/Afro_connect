@@ -1,9 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+} from "recharts";
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28FD0', '#FF6666'];
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#A28FD0",
+  "#FF6666",
+];
 
-export const StatsCard = ({ title, value }: { title: string; value: string | number }) => (
+export const StatsCard = ({
+  title,
+  value,
+}: {
+  title: string;
+  value: string | number;
+}) => (
   <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
     <h3 className="text-xs md:text-sm text-gray-500 mb-1 md:mb-2">{title}</h3>
     <p className="text-xl md:text-3xl font-bold text-gray-800">{value}</p>
@@ -16,31 +43,85 @@ export const StatsGrid = ({ stats }: { stats: any }) => (
     <StatsCard title="Active Professionals" value={stats.totalUsers || 0} />
     <StatsCard title="Website Visits" value={stats.totalVisits || 0} />
     <StatsCard title="New This Week" value={stats.newThisWeek || 0} />
-    <StatsCard title="Avg Experience (Years)" value={stats.averageExperience || 0} />
-    <StatsCard title="Avg Projects Completed" value={stats.averageProjects || 0} />
+    <StatsCard
+      title="Avg Experience (Years)"
+      value={stats.averageExperience || 0}
+    />
+    <StatsCard
+      title="Avg Projects Completed"
+      value={stats.averageProjects || 0}
+    />
   </div>
 );
 
-export const RegistrationChart = ({ data }: { data: any[] }) => (
-  <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-    <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Registrations Last 7 Days</h3>
-    <div className="h-64 md:h-80">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="count" stroke="#8884d8" />
-        </LineChart>
-      </ResponsiveContainer>
+export const RegistrationChart = ({ data }: { data: any[] }) => {
+  // Sort data chronologically
+  const daysOrder = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const sortedData = [...data].sort(
+    (a, b) => daysOrder.indexOf(a.date) - daysOrder.indexOf(b.date),
+  );
+
+  return (
+    <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
+      <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
+        Registrations Last 7 Days
+      </h3>
+      <div className="h-64 md:h-80">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={sortedData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="date"
+              tick={{ fontSize: 12 }}
+              label={{
+                value: "Day",
+                position: "bottom",
+                offset: 0,
+              }}
+            />
+            <YAxis
+              allowDecimals={false}
+              label={{
+                value: "Registrations",
+                angle: -90,
+                position: "insideLeft",
+                offset: 10,
+              }}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }}
+              formatter={(value: number) => [value, "Registrations"]}
+              labelFormatter={(label: string) => {
+                const fullDate = data.find((d) => d.date === label)?.fullDate;
+                return fullDate || label;
+              }}
+            />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="count"
+              stroke="#6366f1"
+              strokeWidth={2}
+              dot={{ fill: "#6366f1", strokeWidth: 2 }}
+              activeDot={{ r: 8 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const ExpertiseChart = ({ data }: { data: any[] }) => (
   <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-    <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Expertise Distribution</h3>
+    <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
+      Expertise Distribution
+    </h3>
     <div className="h-64 md:h-80">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
@@ -52,7 +133,10 @@ export const ExpertiseChart = ({ data }: { data: any[] }) => (
             dataKey="value"
           >
             {data?.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+              />
             ))}
           </Pie>
           <Tooltip />
@@ -65,7 +149,9 @@ export const ExpertiseChart = ({ data }: { data: any[] }) => (
 
 export const CoverageChart = ({ data }: { data: any[] }) => (
   <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm">
-    <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Coverage Zones</h3>
+    <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
+      Coverage Zones
+    </h3>
     <div className="h-64 md:h-80">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>

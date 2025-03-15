@@ -8,7 +8,13 @@ interface FileUploadProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ name, label, file, accept, onChange }) => {
+const FileUpload: React.FC<FileUploadProps> = ({
+  name,
+  label,
+  file,
+  accept,
+  onChange,
+}) => {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -17,7 +23,9 @@ const FileUpload: React.FC<FileUploadProps> = ({ name, label, file, accept, onCh
       <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-indigo-500 transition-colors">
         {file ? (
           <span className="text-indigo-600">
-            {typeof file === 'string' ? 'Fichier déjà téléchargé' : `Fichier sélectionné: ${file.name}`}
+            {typeof file === "string"
+              ? "Fichier déjà téléchargé"
+              : `Fichier sélectionné: ${file.name}`}
           </span>
         ) : (
           <div className="flex flex-col items-center">

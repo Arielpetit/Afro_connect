@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { useEffect, useState } from "react";
+import { db } from "../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 interface Resource {
   id: string;
@@ -13,8 +13,8 @@ interface Resource {
 }
 
 const ResourcesPage = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,9 +22,9 @@ const ResourcesPage = () => {
     const fetchResources = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "resources"));
-        const resourcesList = querySnapshot.docs.map(doc => ({
+        const resourcesList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         })) as Resource[];
         setResources(resourcesList);
       } catch (error) {
@@ -37,17 +37,19 @@ const ResourcesPage = () => {
   }, []);
 
   const categories = [
-    { id: 'all', name: 'All' },
-    { id: 'market-trends', name: 'Market Trends' },
-    { id: 'buying-guides', name: 'Buying Guides' },
-    { id: 'legal-advice', name: 'Legal Advice' },
-    { id: 'investment-strategies', name: 'Investment Strategies' },
+    { id: "all", name: "Tous" },
+    { id: "market-trends", name: "Tendances du marché" },
+    { id: "buying-guides", name: "Guides d'achat" },
+    { id: "legal-advice", name: "Conseils juridiques" },
+    { id: "investment-strategies", name: "Stratégies d'investissement" },
   ];
 
-  const filteredResources = resources.filter(resource => {
-    const matchesSearch = resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredResources = resources.filter((resource) => {
+    const matchesSearch =
+      resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       resource.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || resource.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "all" || resource.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -56,9 +58,12 @@ const ResourcesPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Real Estate Resources</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Ressources Immobilières
+          </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Curated collection of market insights, buying guides, and expert advice
+            Collection organisée d'analyses de marché, guides d'achat et
+            conseils d'experts
           </p>
         </div>
 
@@ -88,14 +93,14 @@ const ResourcesPage = () => {
           </div>
 
           <div className="flex flex-wrap justify-center gap-2">
-            {categories.map(category => (
+            {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedCategory === category.id
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-100'
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-600 hover:bg-gray-100"
                 }`}
               >
                 {category.name}
@@ -106,7 +111,7 @@ const ResourcesPage = () => {
 
         {/* Resource Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredResources.map(resource => (
+          {filteredResources.map((resource) => (
             <a
               key={resource.id}
               href={resource.url}
@@ -127,7 +132,7 @@ const ResourcesPage = () => {
                     {resource.source}
                   </span>
                   <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-                    {categories.find(c => c.id === resource.category)?.name}
+                    {categories.find((c) => c.id === resource.category)?.name}
                   </span>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600">
@@ -137,7 +142,7 @@ const ResourcesPage = () => {
                   {resource.description}
                 </p>
                 <div className="mt-4 flex items-center text-blue-600 font-medium hover:text-blue-700">
-                  Read more
+                  Lire la suite
                   <svg
                     className="w-4 h-4 ml-2"
                     fill="none"
@@ -161,9 +166,12 @@ const ResourcesPage = () => {
         {filteredResources.length === 0 && (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4 text-6xl">🏡</div>
-            <h3 className="text-gray-900 font-medium mb-2">No resources found</h3>
+            <h3 className="text-gray-900 font-medium mb-2">
+              Aucune ressource trouvée
+            </h3>
             <p className="text-gray-600 max-w-md mx-auto">
-              Try adjusting your search or filters to find what you're looking for
+              Essayez de modifier votre recherche ou les filtres pour trouver ce
+              que vous cherchez
             </p>
           </div>
         )}

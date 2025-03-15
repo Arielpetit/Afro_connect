@@ -2,10 +2,17 @@ import { expertiseOptions } from "../../constants/registration";
 
 interface ExpertiseProps {
   formData: any;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  handleChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => void;
 }
 
-const ExpertiseSelection: React.FC<ExpertiseProps> = ({ formData, handleChange }) => {
+const ExpertiseSelection: React.FC<ExpertiseProps> = ({
+  formData,
+  handleChange,
+}) => {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">

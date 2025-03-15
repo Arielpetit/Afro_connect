@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useNavigate, useLocation } from "react-router-dom";
-import { getFirestore, collection, addDoc, doc, updateDoc, getDocs, query, where } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  updateDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { toast, ToastContainer } from "react-toastify";
-import { auth } from '../firebase';
+import { auth } from "../firebase";
 import PersonalInfoForm from "../components/Registration/PersonalInfoForm";
 import ProfessionalInfoForm from "../components/Registration/ProfessionalInfoForm";
 import DocumentsSection from "../components/Registration/DocumentsSection";
@@ -11,7 +20,6 @@ import ExpertiseSelection from "../components/Registration/ExpertiseSelection";
 import ExperienceProjects from "../components/Registration/ExperienceProjects";
 
 const RegisterPage = () => {
-  const location = useLocation();
   const [editMode, setEditMode] = useState(false);
   const [docId, setDocId] = useState("");
   const [formData, setFormData] = useState({
@@ -49,12 +57,12 @@ const RegisterPage = () => {
 
       const q = query(collection(db, "users"), where("userId", "==", user.uid));
       const querySnapshot = await getDocs(q);
-      
+
       if (!querySnapshot.empty) {
         const docData = querySnapshot.docs[0].data();
         setDocId(querySnapshot.docs[0].id);
         setEditMode(true);
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           ...docData,
           userId: user.uid,
@@ -62,7 +70,7 @@ const RegisterPage = () => {
           profilePicture: docData.profilePicture || null,
           businessCard: docData.businessCard || null,
           licenseCertification: docData.licenseCertification || null,
-          identityCard: docData.identityCard || null
+          identityCard: docData.identityCard || null,
         }));
       }
     };
@@ -71,14 +79,16 @@ const RegisterPage = () => {
   }, [db]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const target = e.target as HTMLInputElement;
     const { name, value, files } = target;
     if (files && files[0]) {
-      setFormData(prev => ({ ...prev, [name]: files[0] }));
+      setFormData((prev) => ({ ...prev, [name]: files[0] }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -96,10 +106,18 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      let profilePictureUrl = typeof formData.profilePicture === 'string' ? formData.profilePicture : "";
-      let businessCardUrl = typeof formData.businessCard === 'string' ? formData.businessCard : "";
-      let licenseCertificationUrl = typeof formData.licenseCertification === 'string' ? formData.licenseCertification : "";
-      let identityCardUrl = typeof formData.identityCard === 'string' ? formData.identityCard : "";
+      let profilePictureUrl =
+        typeof formData.profilePicture === "string"
+          ? formData.profilePicture
+          : "";
+      let businessCardUrl =
+        typeof formData.businessCard === "string" ? formData.businessCard : "";
+      let licenseCertificationUrl =
+        typeof formData.licenseCertification === "string"
+          ? formData.licenseCertification
+          : "";
+      let identityCardUrl =
+        typeof formData.identityCard === "string" ? formData.identityCard : "";
 
       if (formData.profilePicture instanceof File) {
         profilePictureUrl = await convertToBase64(formData.profilePicture);
@@ -108,7 +126,9 @@ const RegisterPage = () => {
         businessCardUrl = await convertToBase64(formData.businessCard);
       }
       if (formData.licenseCertification instanceof File) {
-        licenseCertificationUrl = await convertToBase64(formData.licenseCertification);
+        licenseCertificationUrl = await convertToBase64(
+          formData.licenseCertification,
+        );
       }
       if (formData.identityCard instanceof File) {
         identityCardUrl = await convertToBase64(formData.identityCard);
@@ -125,22 +145,27 @@ const RegisterPage = () => {
         projectsCompleted: Number(formData.projectsCompleted),
         userId: auth.currentUser?.uid,
         status: "pending",
+        createdAt: new Date(),
         updatedAt: new Date(),
       };
 
       if (editMode && docId) {
         await updateDoc(doc(db, "users", docId), professionalData);
       } else {
-        await addDoc(collection(db, "users"), professionalData);
+        await addDoc(collection(db, "users"), {
+          ...professionalData,
+          createdAt: new Date(), // Ensure createdAt is set for new registrations
+        });
       }
 
-      toast.success(editMode 
-        ? "Profile updated! Waiting for admin approval." 
-        : "Registration successful! Waiting for approval");
+      toast.success(
+        editMode
+          ? "Profile updated! Waiting for admin approval."
+          : "Registration successful! Waiting for approval",
+      );
       setTimeout(() => {
-        navigate('/profile');
+        navigate("/profile");
       }, 2000);
-      
     } catch (error) {
       console.error("Registration error:", error);
       toast.error("Registration failed");
@@ -161,18 +186,27 @@ const RegisterPage = () => {
           {editMode ? "Modifier l'inscription" : "Inscription Professionnelle"}
         </h2>
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
+        <form
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          onSubmit={handleSubmit}
+        >
           <PersonalInfoForm formData={formData} handleChange={handleChange} />
-          
+
           <div className="space-y-4">
-            <ProfessionalInfoForm 
-              formData={formData} 
-              handleChange={handleChange} 
-              setFormData={setFormData} 
+            <ProfessionalInfoForm
+              formData={formData}
+              handleChange={handleChange}
+              setFormData={setFormData}
             />
-            <ExpertiseSelection formData={formData} handleChange={handleChange} />
-            <ExperienceProjects formData={formData} handleChange={handleChange} />
-            
+            <ExpertiseSelection
+              formData={formData}
+              handleChange={handleChange}
+            />
+            <ExperienceProjects
+              formData={formData}
+              handleChange={handleChange}
+            />
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Description des services offerts (max. 250 mots) *
@@ -194,7 +228,11 @@ const RegisterPage = () => {
             className="md:col-span-2 w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors mt-4"
             disabled={loading}
           >
-            {loading ? "Enregistrement..." : editMode ? "Mettre à jour" : "Finaliser l'inscription"}
+            {loading
+              ? "Enregistrement..."
+              : editMode
+                ? "Mettre à jour"
+                : "Finaliser l'inscription"}
           </button>
         </form>
       </motion.div>

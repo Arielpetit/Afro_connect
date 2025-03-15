@@ -4,11 +4,19 @@ import FileUpload from "./FileUpload";
 
 interface ProfessionalInfoProps {
   formData: any;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  handleChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => void;
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const ProfessionalInfoForm: React.FC<ProfessionalInfoProps> = ({ formData, handleChange, setFormData }) => {
+const ProfessionalInfoForm: React.FC<ProfessionalInfoProps> = ({
+  formData,
+  handleChange,
+  setFormData,
+}) => {
   return (
     <div className="space-y-4">
       <div>

@@ -21,13 +21,14 @@ const ReviewFormPage = () => {
 
       await runTransaction(db, async (transaction) => {
         const professionalDoc = await transaction.get(professionalRef);
-        if (!professionalDoc.exists()) throw new Error("Professional not found");
+        if (!professionalDoc.exists())
+          throw new Error("Professional not found");
 
         transaction.set(doc(ratingsRef), {
           comment,
           clientName: clientName || "Anonymous",
           timestamp: new Date(),
-          userAgent: navigator.userAgent
+          userAgent: navigator.userAgent,
         });
       });
 
@@ -52,10 +53,14 @@ const ReviewFormPage = () => {
             <FiArrowLeft className="w-5 h-5" />
             Back
           </button>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">Leave a Review</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+            Leave a Review
+          </h1>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Your Name (optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Your Name (optional)
+              </label>
               <input
                 type="text"
                 value={clientName}
@@ -65,7 +70,9 @@ const ReviewFormPage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Comment</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Comment
+              </label>
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
@@ -81,13 +88,12 @@ const ReviewFormPage = () => {
               className="w-full bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <FiMessageSquare className="w-5 h-5" />
-              {submitting ? 'Submitting...' : 'Submit Review'}
+              {submitting ? "Submitting..." : "Submit Review"}
             </button>
           </form>
         </div>
       </div>
       <ToastContainer />
-
     </div>
   );
 };

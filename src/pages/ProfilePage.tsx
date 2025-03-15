@@ -1,13 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { FiUsers, FiArrowLeft } from "react-icons/fi";
 import { CategoriesGrid } from "../components/Proffesionalprofile/CategoriesGrid";
 import { FiltersSection } from "../components/Proffesionalprofile/FiltersSection";
 import { ProfessionalCard } from "../components/Proffesionalprofile/ProfessionalCard";
-
-
 
 const financialSpecialties = [
   "Consultant en stratégie immobilière",
@@ -15,7 +19,7 @@ const financialSpecialties = [
   "Expert en valorisation immobilière",
   "Avocat spécialisé en droit immobilier",
   "Gestionnaire d'actifs immobiliers",
-  "Conseil en sécurité financière"
+  "Conseil en sécurité financière",
 ];
 
 const categories = [
@@ -57,7 +61,7 @@ const categories = [
   },
 ];
 
-const mainCategories = categories.slice(0, -2).map(c => c.name);
+const mainCategories = categories.slice(0, -2).map((c) => c.name);
 
 export const ProfilePage = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -81,7 +85,7 @@ export const ProfilePage = () => {
         const q = query(
           collection(db, "users"),
           where("status", "==", "approved"),
-          where("userType", "==", "professional")
+          where("userType", "==", "professional"),
         );
         const querySnapshot = await getDocs(q);
         const usersList: any[] = [];
@@ -91,7 +95,9 @@ export const ProfilePage = () => {
         setUsers(usersList);
         setFilteredUsers(usersList);
       } catch (err) {
-        setError("Échec du chargement des profils. Veuillez réessayer plus tard.");
+        setError(
+          "Échec du chargement des profils. Veuillez réessayer plus tard.",
+        );
         console.error("Erreur lors de la récupération des utilisateurs:", err);
       } finally {
         setLoading(false);
@@ -114,9 +120,17 @@ export const ProfilePage = () => {
     const filtered = users.filter((user) => {
       let expertiseMatch = true;
       if (filters.expertise) {
-        if (filters.expertise === "Métiers spécialisés de la construction et de l'immobilier") {
-          expertiseMatch = !mainCategories.includes(user.expertise) && !financialSpecialties.includes(user.expertise);
-        } else if (filters.expertise === "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé") {
+        if (
+          filters.expertise ===
+          "Métiers spécialisés de la construction et de l'immobilier"
+        ) {
+          expertiseMatch =
+            !mainCategories.includes(user.expertise) &&
+            !financialSpecialties.includes(user.expertise);
+        } else if (
+          filters.expertise ===
+          "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé"
+        ) {
           expertiseMatch = financialSpecialties.includes(user.expertise);
         } else {
           expertiseMatch = user.expertise === filters.expertise;
@@ -130,28 +144,35 @@ export const ProfilePage = () => {
         ? user.experience >= filters.experience
         : true;
       const languagesMatch = filters.languages
-        ? user.languages?.toLowerCase().includes(filters.languages.toLowerCase())
+        ? user.languages
+            ?.toLowerCase()
+            .includes(filters.languages.toLowerCase())
         : true;
-      const averageRating = user.numberOfRatings > 0 
-        ? user.totalRatings / user.numberOfRatings 
-        : 0;
-      const ratingMatch = filters.rating 
-        ? averageRating >= filters.rating 
+      const averageRating =
+        user.numberOfRatings > 0 ? user.totalRatings / user.numberOfRatings : 0;
+      const ratingMatch = filters.rating
+        ? averageRating >= filters.rating
         : true;
 
-      return expertiseMatch && coverageZoneMatch && experienceMatch && languagesMatch && ratingMatch;
+      return (
+        expertiseMatch &&
+        coverageZoneMatch &&
+        experienceMatch &&
+        languagesMatch &&
+        ratingMatch
+      );
     });
     setFilteredUsers(filtered);
   };
 
   const handleCategoryClick = (categoryName: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      expertise: categoryName
+      expertise: categoryName,
     }));
     setShowCategories(false);
     applyFilters({ ...filters, expertise: categoryName });
-      // Scroll to top when a category is clicked
+    // Scroll to top when a category is clicked
     window.scrollTo(0, 0);
   };
 
@@ -204,10 +225,10 @@ export const ProfilePage = () => {
                 <div className="w-24 hidden sm:block"></div>
               </div>
               <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-                Connectez-vous avec des professionnels qualifiés dans votre région
+                Connectez-vous avec des professionnels qualifiés dans votre
+                région
               </p>
             </div>
-
 
             <FiltersSection
               filters={filters}

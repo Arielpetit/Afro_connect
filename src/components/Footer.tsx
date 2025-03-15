@@ -1,6 +1,14 @@
-import React from 'react';
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
-import { Newsletter } from './Newsletter';
+import React from "react";
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
+import { Newsletter } from "./Newsletter";
 
 export function Footer() {
   return (
@@ -9,43 +17,67 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">À propos d'Afro Immobilier Connect</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">
+              À propos d'Afro Immobilier Connect
+            </h3>
             <p className="text-sm leading-relaxed">
-              Afro Immobilier Connect est votre solution pour trouver des conseils d'experts et des services professionnels pour vous aider dans vos démarches d'acquisition immobilière. Nous vous mettons en relation avec des spécialistes qualifiés à travers le Canada.
+              Afro Immobilier Connect est votre solution pour trouver des
+              conseils d'experts et des services professionnels pour vous aider
+              dans vos démarches d'acquisition immobilière. Nous vous mettons en
+              relation avec des spécialistes qualifiés à travers le Canada.
             </p>
           </div>
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Liens Utiles</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">
+              Liens Utiles
+            </h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="hover:text-white transition-colors flex items-center gap-2">
+                <a
+                  href="#"
+                  className="hover:text-white transition-colors flex items-center gap-2"
+                >
                   À propos de nous
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors flex items-center gap-2">
+                <a
+                  href="#"
+                  className="hover:text-white transition-colors flex items-center gap-2"
+                >
                   Nos Services
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors flex items-center gap-2">
+                <a
+                  href="#"
+                  className="hover:text-white transition-colors flex items-center gap-2"
+                >
                   Devenir Partenaire
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors flex items-center gap-2">
+                <a
+                  href="#"
+                  className="hover:text-white transition-colors flex items-center gap-2"
+                >
                   Politique de confidentialité
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors flex items-center gap-2">
+                <a
+                  href="#"
+                  className="hover:text-white transition-colors flex items-center gap-2"
+                >
                   Conditions d'utilisation
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Contactez-Nous</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">
+              Contactez-Nous
+            </h3>
             <ul className="space-y-4 text-sm">
               <li className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-orange-500" />
@@ -62,7 +94,9 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <h3 className="text-white font-semibold text-lg mb-4">Suivez-Nous</h3>
+            <h3 className="text-white font-semibold text-lg mb-4">
+              Suivez-Nous
+            </h3>
             <div className="flex gap-4">
               <a
                 href="#"
@@ -105,5 +139,3 @@ export function Footer() {
     </footer>
   );
 }
-
-

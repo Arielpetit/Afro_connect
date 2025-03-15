@@ -5,7 +5,10 @@ interface FiltersSectionProps {
   onFilterChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-export const FiltersSection = ({ filters, onFilterChange }: FiltersSectionProps) => (
+export const FiltersSection = ({
+  filters,
+  onFilterChange,
+}: FiltersSectionProps) => (
   <div className="bg-white rounded-2xl shadow-sm p-6 mb-12 border border-gray-100">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Rating Filter */}
@@ -54,8 +57,12 @@ export const FiltersSection = ({ filters, onFilterChange }: FiltersSectionProps)
             <option value="Ontario">Ontario</option>
             <option value="Québec">Québec</option>
             <option value="Saskatchewan">Saskatchewan</option>
-            <option value="Terre-Neuve-et-Labrador">Terre-Neuve-et-Labrador</option>
-            <option value="Territoires du Nord-Ouest">Territoires du Nord-Ouest</option>
+            <option value="Terre-Neuve-et-Labrador">
+              Terre-Neuve-et-Labrador
+            </option>
+            <option value="Territoires du Nord-Ouest">
+              Territoires du Nord-Ouest
+            </option>
             <option value="Yukon">Yukon</option>
           </select>
           <FiGlobe className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />

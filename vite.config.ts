@@ -72,13 +72,13 @@ export default defineConfig({
             sizes: '472x923',
             form_factor: 'wide',
           },
-          {
-            src: '/Screenshot_sidebar.png',
-            type: 'image/png',
-            sizes: '472x923',
+          // {
+          //   src: '/Screenshot_sidebar.png',
+          //   type: 'image/png',
+          //   sizes: '472x923',
 
-            form_factor: 'wide',
-          },
+          //   form_factor: 'wide',
+          // },
           {
             src: '/Screenshot_expert.png',
             type: 'image/png',

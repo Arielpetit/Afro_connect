@@ -7,7 +7,10 @@ interface ApprovalStatusChartProps {
   pending: number;
 }
 
-const ApprovalStatusChart = ({ approved, pending }: ApprovalStatusChartProps) => {
+const ApprovalStatusChart = ({
+  approved,
+  pending,
+}: ApprovalStatusChartProps) => {
   const data = [
     { name: "Approved", value: approved },
     { name: "Pending", value: pending },
@@ -30,7 +33,10 @@ const ApprovalStatusChart = ({ approved, pending }: ApprovalStatusChartProps) =>
               label
             >
               {data.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
               ))}
             </Pie>
             <Tooltip />

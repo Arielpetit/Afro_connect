@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import React, { useState } from "react";
+import { Mail, Phone, MapPin } from "lucide-react";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    console.log("Form submitted:", formData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -54,12 +56,18 @@ const ContactPage = () => {
       </div>
 
       {/* Contact Form */}
-      <div className="py-16 container mx-auto px-4" >
+      <div className="py-16 container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
-          <form onSubmit={handleSubmit} className="space-y-6 bg-white bg-opacity-90 p-8 rounded-lg shadow-lg">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-6 bg-white bg-opacity-90 p-8 rounded-lg shadow-lg"
+          >
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-blue-800 mb-1">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-blue-800 mb-1"
+                >
                   Nom
                 </label>
                 <input
@@ -73,7 +81,10 @@ const ContactPage = () => {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-blue-800 mb-1">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-blue-800 mb-1"
+                >
                   Email
                 </label>
                 <input
@@ -88,7 +99,10 @@ const ContactPage = () => {
               </div>
             </div>
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-blue-800 mb-1">
+              <label
+                htmlFor="subject"
+                className="block text-sm font-medium text-blue-800 mb-1"
+              >
                 Sujet
               </label>
               <input
@@ -102,7 +116,10 @@ const ContactPage = () => {
               />
             </div>
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-blue-800 mb-1">
+              <label
+                htmlFor="message"
+                className="block text-sm font-medium text-blue-800 mb-1"
+              >
                 Message
               </label>
               <textarea

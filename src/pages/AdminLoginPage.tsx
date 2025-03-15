@@ -12,10 +12,10 @@ const AdminLoginPage = () => {
 
   const handleLogin = () => {
     if (username === validUsername && password === validPassword) {
-      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("isAdmin", "true");
       toast.success("Login as admin successful");
       setTimeout(() => {
-      navigate("/admin");
+        navigate("/admin");
       }, 2000);
     } else {
       toast.error("Invalid username or password");
@@ -35,7 +35,6 @@ const AdminLoginPage = () => {
         <div className="space-y-6">
           <div className="relative group">
             <input
-            
               type="text"
               id="username"
               value={username}
@@ -43,19 +42,24 @@ const AdminLoginPage = () => {
               className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:outline-none peer transition-colors duration-200 pl-11"
               placeholder=" "
             />
-            <label 
+            <label
               htmlFor="username"
               className="absolute left-11 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-all duration-200 pointer-events-none peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 -translate-y-[1.15rem] scale-75 origin-left"
             >
               Username
             </label>
-            <svg 
+            <svg
               className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 peer-focus:text-blue-500 transition-colors duration-200"
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
             </svg>
           </div>
 
@@ -68,19 +72,24 @@ const AdminLoginPage = () => {
               className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:outline-none peer transition-colors duration-200 pl-11"
               placeholder=" "
             />
-            <label 
+            <label
               htmlFor="password"
               className="absolute left-11 top-3.5 text-gray-400 peer-focus:text-blue-500 transition-all duration-200 pointer-events-none peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 -translate-y-[1.15rem] scale-75 origin-left"
             >
               Password
             </label>
-            <svg 
+            <svg
               className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 peer-focus:text-blue-500 transition-colors duration-200"
-              fill="none" 
-              stroke="currentColor" 
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
             </svg>
           </div>
 
@@ -95,7 +104,6 @@ const AdminLoginPage = () => {
         </div>
       </div>
       <ToastContainer />
-
     </div>
   );
 };

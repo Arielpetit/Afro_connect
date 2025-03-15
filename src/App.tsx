@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 
@@ -7,11 +13,11 @@ import { Navbar } from "./components/HomePage/Navbar";
 import { Footer } from "./components/Footer";
 
 import SignupPage from "./pages/SignupPage";
-import {ProfilePage} from "./pages/ProfilePage";
+import { ProfilePage } from "./pages/ProfilePage";
 import ProfileDetailsPage from "./pages/ProfileDetailsPage";
 import ScrollToTop from "./components/ScrollToTop";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
-import LoginPage from "./pages/LoginPage"; 
+import LoginPage from "./pages/LoginPage";
 import SubscriptionPage from "./pages/SuscriptionPage";
 import ContactPage from "./pages/ContactPage";
 import FAQ from "./pages/FaqsPage";
@@ -59,7 +65,10 @@ const AppContent = () => {
           <Route path="/faqs" element={<FAQ />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/personal-profile" element={<Profile />} />
-          <Route path="/profiles/:userId/reviews" element={<ReviewListPage />} />
+          <Route
+            path="/profiles/:userId/reviews"
+            element={<ReviewListPage />}
+          />
           <Route path="/profiles/:userId/review" element={<ReviewFormPage />} />
 
           {/* Protected Routes */}
@@ -97,15 +106,17 @@ const AppContent = () => {
           />
 
           {/* Admin Route */}
-          <Route path="/admin-login" 
-            element={<ProtectedRoute element={<AdminLoginPage />} />} />
+          <Route
+            path="/admin-login"
+            element={<ProtectedRoute element={<AdminLoginPage />} />}
+          />
           <Route
             path="/admin"
             element={<ProtectedRoute element={<AdminDashboardPage />} />}
           />
           <Route
             path="/SendEmail"
-            element={<ProtectedRoute element={< SendEmailForm/>} />}
+            element={<ProtectedRoute element={<SendEmailForm />} />}
           />
 
           <Route path="*" element={<div>404 Page Not Found</div>} />
@@ -128,4 +139,3 @@ function App() {
 }
 
 export default App;
-

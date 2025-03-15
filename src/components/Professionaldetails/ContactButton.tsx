@@ -1,10 +1,6 @@
 import { FiSend } from "react-icons/fi";
 
-export const ContactButton = ({ 
-  onClick 
-}: { 
-  onClick: () => void 
-}) => (
+export const ContactButton = ({ onClick }: { onClick: () => void }) => (
   <div className="bg-gray-50 rounded-lg p-4 sm:p-6 border-l-4 border-indigo-500">
     <button
       onClick={onClick}

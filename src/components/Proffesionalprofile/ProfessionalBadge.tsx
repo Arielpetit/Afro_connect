@@ -1,4 +1,3 @@
-
 interface ProfessionalBadgeProps {
   icon: React.ReactNode;
   label: string;

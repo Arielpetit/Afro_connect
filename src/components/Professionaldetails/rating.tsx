@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 
-export const Rating = ({ 
+export const Rating = ({
   initialRating,
   numberOfRatings,
   onRate,
-  isSubmitting
-}: { 
+  isSubmitting,
+}: {
   initialRating: number;
   numberOfRatings: number;
   onRate: (rating: number) => void;
@@ -33,11 +33,9 @@ export const Rating = ({
         <div className="text-2xl font-bold text-indigo-600">
           {initialRating.toFixed(1)}
         </div>
-        <div className="text-gray-500 text-sm">
-          ({numberOfRatings} avis)
-        </div>
+        <div className="text-gray-500 text-sm">({numberOfRatings} avis)</div>
       </div>
-      
+
       {!hasRated && (
         <>
           <div className="flex gap-1">
@@ -49,9 +47,9 @@ export const Rating = ({
                 onClick={() => setSelectedRating(star)}
                 disabled={isSubmitting}
                 className={`text-2xl transition-colors duration-150 ${
-                  (hoverRating || selectedRating) >= star 
-                    ? 'text-yellow-400' 
-                    : 'text-gray-300'
+                  (hoverRating || selectedRating) >= star
+                    ? "text-yellow-400"
+                    : "text-gray-300"
                 }`}
               >
                 ★
@@ -63,11 +61,11 @@ export const Rating = ({
             disabled={!selectedRating || isSubmitting}
             className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50"
           >
-            {isSubmitting ? 'Envoi...' : 'Noter'}
+            {isSubmitting ? "Envoi..." : "Noter"}
           </button>
         </>
       )}
-      
+
       {hasRated && (
         <div className="text-green-600">Merci pour votre notation !</div>
       )}

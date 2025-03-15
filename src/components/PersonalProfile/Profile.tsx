@@ -1,9 +1,22 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth } from '../../firebase';
-import { signOut } from 'firebase/auth';
-import { User, ShieldCheck, Clock, CalendarDays, MailCheck, LogOut } from 'lucide-react';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../../firebase";
+import { signOut } from "firebase/auth";
+import {
+  User,
+  ShieldCheck,
+  Clock,
+  CalendarDays,
+  MailCheck,
+  LogOut,
+} from "lucide-react";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 export function Profile() {
   const navigate = useNavigate();
@@ -14,11 +27,14 @@ export function Profile() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) {
-        navigate('/signup');
+        navigate("/signup");
       } else {
         // Fetch professional data
         const db = getFirestore();
-        const q = query(collection(db, 'users'), where('userId', '==', user.uid));
+        const q = query(
+          collection(db, "users"),
+          where("userId", "==", user.uid),
+        );
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
           setProfessionalData(querySnapshot.docs[0].data());
@@ -32,9 +48,9 @@ export function Profile() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 
@@ -56,9 +72,9 @@ export function Profile() {
               <div className="flex items-center space-x-4">
                 <div className="h-16 w-16 rounded-full bg-blue-700 flex items-center justify-center">
                   {user.photoURL ? (
-                    <img 
-                      src={user.photoURL} 
-                      alt="Profile" 
+                    <img
+                      src={user.photoURL}
+                      alt="Profile"
                       className="h-full w-full rounded-full object-cover"
                     />
                   ) : (
@@ -67,7 +83,7 @@ export function Profile() {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-white">
-                    {user.displayName || 'Welcome User'}
+                    {user.displayName || "Bienvenue Utilisateur"}
                   </h1>
                   <p className="text-blue-100">{user.email}</p>
                 </div>
@@ -77,7 +93,7 @@ export function Profile() {
                 className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 px-5 py-2.5 rounded-lg transition-all duration-200"
               >
                 <LogOut className="h-5 w-5 text-white" />
-                <span className="text-white font-medium">Log Out</span>
+                <span className="text-white font-medium">Déconnexion</span>
               </button>
             </div>
           </div>
@@ -88,56 +104,83 @@ export function Profile() {
             <div className="bg-blue-50 rounded-xl p-6">
               <h2 className="flex items-center text-lg font-semibold text-blue-900 mb-4">
                 <ShieldCheck className="h-6 w-6 mr-2 text-blue-600" />
-                Account Status
+                Statut du Compte
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-center space-x-3 bg-white p-4 rounded-lg">
                   <MailCheck className="h-6 w-6 text-blue-600" />
                   <div>
-                    <p className="text-sm text-gray-500">Email Verification</p>
-                    <p className={`font-medium ${user.emailVerified ? 'text-green-600' : 'text-orange-600'}`}>
-                      {user.emailVerified ? 'Verified' : 'Pending Verification'}
+                    <p className="text-sm text-gray-500">
+                      Vérification d'E-mail
+                    </p>
+                    <p
+                      className={`font-medium ${user.emailVerified ? "text-green-600" : "text-orange-600"}`}
+                    >
+                      {user.emailVerified
+                        ? "Vérifié"
+                        : "En Attente de Vérification"}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 bg-white p-4 rounded-lg">
                   <CalendarDays className="h-6 w-6 text-blue-600" />
                   <div>
-                    <p className="text-sm text-gray-500">Member Since</p>
+                    <p className="text-sm text-gray-500">Membre Depuis</p>
                     <p className="font-medium text-gray-900">
-                      {new Date(user.metadata.creationTime).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      {new Date(user.metadata.creationTime).toLocaleDateString(
+                        "fr-FR",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        },
+                      )}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 bg-white p-4 rounded-lg">
                   <Clock className="h-6 w-6 text-blue-600" />
                   <div>
-                    <p className="text-sm text-gray-500">Professional Status</p>
+                    <p className="text-sm text-gray-500">
+                      Statut Professionnel
+                    </p>
                     {loadingProfessional ? (
-                      <p className="font-medium text-gray-500">Loading...</p>
+                      <p className="font-medium text-gray-500">Chargement...</p>
                     ) : (
                       <>
-                        <p className={`font-medium ${
-                          professionalData?.status === 'pending' ? 'text-orange-600' :
-                          professionalData?.status === 'approved' ? 'text-green-600' : 'text-gray-600'
-                        }`}>
-                          {professionalData ? 
-                            (professionalData.status === 'pending' ? 'Pending Approval' : 
-                             professionalData.status === 'approved' ? 'Approved' : 'Not Registered') 
-                            : 'Not Registered'}
+                        <p
+                          className={`font-medium ${
+                            professionalData?.status === "pending"
+                              ? "text-orange-600"
+                              : professionalData?.status === "approved"
+                                ? "text-green-600"
+                                : "text-gray-600"
+                          }`}
+                        >
+                          {professionalData
+                            ? professionalData.status === "pending"
+                              ? "En Attente d'Approbation"
+                              : professionalData.status === "approved"
+                                ? "Approuvé"
+                                : "Non Enregistré"
+                            : "Non Enregistré"}
                         </p>
-                        {professionalData?.status === 'pending' || professionalData?.status === 'approved' && (
-                          <button
-                            onClick={() => navigate('/register', { state: { editMode: true, existingData: professionalData } })}
-                            className="text-blue-600 text-sm mt-1 hover:underline"
-                          >
-                            Edit Registration
-                          </button>
-                        )}
+                        {professionalData?.status === "pending" ||
+                          (professionalData?.status === "approved" && (
+                            <button
+                              onClick={() =>
+                                navigate("/register", {
+                                  state: {
+                                    editMode: true,
+                                    existingData: professionalData,
+                                  },
+                                })
+                              }
+                              className="text-blue-600 text-sm mt-1 hover:underline"
+                            >
+                              Modifier l'Inscription
+                            </button>
+                          ))}
                       </>
                     )}
                   </div>
@@ -145,21 +188,23 @@ export function Profile() {
               </div>
             </div>
 
-            {/* Rest of the components remain the same */}
             {/* Activity Section */}
             <div className="bg-gray-50 rounded-xl p-6">
               <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-4">
                 <Clock className="h-6 w-6 mr-2 text-gray-600" />
-                Recent Activity
+                Activité Récente
               </h2>
               <div className="space-y-4">
                 <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <p className="text-sm text-gray-500">Last Sign In</p>
+                  <p className="text-sm text-gray-500">Dernière Connexion</p>
                   <p className="font-medium text-gray-900">
-                    {new Date(user.metadata.lastSignInTime).toLocaleString('en-US', {
-                      dateStyle: 'medium',
-                      timeStyle: 'short'
-                    })}
+                    {new Date(user.metadata.lastSignInTime).toLocaleString(
+                      "fr-FR",
+                      {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      },
+                    )}
                   </p>
                 </div>
               </div>
@@ -169,16 +214,20 @@ export function Profile() {
             <div className="bg-red-50 rounded-xl p-6">
               <h2 className="flex items-center text-lg font-semibold text-red-900 mb-4">
                 <ShieldCheck className="h-6 w-6 mr-2 text-red-600" />
-                Security
+                Sécurité
               </h2>
               <div className="space-y-4">
                 <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <p className="text-sm text-gray-500">Password</p>
+                  <p className="text-sm text-gray-500">Mot de Passe</p>
                   <p className="font-medium text-gray-900">••••••••</p>
                 </div>
                 <button className="w-full text-left bg-white p-4 rounded-lg shadow-sm hover:bg-gray-50 transition-colors">
-                  <p className="text-sm text-gray-500">Two-Factor Authentication</p>
-                  <p className="font-medium text-blue-600">Add extra security →</p>
+                  <p className="text-sm text-gray-500">
+                    Authentification à Deux Facteurs
+                  </p>
+                  <p className="font-medium text-blue-600">
+                    Ajouter une sécurité supplémentaire →
+                  </p>
                 </button>
               </div>
             </div>

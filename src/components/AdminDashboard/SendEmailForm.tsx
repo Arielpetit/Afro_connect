@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
-import emailjs from '@emailjs/browser';
+import emailjs from "@emailjs/browser";
 import { toast, ToastContainer } from "react-toastify";
-import { TailSpin } from 'react-loader-spinner';
+import { TailSpin } from "react-loader-spinner";
 
 const MAX_MESSAGE_LENGTH = 1000;
 
@@ -22,17 +22,20 @@ const SendEmailForm = () => {
   const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
   // Memoized user counts
-  const userCounts = useMemo(() => ({
-    all: users.length,
-    pending: users.filter(u => u.status === 'pending').length,
-    approved: users.filter(u => u.status === 'approved').length,
-  }), [users]);
+  const userCounts = useMemo(
+    () => ({
+      all: users.length,
+      pending: users.filter((u) => u.status === "pending").length,
+      approved: users.filter((u) => u.status === "approved").length,
+    }),
+    [users],
+  );
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const snapshot = await getDocs(collection(db, "users"));
-        setUsers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setUsers(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       } catch (error) {
         toast.error("Failed to load users");
         console.error("User fetch error:", error);
@@ -47,8 +50,8 @@ const SendEmailForm = () => {
     e.preventDefault();
     setIsSending(true);
 
-    const filteredUsers = users.filter(user => 
-      recipientType === 'all' || user.status === recipientType
+    const filteredUsers = users.filter(
+      (user) => recipientType === "all" || user.status === recipientType,
     );
 
     if (filteredUsers.length === 0) {
@@ -59,27 +62,31 @@ const SendEmailForm = () => {
 
     try {
       await Promise.all(
-        filteredUsers.map(user => 
+        filteredUsers.map((user) =>
           emailjs.send(
             SERVICE_ID,
             TEMPLATE_ID,
             {
               to_email: user.email,
               subject,
-              message
+              message,
             },
-            PUBLIC_KEY
-          )
-        )
+            PUBLIC_KEY,
+          ),
+        ),
       );
-      
-      toast.success(`Successfully sent emails to ${filteredUsers.length} recipients`);
-      
+
+      toast.success(
+        `Successfully sent emails to ${filteredUsers.length} recipients`,
+      );
+
       // Reset form after success
       setSubject("");
       setMessage("");
     } catch (error) {
-      toast.error("Failed to send some emails. Please check the console for details.");
+      toast.error(
+        "Failed to send some emails. Please check the console for details.",
+      );
       console.error("Email sending error:", error);
     } finally {
       // Enable button after 10 seconds
@@ -89,11 +96,15 @@ const SendEmailForm = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-lg">
-      <h2 className="text-3xl font-semibold text-gray-800 mb-6">Email Campaign</h2>
-      
+      <h2 className="text-3xl font-semibold text-gray-800 mb-6">
+        Email Campaign
+      </h2>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Recipient Group</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Recipient Group
+          </label>
           <select
             value={recipientType}
             onChange={(e) => setRecipientType(e.target.value)}
@@ -101,13 +112,19 @@ const SendEmailForm = () => {
             disabled={isLoading || isSending}
           >
             <option value="all">All Users ({userCounts.all})</option>
-            <option value="pending">Pending Users ({userCounts.pending})</option>
-            <option value="approved">Approved Users ({userCounts.approved})</option>
+            <option value="pending">
+              Pending Users ({userCounts.pending})
+            </option>
+            <option value="approved">
+              Approved Users ({userCounts.approved})
+            </option>
           </select>
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Subject Line</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Subject Line
+          </label>
           <input
             type="text"
             value={subject}
@@ -119,7 +136,9 @@ const SendEmailForm = () => {
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Message Content</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Message Content
+          </label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -147,7 +166,7 @@ const SendEmailForm = () => {
           )}
         </button>
       </form>
-      <ToastContainer 
+      <ToastContainer
         position="top-center"
         autoClose={5000}
         hideProgressBar
@@ -158,7 +177,6 @@ const SendEmailForm = () => {
         pauseOnHover
         theme="colored"
       />
-
     </div>
   );
 };

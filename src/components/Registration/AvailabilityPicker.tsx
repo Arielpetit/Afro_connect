@@ -1,28 +1,51 @@
 import { useState } from "react";
 
-const AvailabilityPicker = ({ formData, setFormData }) => {
-  const [availability, setAvailability] = useState([]);
-  const [selectedDay, setSelectedDay] = useState("");
-  const [fromTime, setFromTime] = useState("");
-  const [toTime, setToTime] = useState("");
+interface AvailabilityPickerProps {
+  formData: {
+    availability: string[];
+  };
+  setFormData: React.Dispatch<
+    React.SetStateAction<{
+      availability: string[];
+    }>
+  >;
+}
 
-  const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+const AvailabilityPicker: React.FC<AvailabilityPickerProps> = ({
+  formData,
+  setFormData,
+}) => {
+  const [availability, setAvailability] = useState<string[]>([]);
+  const [selectedDay, setSelectedDay] = useState<string>("");
+  const [fromTime, setFromTime] = useState<string>("");
+  const [toTime, setToTime] = useState<string>("");
+
+  const daysOfWeek = [
+    "Lundi",
+    "Mardi",
+    "Mercredi",
+    "Jeudi",
+    "Vendredi",
+    "Samedi",
+    "Dimanche",
+  ];
 
   const addAvailability = () => {
     if (!selectedDay || !fromTime || !toTime) return;
 
     const newEntry = `${selectedDay}: ${fromTime} - ${toTime}`;
-    setAvailability([...availability, newEntry]);
-    setFormData({ ...formData, availability: [...availability, newEntry] });
+    const newAvailability = [...availability, newEntry];
+    setAvailability(newAvailability);
+    setFormData((prev) => ({ ...prev, availability: newAvailability }));
     setSelectedDay("");
     setFromTime("");
     setToTime("");
   };
 
-  const removeAvailability = (index) => {
+  const removeAvailability = (index: number) => {
     const updatedAvailability = availability.filter((_, i) => i !== index);
     setAvailability(updatedAvailability);
-    setFormData({ ...formData, availability: updatedAvailability });
+    setFormData((prev) => ({ ...prev, availability: updatedAvailability }));
   };
 
   return (
@@ -31,12 +54,16 @@ const AvailabilityPicker = ({ formData, setFormData }) => {
         {/* Day Selection */}
         <select
           value={selectedDay}
-          onChange={(e) => setSelectedDay(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            setSelectedDay(e.target.value)
+          }
           className="w-full md:w-auto border rounded-lg px-4 py-2"
         >
           <option value="">Choisir un jour</option>
           {daysOfWeek.map((day) => (
-            <option key={day} value={day}>{day}</option>
+            <option key={day} value={day}>
+              {day}
+            </option>
           ))}
         </select>
 
@@ -46,7 +73,9 @@ const AvailabilityPicker = ({ formData, setFormData }) => {
           <input
             type="time"
             value={fromTime}
-            onChange={(e) => setFromTime(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setFromTime(e.target.value)
+            }
             className="w-full border rounded-lg px-4 py-2"
           />
 
@@ -54,7 +83,9 @@ const AvailabilityPicker = ({ formData, setFormData }) => {
           <input
             type="time"
             value={toTime}
-            onChange={(e) => setToTime(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setToTime(e.target.value)
+            }
             className="w-full border rounded-lg px-4 py-2"
           />
         </div>

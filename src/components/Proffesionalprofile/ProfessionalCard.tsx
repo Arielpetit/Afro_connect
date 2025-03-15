@@ -6,7 +6,10 @@ interface ProfessionalCardProps {
   onProfileClick: (userId: string) => void;
 }
 
-export const ProfessionalCard = ({ user, onProfileClick }: ProfessionalCardProps) => (
+export const ProfessionalCard = ({
+  user,
+  onProfileClick,
+}: ProfessionalCardProps) => (
   <div
     key={user.id}
     onClick={() => onProfileClick(user.id)}
@@ -46,7 +49,9 @@ export const ProfessionalCard = ({ user, onProfileClick }: ProfessionalCardProps
           <ProfessionalBadge
             icon={<FiClock />}
             label="Projets réalisés"
-            value={user.projectsCompleted ? String(user.projectsCompleted) : "N/A"}
+            value={
+              user.projectsCompleted ? String(user.projectsCompleted) : "N/A"
+            }
           />
           <ProfessionalBadge
             icon={<FiStar />}

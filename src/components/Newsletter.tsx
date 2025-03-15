@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { Send } from 'lucide-react';
+import React, { useState } from "react";
+import { Send } from "lucide-react";
 
 export function Newsletter() {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatus('success');
-    setEmail('');
-    setTimeout(() => setStatus('idle'), 3000);
+    setStatus("success");
+    setEmail("");
+    setTimeout(() => setStatus("idle"), 3000);
   };
 
   return (
@@ -20,10 +20,14 @@ export function Newsletter() {
             Restez informé des nouvelles propriétés et offres exclusives
           </h3>
           <p className="text-white/90 mb-6">
-            Abonnez-vous à notre newsletter pour recevoir les dernières annonces immobilières, 
-            les tendances du marché et des offres exclusives adaptées à votre future maison de rêve.
+            Abonnez-vous à notre newsletter pour recevoir les dernières annonces
+            immobilières, les tendances du marché et des offres exclusives
+            adaptées à votre future maison de rêve.
           </p>
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
+          >
             <input
               type="email"
               value={email}
@@ -39,9 +43,10 @@ export function Newsletter() {
               S'abonner <Send className="w-4 h-4" />
             </button>
           </form>
-          {status === 'success' && (
+          {status === "success" && (
             <p className="text-white mt-4 animate-fade-in">
-              Merci pour votre abonnement ! 🎉 Restez à l'affût des dernières mises à jour sur votre future propriété.
+              Merci pour votre abonnement ! 🎉 Restez à l'affût des dernières
+              mises à jour sur votre future propriété.
             </p>
           )}
         </div>
