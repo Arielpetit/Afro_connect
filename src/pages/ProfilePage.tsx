@@ -203,9 +203,6 @@ export const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-      <h2 className="mb-12 md:mb-16 text-center text-4xl font-bold text-gray-900">
-          Liste des professionnels
-        </h2>
         {showCategories ? (
           <CategoriesGrid
             categories={categories}

@@ -91,11 +91,10 @@ const ProfessionalInfoForm: React.FC<ProfessionalInfoProps> = ({
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Photo de Profil *
         </label>
         <FileUpload
           name="profilePicture"
-          label="Photo de Profil"
+          label="Photo de Profil *"
           file={formData.profilePicture}
           accept="image/*"
           onChange={handleChange}
