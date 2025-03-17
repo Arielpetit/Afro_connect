@@ -58,8 +58,15 @@ export function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo Section */}
-          <NavLink to="/" className="text-2xl font-bold text-blue-600">
-            Afro Immobilier Connect
+          <NavLink
+            to="/"
+            className="flex items-center gap-2 text-2xl font-bold text-blue-600"
+          >
+            <img
+              src="/afro-removebg-preview.png"
+              alt="Afro Immobilier Connect Logo"
+              className="h-32 w-auto"
+            />
           </NavLink>
 
           {/* Desktop Navigation */}
