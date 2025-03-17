@@ -80,7 +80,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   };
 
   const handleSubmit = async () => {
-    if (!user) {
+    if (!user.email) {
       navigate("/signup");
       return;
     }
