@@ -25,7 +25,6 @@ interface Professional {
   photoURL?: string;
 }
 
-const user = auth.currentUser;
 
 const locations = [
     "🇨🇦 Canada","🏔️ Alberta", "🌲 Colombie-Britannique", "🏝️ Île-du-Prince-Édouard",
@@ -60,6 +59,9 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   const [noMatch, setNoMatch] = useState(false);
   const [matchedProfessionals, setMatchedProfessionals] = useState<Professional[]>([]);
   const navigate = useNavigate();
+    
+  const user = auth.currentUser;
+
   
   useEffect(() => {
     emailjs.init(PUBLIC_KEY);
@@ -80,7 +82,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   };
 
   const handleSubmit = async () => {
-    if (!user.email) {
+    if (!user) {
       navigate("/signup");
       return;
     }
@@ -421,7 +423,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   />
                   <motion.button
                     onClick={handleSubmit}
-                    disabled={loading || (!user && !user.email)}
+                    disabled={loading}
                     className="w-full bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
