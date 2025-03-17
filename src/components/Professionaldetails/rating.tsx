@@ -5,11 +5,13 @@ export const Rating = ({
   numberOfRatings,
   onRate,
   isSubmitting,
+  canRate, // New prop to control rating ability
 }: {
   initialRating: number;
   numberOfRatings: number;
   onRate: (rating: number) => void;
   isSubmitting: boolean;
+  canRate: boolean; // Add this prop type
 }) => {
   const [hoverRating, setHoverRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
@@ -36,7 +38,9 @@ export const Rating = ({
         <div className="text-gray-500 text-sm">({numberOfRatings} avis)</div>
       </div>
 
-      {!hasRated && (
+      {hasRated ? (
+        <div className="text-green-600">Merci pour votre notation !</div>
+      ) : canRate ? (
         <>
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -64,10 +68,10 @@ export const Rating = ({
             {isSubmitting ? "Envoi..." : "Noter"}
           </button>
         </>
-      )}
-
-      {hasRated && (
-        <div className="text-green-600">Merci pour votre notation !</div>
+      ) : (
+        <div className="text-gray-500">
+          Vous devez effectuer une transaction avec ce professionnel avant de pouvoir noter
+        </div>
       )}
     </div>
   );

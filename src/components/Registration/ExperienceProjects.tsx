@@ -36,7 +36,6 @@ const ExperienceProjects: React.FC<ExperienceProps> = ({
           onChange={handleChange}
           className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           min="0"
-          required
         />
       </div>
     </div>

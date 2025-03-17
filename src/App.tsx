@@ -31,6 +31,7 @@ import { Profile } from "./components/PersonalProfile/Profile";
 import ReviewListPage from "./pages/ReviewListPage";
 import ReviewFormPage from "./pages/ReviewFormPage";
 import Home from "./pages/Home";
+import { ProfessionalRoadmap } from "./pages/ProfessionalRoadmap";
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -73,8 +74,12 @@ const AppContent = () => {
 
           {/* Protected Routes */}
           <Route
-            path="/profile"
+            path="/profile-liste"
             element={<ProtectedRoute element={<ProfilePage />} />}
+          />
+          <Route
+            path="/profile"
+            element={<ProtectedRoute element={<ProfessionalRoadmap />} />}
           />
           <Route
             path="/register"

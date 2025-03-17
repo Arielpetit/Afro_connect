@@ -14,6 +14,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   file,
   accept,
   onChange,
+  
 }) => {
   return (
     <div>

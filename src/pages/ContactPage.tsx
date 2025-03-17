@@ -31,25 +31,25 @@ const ContactPage = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-blue-900 mb-12 text-center animate__animated animate__fadeIn">
             Contactez-nous
           </h1>
+          
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {/* Phone */}
             <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-lg transform transition duration-500 hover:scale-105 hover:shadow-xl">
               <Phone className="w-8 h-8 text-blue-500 mb-4" />
               <h3 className="font-semibold mb-2 text-blue-800">Téléphone</h3>
-              <p className="text-gray-600">+237 659143005</p>
-              <p className="text-gray-600">+237 673425598</p>
+              <p className="text-gray-600">+1(438) 870-2000</p>
             </div>
             {/* Email */}
             <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-lg transform transition duration-500 hover:scale-105 hover:shadow-xl">
               <Mail className="w-8 h-8 text-blue-500 mb-4" />
               <h3 className="font-semibold mb-2 text-blue-800">Email</h3>
-              <p className="text-gray-600">Tchikayaline@gmail.com</p>
+              <p className="text-gray-600">support@afroimmobilierconnect.com</p>
             </div>
             {/* Address */}
             <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-lg transform transition duration-500 hover:scale-105 hover:shadow-xl">
               <MapPin className="w-8 h-8 text-blue-500 mb-4" />
               <h3 className="font-semibold mb-2 text-blue-800">Adresse</h3>
-              <p className="text-gray-600">Nkolbisson, Yaoundé, Cameroun</p>
+              <p className="text-gray-600">Quebec, Canada</p>
             </div>
           </div>
         </div>
@@ -142,18 +142,6 @@ const ContactPage = () => {
             </div>
           </form>
         </div>
-      </div>
-
-      {/* Map */}
-      <div className="h-96 bg-blue-100">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11631.144751807782!2d11.44949199692273!3d3.871683484408375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x108bce8ae224a523%3A0x1cd708b6847b515b!2sNkolbisson%2C%20Yaound%C3%A9%2C%20Cameroun!5e1!3m2!1sfr!2sde!4v1733226919839!5m2!1sfr!2sde"
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-        ></iframe>
       </div>
     </div>
   );

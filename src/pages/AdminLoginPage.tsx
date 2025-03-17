@@ -13,14 +13,26 @@ const AdminLoginPage = () => {
   const handleLogin = () => {
     if (username === validUsername && password === validPassword) {
       localStorage.setItem("isAdmin", "true");
+  
       toast.success("Login as admin successful");
       setTimeout(() => {
         navigate("/admin");
+  
+        // After navigating, check if reload is needed
+        setTimeout(() => {
+          if (!sessionStorage.getItem("reloaded")) {
+            sessionStorage.setItem("reloaded", "true");
+            window.location.reload();
+          }
+        }, 500);
       }, 2000);
     } else {
       toast.error("Invalid username or password");
     }
   };
+  
+  
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">

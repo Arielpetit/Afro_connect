@@ -177,6 +177,21 @@ const AdminDashboardPage = () => {
       },
     });
   };
+  const handleLogout = () => {
+    localStorage.removeItem("isAdmin"); // Remove admin privileges
+    navigate("/");
+  
+    setTimeout(() => {
+      if (sessionStorage.getItem("reloaded")) {
+        window.location.reload();
+        sessionStorage.removeItem("reloaded");
+      } else {
+        sessionStorage.removeItem("reloaded"); 
+      }
+    }, 500);
+  };
+  
+  
 
   const handleApprove = async (userId: string) => {
     try {
@@ -233,7 +248,14 @@ const AdminDashboardPage = () => {
 
         <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
           <StatsGrid stats={stats} />
-
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
+          </div>
           <div className="grid md:grid-cols-2 gap-3 md:gap-6 mb-8">
             <div className="chart-container">
               <RegistrationChart data={stats.registrationData || []} />

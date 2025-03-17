@@ -36,15 +36,9 @@ const DocumentsSection: React.FC<DocumentsProps> = ({
             value={formData.professionalPermitNumber}
             onChange={handleChange}
             className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            required
           />
         </div>
-        <FileUpload
-          name="identityCard"
-          label="Carte d'identité (PDF/JPG/PNG)"
-          file={formData.identityCard}
-          accept=".pdf,.jpg,.png"
-          onChange={handleChange}
-        />
       </div>
     </div>
   );

@@ -16,87 +16,89 @@ const FAQ = () => {
 
   const questions: FAQItem[] = [
     {
-      question: "How does the billing work?",
+      question: "Comment trouver un professionnel ?",
       answer:
-        "Springerdata offers a variety of billing options, including monthly and annual subscription plans, as well as pay-as-you-go pricing for certain services. Payment is typically made through a credit card or other secure online payment method.",
+        "Cliquez sur 'Trouver un professionnel'. Sélectionnez la spécialité, la région et la langue de communication. Ensuite, fournissez une brève description de votre situation. Le système vous mettra en relation avec un professionnel correspondant et vous recevrez une notification lorsqu'il vous contactera.",
     },
     {
-      question: "Can I get a refund for my subscription?",
+      question: "Comment voir la liste des professionnels ?",
       answer:
-        "We offer a 30-day money-back guarantee for most of its subscription plans. If you are not satisfied with your subscription within the first 30 days, you can request a full refund. Refunds for subscriptions that have been active for longer than 30 days may be considered on a case-by-case basis.",
+        "Sur la page d'accueil, cliquez sur 'Liste des professionnels' pour afficher tous les experts disponibles sur la plateforme.",
     },
     {
-      question: "How do I cancel my subscription?",
+      question: "Comment contacter le support ?",
       answer:
-        "To cancel your subscription, you can log in to your account and navigate to the subscription management page. From there, you should be able to cancel your subscription and stop future billing.",
+        "Naviguez vers la page de contact et laissez un message à notre adresse e-mail. Nous vous répondrons dans les plus brefs délais.",
     },
     {
-      question: "Is there a free trial?",
+      question: "Quels services offrez-vous ?",
       answer:
-        "We offer a free trial of our software for a limited time. During the trial period, you will have access to a limited set of features and functionality, but you will not be charged.",
+        "Afro Immobilier Connect est votre solution pour trouver des conseils d'experts et des services professionnels pour vous accompagner dans vos démarches d'acquisition immobilière à travers le Canada.",
     },
     {
-      question: "How do I contact support?",
+      question: "Quels sont les frais pour utiliser la plateforme ?",
       answer:
-        "If you need help with our platform or have any other questions, you can contact the company's support team by submitting a support request through the website or by emailing support@ourwebsite.com.",
+        "L'utilisation de la plateforme pour rechercher un professionnel est gratuite. Certains services proposés par les experts peuvent être payants en fonction de leurs tarifs.",
     },
     {
-      question: "Do you offer any discounts or promotions?",
+      question: "Comment savoir si un professionnel est fiable ?",
       answer:
-        "We may offer discounts or promotions from time to time. To stay up-to-date on the latest deals and special offers, you can sign up for the company's newsletter or follow it on social media.",
+        "Tous les professionnels inscrits sur notre plateforme sont vérifiés et doivent fournir des références pour garantir leur fiabilité et leur expertise.",
+    },
+    {
+      question: "Puis-je laisser un avis sur un professionnel ?",
+      answer:
+        "Oui, après avoir travaillé avec un professionnel, vous pouvez laisser un avis pour aider d'autres utilisateurs à faire leur choix.",
+    },
+    {
+      question: "Quels types de professionnels sont disponibles ?",
+      answer:
+        "Nous mettons à votre disposition des experts en immobilier, tels que des agents immobiliers, des courtiers, des avocats spécialisés, des experts en financement, et bien d'autres.",
+    },
+    {
+      question: "Puis-je contacter plusieurs professionnels en même temps ?",
+      answer:
+        "Oui, vous pouvez envoyer plusieurs demandes et choisir le professionnel qui correspond le mieux à vos besoins.",
+    },
+    {
+      question: "La plateforme est-elle disponible dans d'autres pays ?",
+      answer:
+        "Actuellement, Afro Immobilier Connect est disponible au Canada, mais nous prévoyons d'étendre notre service à d'autres régions prochainement.",
     },
   ];
 
   const filteredQuestions = questions.filter(
     (item) =>
       item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.answer.toLowerCase().includes(searchQuery.toLowerCase()),
+      item.answer.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4 tracking-tight">
-            Frequently Asked Questions
+            Foire aux questions
           </h1>
           <p className="text-lg text-gray-600">
-            Find answers to common questions about our services
+            Trouvez des réponses aux questions les plus courantes sur notre plateforme
           </p>
         </div>
-
-        {/* Search Bar */}
         <div className="mb-10">
           <div className="relative rounded-md shadow-sm">
             <input
               type="text"
-              placeholder="Search questions..."
+              placeholder="Rechercher une question..."
               className="w-full px-6 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <svg
-              className="absolute right-4 top-4 h-6 w-6 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
           </div>
         </div>
-
-        {/* FAQ Items */}
         <div className="bg-white rounded-2xl shadow-lg divide-y divide-gray-200/50">
           {filteredQuestions.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              No results found for "{searchQuery}"
+              Aucun résultat trouvé pour "{searchQuery}"
             </div>
           ) : (
             filteredQuestions.map((item, index) => (
@@ -138,21 +140,18 @@ const FAQ = () => {
             ))
           )}
         </div>
-
-        {/* Contact Section */}
         <div className="mt-12 text-center bg-white p-8 rounded-2xl shadow-lg">
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-            Still have questions?
+            Vous avez encore des questions ?
           </h2>
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            Can't find the answer you're looking for? Our support team is here
-            to help.
+            Vous ne trouvez pas la réponse que vous cherchez ? Notre équipe support est là pour vous aider.
           </p>
           <button
             className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 shadow-sm"
             onClick={handleClick}
           >
-            Contact Support
+            Contacter le support
           </button>
         </div>
       </div>

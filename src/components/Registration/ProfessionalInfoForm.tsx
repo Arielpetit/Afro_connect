@@ -21,7 +21,7 @@ const ProfessionalInfoForm: React.FC<ProfessionalInfoProps> = ({
     <div className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Adresse physique *
+          Place d’affaires *
         </label>
         <input
           type="text"
@@ -66,7 +66,7 @@ const ProfessionalInfoForm: React.FC<ProfessionalInfoProps> = ({
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Langues parlées
+          Langues parlées *
         </label>
         <select
           name="languages"
@@ -89,13 +89,21 @@ const ProfessionalInfoForm: React.FC<ProfessionalInfoProps> = ({
         </label>
         <AvailabilityPicker formData={formData} setFormData={setFormData} />
       </div>
-      <FileUpload
-        name="profilePicture"
-        label="Photo de Profil"
-        file={formData.profilePicture}
-        accept="image/*"
-        onChange={handleChange}
-      />
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Photo de Profil *
+        </label>
+        <FileUpload
+          name="profilePicture"
+          label="Photo de Profil"
+          file={formData.profilePicture}
+          accept="image/*"
+          onChange={handleChange}
+        />
+        {!formData.profilePicture && (
+          <p className="text-red-500 text-sm mt-1">Veuillez ajouter une photo de profil.</p>
+        )}
+      </div>
     </div>
   );
 };

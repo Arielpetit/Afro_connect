@@ -9,9 +9,6 @@ export const CategoriesGrid = ({
   onCategoryClick,
 }: CategoriesGridProps) => (
   <div className="mb-12 md:mb-16 text-center">
-    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
-      Trouvez votre expert
-    </h1>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {categories.map(({ name, image }) => (
         <div
