@@ -422,7 +422,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   />
                   <motion.button
                     onClick={handleSubmit}
-                    disabled={loading || !user && !user.email}
+                    disabled={loading}
                     className="w-full bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
