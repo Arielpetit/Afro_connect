@@ -80,7 +80,7 @@ export function Navbar() {
                 }`
               }
             >
-              Home
+              Accueil
             </NavLink>
             {!user && (
               
@@ -92,7 +92,7 @@ export function Navbar() {
                 }`
               }
             >
-              Signup
+              Inscription
             </NavLink>
             )}
 
@@ -106,7 +106,7 @@ export function Navbar() {
                     }`
                   }
                 >
-                  Resources
+                  Ressources
                 </NavLink>
               </>
             )}
@@ -129,7 +129,7 @@ export function Navbar() {
                 }`
               }
             >
-              FAQs
+              FAQ
             </NavLink>
             {user && (
           <NavLink 
@@ -164,9 +164,12 @@ export function Navbar() {
                 Enregistrez-vous
               </NavLink>
             )}
+            {user && user?.email === "tchikayaline@gmail.com" && (
             <NavLink to="/admin-login" className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors">
               Admin
             </NavLink>
+            )}
+
             {user && (
             <NavLink 
               to="/personal-profile" 
@@ -263,7 +266,7 @@ export function Navbar() {
                 }
                 onClick={toggleMenu}
               >
-                <BookOpen className="inline-block w-5 h-5 mr-2" /> Resources
+                <BookOpen className="inline-block w-5 h-5 mr-2" /> Ressources
               </NavLink>
               
             </>
@@ -300,7 +303,7 @@ export function Navbar() {
             }
             onClick={toggleMenu}
           >
-            <UserPlus className="inline-block w-5 h-5 mr-2" /> Signup
+            <UserPlus className="inline-block w-5 h-5 mr-2" /> Inscription
           </NavLink>
           )}
           {user && (
@@ -334,9 +337,12 @@ export function Navbar() {
               Enregistrez-vous
             </NavLink>
           )}
+          {user && user?.email === "tchikayaline@gmail.com" && (
+
           <NavLink to="/admin-login" className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors text-center" onClick={toggleMenu}>
             Admin
           </NavLink>
+            )}
 
           {deferredPrompt && (
             <button

@@ -9,7 +9,12 @@ import {
   CalendarDays,
   MailCheck,
   LogOut,
+  Link2,
+  Copy,
+  Gift,
 } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
+
 import {
   getFirestore,
   collection,
@@ -17,18 +22,25 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
+import { toast, ToastContainer } from "react-toastify";
 
 export function Profile() {
   const navigate = useNavigate();
   const user = auth.currentUser;
   const [professionalData, setProfessionalData] = useState<any>(null);
   const [loadingProfessional, setLoadingProfessional] = useState(true);
+  const [referralLink, setReferralLink] = useState("");
+  const [referralPoints, setReferralPoints] = useState(0);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) {
         navigate("/signup");
       } else {
+        // Generate referral link
+        const baseUrl = window.location.origin;
+        setReferralLink(`${baseUrl}/signup?ref=${user.uid}`);
+
         // Fetch professional data
         const db = getFirestore();
         const q = query(
@@ -37,7 +49,9 @@ export function Profile() {
         );
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
-          setProfessionalData(querySnapshot.docs[0].data());
+          const userData = querySnapshot.docs[0].data();
+          setProfessionalData(userData);
+          setReferralPoints(userData.referralPoints || 0);
         }
         setLoadingProfessional(false);
       }
@@ -52,6 +66,26 @@ export function Profile() {
     } catch (error) {
       console.error("Logout error:", error);
     }
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      toast.success("Referral link copied to clipboard!", {
+        position: "bottom-center",
+        autoClose: 2000,
+      });
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
+
+  const shareOnWhatsApp = () => {
+    const text = `Rejoignez notre plateforme avec mon lien de parrainage! ${referralLink}`;
+    window.open(
+      `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`,
+      "_blank",
+    );
   };
 
   if (!user) {
@@ -106,7 +140,7 @@ export function Profile() {
                 <ShieldCheck className="h-6 w-6 mr-2 text-blue-600" />
                 Statut du Compte
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="flex items-center space-x-3 bg-white p-4 rounded-lg">
                   <MailCheck className="h-6 w-6 text-blue-600" />
                   <div>
@@ -185,6 +219,56 @@ export function Profile() {
                     )}
                   </div>
                 </div>
+                <div className="flex items-center space-x-3 bg-white p-4 rounded-lg">
+                  <Gift className="h-6 w-6 text-blue-600" />
+                  <div>
+                    <p className="text-sm text-gray-500">Points de Parrainage</p>
+                    <p className="font-medium text-purple-600">
+                      {referralPoints} points
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Referral Section */}
+            <div className="bg-purple-50 rounded-xl p-6">
+              <h2 className="flex items-center text-lg font-semibold text-purple-900 mb-4">
+                <Link2 className="h-6 w-6 mr-2 text-purple-600" />
+                Programme de Parrainage
+              </h2>
+              <div className="space-y-4">
+                <div className="bg-white p-4 rounded-lg shadow-sm">
+                  <p className="text-sm text-gray-500 mb-2">Votre lien de parrainage</p>
+                  <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                    <span className="text-sm font-mono text-gray-700 truncate">
+                      {referralLink}
+                    </span>
+                    <button
+                      onClick={copyToClipboard}
+                      className="ml-2 p-2 hover:bg-gray-200 rounded-lg"
+                    >
+                      <Copy className="h-5 w-5 text-gray-600" />
+                    </button>
+                  </div>
+                  <div className="mt-4 flex space-x-3">
+                  <button
+                      onClick={shareOnWhatsApp}
+                      className="flex items-center space-x-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg"
+                    >
+                      <FaWhatsapp className="h-5 w-5" />
+                      <span>Partager sur WhatsApp</span>
+                    </button>
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-sm">
+                  <p className="text-sm text-gray-500">Comment ça marche?</p>
+                  <ul className="list-disc pl-5 mt-2 space-y-2 text-gray-700">
+                    <li>Partagez votre lien de parrainage avec vos amis</li>
+                    <li>Lorsqu'ils s'inscrivent avec votre lien, vous gagnez 10 points</li>
+                    <li>Les points peuvent être échangés contre des récompenses</li>
+                  </ul>
+                </div>
               </div>
             </div>
 
@@ -234,6 +318,7 @@ export function Profile() {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }

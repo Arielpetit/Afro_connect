@@ -10,9 +10,64 @@ import AuthForm from "../components/Auth/AuthForm";
 import { auth } from "../firebase";
 import { FirebaseError } from "firebase/app";
 import { toast, ToastContainer } from "react-toastify";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  increment,
+  arrayUnion,
+} from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
 
 const SignupPage = () => {
   const navigate = useNavigate();
+  const db = getFirestore();
+
+  const createUserDocument = async (user: any) => {
+    const referralCode = uuidv4().substring(0, 8).toUpperCase();
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      userId: user.uid,
+      referralCode,
+      referralPoints: 0,
+      referrals: [],
+      createdAt: new Date().toISOString(),
+      emailVerified: user.emailVerified,
+    });
+    return referralCode;
+  };
+
+  const handleReferral = async (newUserId: string) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralParam = urlParams.get("ref");
+
+    if (referralParam) {
+      try {
+        const q = query(
+          collection(db, "users"),
+          where("referralCode", "==", referralParam),
+        );
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const referrerDoc = querySnapshot.docs[0];
+          if (referrerDoc.id !== newUserId) {
+            await updateDoc(doc(db, "users", referrerDoc.id), {
+              referralPoints: increment(1),
+              referrals: arrayUnion(newUserId),
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error handling referral:", error);
+      }
+    }
+  };
 
   const handleSignup = async (email: string, password: string) => {
     try {
@@ -22,7 +77,12 @@ const SignupPage = () => {
         password,
       );
       const user = userCredential.user;
-      console.log("User created:", user);
+
+      // Create user document with referral data
+      await createUserDocument(user);
+      
+      // Process any existing referral
+      await handleReferral(user.uid);
 
       await sendEmailVerification(user);
       toast.info("Verification email sent! Please check your inbox.");
@@ -44,9 +104,9 @@ const SignupPage = () => {
       if (error instanceof FirebaseError) {
         switch (error.code) {
           case "auth/email-already-in-use":
-            toast.dismiss(); // Ensure only one toast appears
+            toast.dismiss();
             toast.error("Email already in use");
-            setTimeout(() => navigate("/login"), 3000); // Redirect to login
+            setTimeout(() => navigate("/login"), 3000);
             return;
           case "auth/invalid-email":
             message = "Invalid email format";
@@ -68,7 +128,19 @@ const SignupPage = () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log(result);
+      const user = result.user;
+
+      // Create user document with referral data
+      await createUserDocument(user);
+      
+      // Process any existing referral
+      await handleReferral(user.uid);
+
+      // Update email verification status
+      await updateDoc(doc(db, "users", user.uid), {
+        emailVerified: user.emailVerified,
+      });
+
       navigate("/profile");
     } catch (error) {
       console.error("Google signup error:", error);

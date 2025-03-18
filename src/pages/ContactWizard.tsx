@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { getFirestore, collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import emailjs from "@emailjs/browser";
@@ -6,6 +5,7 @@ import { FiCheckCircle, FiArrowLeft, FiUser, FiMail, FiXCircle } from "react-ico
 import { motion, AnimatePresence } from "framer-motion";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import { SPECIALTY_OPTIONS } from "../constants/constants";
 
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const PROFESSIONAL_TEMPLATE = import.meta.env.VITE_EMAILJS_PROFESSIONAL_TEMPLATE;
@@ -58,6 +58,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   const [submitted, setSubmitted] = useState(false);
   const [noMatch, setNoMatch] = useState(false);
   const [matchedProfessionals, setMatchedProfessionals] = useState<Professional[]>([]);
+  const [showCustomInput, setShowCustomInput] = useState(false);
   const navigate = useNavigate();
     
   const user = auth.currentUser;
@@ -401,37 +402,85 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                 </div>
               )}
 
-              {currentStep === 4 && (
-                <div className="space-y-6">
-                  <h3 className="text-lg md:text-xl font-semibold text-gray-800">Fournissez une brève description de votre situation.</h3>
-                    {/* Animated Image */}
-                    <div className="flex justify-center">
-                        <img 
-                            src="/description.jpg" 
-                            alt="Language Selection" 
-                            className="w-50 h-48 animate-fade-in" // Adjust size as needed
-                        />
-                    </div>
-                  <motion.textarea
-                    name="problem"
-                    value={formData.problem}
-                    onChange={(e) => handleSelect('problem', e.target.value)}
-                    placeholder="Décrivez votre situation en détail..."
-                    className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all resize-none h-40 text-sm md:text-base"
-                    required
-                    whileFocus={{ scale: 1.005 }}
-                  />
-                  <motion.button
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className="w-full bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {loading ? "Envoi en cours..." : "Envoyer la demande"}
-                  </motion.button>
-                </div>
-              )}
+{currentStep === 4 && (
+  <div className="space-y-6">
+    <h3 className="text-lg md:text-xl font-semibold text-gray-800">
+      {SPECIALTY_OPTIONS[specialty as keyof typeof SPECIALTY_OPTIONS] 
+        ? "Sélectionnez votre situation"
+        : "Fournissez une brève description de votre situation"}
+    </h3>
+
+    {SPECIALTY_OPTIONS[specialty as keyof typeof SPECIALTY_OPTIONS] ? (
+      <>
+        <div className="grid grid-cols-1 gap-2">
+          {SPECIALTY_OPTIONS[specialty as keyof typeof SPECIALTY_OPTIONS].map((option) => (
+            <motion.button
+              key={option}
+              onClick={() => {
+                if (option === 'Autre') {
+                  setFormData(prev => ({ ...prev, problem: '' }));
+                  setShowCustomInput(true);
+                } else {
+                  setFormData(prev => ({ ...prev, problem: option }));
+                  setShowCustomInput(false);
+                }
+              }}
+              className={`p-3 text-left rounded-lg border transition-all ${
+                formData.problem === option || (option === 'Autre' && showCustomInput)
+                  ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                  : 'border-gray-200 hover:border-emerald-300 bg-white'
+              }`}
+              whileHover={{ y: -2 }}
+            >
+              {option}
+            </motion.button>
+          ))}
+        </div>
+
+        {showCustomInput && (
+          <motion.textarea
+            name="problem"
+            value={formData.problem}
+            onChange={(e) => setFormData(prev => ({ ...prev, problem: e.target.value }))}
+            placeholder="Décrivez votre situation en détail..."
+            className="w-full p-4 mt-4 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all resize-none h-32 text-sm md:text-base"
+            required
+            whileFocus={{ scale: 1.005 }}
+          />
+        )}
+      </>
+    ) : (
+      <>
+        <div className="flex justify-center">
+          <img 
+            src="/description.jpg" 
+            alt="Description" 
+            className="w-50 h-48 animate-fade-in"
+          />
+        </div>
+        <motion.textarea
+          name="problem"
+          value={formData.problem}
+          onChange={(e) => handleSelect('problem', e.target.value)}
+          placeholder="Décrivez votre situation en détail..."
+          className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all resize-none h-40 text-sm md:text-base"
+          required
+          whileFocus={{ scale: 1.005 }}
+        />
+      </>
+    )}
+
+    <motion.button
+      onClick={handleSubmit}
+      disabled={loading || !formData.problem}
+      className="w-full bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      {loading ? "Envoi en cours..." : "Envoyer la demande"}
+    </motion.button>
+  </div>
+)}
             </motion.div>
           </AnimatePresence>
         </>
