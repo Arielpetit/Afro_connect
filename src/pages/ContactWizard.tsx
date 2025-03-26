@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getFirestore, collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, addDoc, writeBatch, doc, increment } from "firebase/firestore";
 import emailjs from "@emailjs/browser";
-import { FiCheckCircle, FiArrowLeft, FiUser, FiMail, FiXCircle } from "react-icons/fi";
+import { FiCheckCircle, FiArrowLeft, FiUser, FiXCircle } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -15,13 +15,15 @@ interface WizardProps {
   onBack: () => void;
 }
 
-interface Professional {
+export interface Professional {
   id: string;
   displayName: string;
   email: string;
   bio?: string;
   photoURL?: string;
   availability: string[];
+  leadCount?: number;
+  expertise?: string; 
 }
 
 const locations = [
@@ -249,6 +251,17 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   };
 
   const sendEmails = async (professionals: Professional[]) => {
+    const db = getFirestore();
+    const batch = writeBatch(db);
+  
+    professionals.forEach(pro => {
+      const proRef = doc(db, 'users', pro.id);
+      batch.update(proRef, {
+        leadCount: increment(1)
+      });
+    });
+  
+    await batch.commit();
     const templateParams = {
       user_availability: formData.availability.join(', '),
       client_email: formData.email,
@@ -430,7 +443,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   <h3 className="text-xl font-semibold">Langue de communication</h3>
                     <div className="flex justify-center">
                         <img 
-                            src="/location.jpg" 
+                            src="/language.jpg" 
                             alt="Language Selection" 
                             className="w-50 h-48 animate-fade-in" // Adjust size as needed
                         />
@@ -463,7 +476,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                     <h3 className="text-xl font-semibold">Contact et description</h3>
                     <div className="flex justify-center">
                         <img 
-                            src="/location.jpg" 
+                            src="/description.jpg" 
                             alt="Language Selection" 
                             className="w-50 h-48 animate-fade-in" // Adjust size as needed
                         />
@@ -497,7 +510,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   <h3 className="text-xl font-semibold">Coordonnées</h3>
                   <div className="flex justify-center">
                         <img 
-                            src="/location.jpg" 
+                            src="/Time.jpg" 
                             alt="Language Selection" 
                             className="w-50 h-48 animate-fade-in" // Adjust size as needed
                         />

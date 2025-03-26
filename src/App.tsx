@@ -13,6 +13,7 @@ import ProfileDetailsPage from './pages/ProfileDetailsPage';
 import ScrollToTop from './components/ScrollToTop';
 import SuggestionsPage from './pages/SuggestionsPage';
 import AdminSuggestionsPage from './pages/AdminSuggestionsPage';
+import { ProfessionalsLeadsPage } from './pages/ProfessionalsLeadsPage';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
               <Route path="/profile/:userId" element={<ProfileDetailsPage />} />
               <Route path="/suggestions" element={<SuggestionsPage />} />
               <Route path="/admin/suggestions" element={<AdminSuggestionsPage />} />
+              <Route path="/admin/leads" element={<ProfessionalsLeadsPage />} />
             </Routes>
           </main>
           <Footer />

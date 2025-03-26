@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu, X, User, Home as HomeIcon } from 'lucide-react';
+import { Menu, X, User, Lightbulb, Home as HomeIcon } from 'lucide-react';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,7 +46,14 @@ export function Navbar() {
             >
               Enregistrez-vous
             </NavLink>
+            <NavLink 
+              to="/suggestions" 
+              className="bg-green-600 text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-green-700 transition-colors"
+            >
+              Suggestions
+            </NavLink>
           </div>
+          
 
           {/* Mobile Menu Toggle Button */}
           <button 
@@ -81,6 +88,13 @@ export function Navbar() {
               onClick={closeMenu}
             >
               Enregistrez-vous
+            </NavLink>
+            <NavLink 
+              to="/suggestions" 
+              className="relative text-gray-700 hover:text-blue-500 transition-colors flex items-center gap-2"
+              onClick={closeMenu}
+            >
+              <Lightbulb className="w-6 h-6" /> <span>Suggestions</span>
             </NavLink>
           </div>
         </div>
