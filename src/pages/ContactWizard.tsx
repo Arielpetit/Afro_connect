@@ -5,16 +5,19 @@ import { FiCheckCircle, FiArrowLeft, FiUser, FiXCircle } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
+// Environment variables for EmailJS configuration
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const PROFESSIONAL_TEMPLATE = import.meta.env.VITE_EMAILJS_PROFESSIONAL_TEMPLATE;
 const CLIENT_TEMPLATE = import.meta.env.VITE_EMAILJS_CLIENT_TEMPLATE;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
+// Props for the ContactWizard component
 interface WizardProps {
   specialty: string;
   onBack: () => void;
 }
 
+// Interface for Professional data
 export interface Professional {
   id: string;
   displayName: string;
@@ -23,14 +26,15 @@ export interface Professional {
   photoURL?: string;
   availability: string[];
   leadCount?: number;
-  expertise?: string; 
+  expertise?: string;
 }
 
+// Predefined options for location and language
 const locations = [
   "🏔️ Alberta", "🌲Colombie-Britannique", "🏝️ Île-du-Prince-Édouard",
   "🌾 Manitoba", "🦞 Nouveau-Brunswick", "🌊 Nouvelle-Écosse", "❄️ Nunavut",
   "🏙️ Ontario", "🍁 Québec", "🌻 Saskatchewan", "🎣 Terre-Neuve-et-Labrador",
-  "🌌 Territoires du Nord-Ouest", "⛰️ Yukon", 
+  "🌌 Territoires du Nord-Ouest", "⛰️ Yukon",
   "🏕️ Whitehorse", "🏔️ Banff", "🌆 Toronto", "🎭 Montréal", "🎡 Vancouver",
   "🏘️ Winnipeg", "🏯 Ottawa", "🌁 Halifax", "🛶 Charlottetown"
 ];
@@ -43,22 +47,11 @@ const languages = [
   "🇩🇰 Danois", "🇮🇷 Persan (Farsi)", "🇻🇳 Vietnamien", "🇮🇱 Hébreu"
 ];
 
-interface AvailabilityEntry {
-  day: string;
-  start: string;
-  end: string;
-}
-
 const daysOfWeek = [
-  "Lundi",
-  "Mardi",
-  "Mercredi",
-  "Jeudi",
-  "Vendredi",
-  "Samedi",
-  "Dimanche",
+  "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"
 ];
 
+// AvailabilityPicker component for selecting client availability
 const AvailabilityPicker: React.FC<{
   availability: string[];
   setAvailability: (value: string[]) => void;
@@ -94,7 +87,6 @@ const AvailabilityPicker: React.FC<{
             <option key={day} value={day}>{day}</option>
           ))}
         </select>
-        
         <div className="flex gap-2">
           <input
             type="time"
@@ -109,7 +101,6 @@ const AvailabilityPicker: React.FC<{
             className="flex-1 border rounded-lg p-2"
           />
         </div>
-        
         <button
           onClick={addEntry}
           className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
@@ -117,7 +108,6 @@ const AvailabilityPicker: React.FC<{
           Ajouter
         </button>
       </div>
-
       <ul className="space-y-2">
         {availability.map((entry, index) => (
           <li
@@ -138,6 +128,7 @@ const AvailabilityPicker: React.FC<{
   );
 };
 
+// Main ContactWizard component
 export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -154,6 +145,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   const [matchedProfessionals, setMatchedProfessionals] = useState<Professional[]>([]);
   const navigate = useNavigate();
 
+  // Initialize EmailJS
   useEffect(() => {
     emailjs.init(PUBLIC_KEY);
   }, []);
@@ -173,37 +165,11 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     window.scrollTo(0, 0);
   };
 
-  const parseAvailability = (entries: string[]): AvailabilityEntry[] => {
-    return entries.map(entry => {
-      const [dayPart, timePart] = entry.split(': ');
-      const [start, end] = timePart.split(' - ');
-      return { day: dayPart, start, end };
-    });
-  };
-
-  const timeToMinutes = (time: string) => {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
-
-  const hasAvailabilityOverlap = (userAvail: AvailabilityEntry[], proAvail: AvailabilityEntry[]) => {
-    return userAvail.some(userEntry => 
-      proAvail.some(proEntry => {
-        if (userEntry.day !== proEntry.day) return false;
-        const userStart = timeToMinutes(userEntry.start);
-        const userEnd = timeToMinutes(userEntry.end);
-        const proStart = timeToMinutes(proEntry.start);
-        const proEnd = timeToMinutes(proEntry.end);
-        return userStart < proEnd && userEnd > proStart;
-      })
-    );
-  };
-
+  // Fetch professionals matching specialty, location, and language
   const findMatchingProfessionals = async () => {
     const db = getFirestore();
     const cleanLocation = formData.location.replace(/[\p{Emoji}]/gu, "").trim();
     const cleanLanguage = formData.language.replace(/[\p{Emoji}]/gu, "").trim();
-    console.log(cleanLocation, cleanLanguage);
 
     const q = query(
       collection(db, "users"),
@@ -219,12 +185,11 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
       availability: doc.data().availability || []
     })) as Professional[];
 
-    const userAvailability = parseAvailability(formData.availability);
-    return professionals.filter(pro => 
-      hasAvailabilityOverlap(userAvailability, parseAvailability(pro.availability)),
-    );
+    // Return all professionals without filtering by availability
+    return professionals;
   };
 
+  // Handle form submission
   const handleSubmit = async () => {
     setLoading(true);
     try {
@@ -243,7 +208,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
       setMatchedProfessionals(professionals);
       await sendEmails(professionals);
       setSubmitted(true);
-      setTimeout(onBack, 10000);
+      setTimeout(onBack, 10000); // Redirect after 10 seconds
     } catch (error) {
       console.error("Submission error:", error);
     } finally {
@@ -251,18 +216,18 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     }
   };
 
+  // Send emails to professionals and client
   const sendEmails = async (professionals: Professional[]) => {
     const db = getFirestore();
     const batch = writeBatch(db);
-  
+
     professionals.forEach(pro => {
       const proRef = doc(db, 'users', pro.id);
-      batch.update(proRef, {
-        leadCount: increment(1)
-      });
+      batch.update(proRef, { leadCount: increment(1) });
     });
-  
+
     await batch.commit();
+
     const templateParams = {
       user_availability: formData.availability.join(', '),
       client_email: formData.email,
@@ -273,7 +238,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     };
 
     try {
-      const proEmails = professionals.map(pro => 
+      const proEmails = professionals.map(pro =>
         emailjs.send(SERVICE_ID, PROFESSIONAL_TEMPLATE, {
           ...templateParams,
           to_email: pro.email,
@@ -295,18 +260,19 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     }
   };
 
+  // Progress bar component
   const ProgressBar = () => (
     <div className="w-full mb-8">
       <div className="relative pt-6">
         <div className="absolute top-8 left-0 right-0 h-1.5 bg-emerald-100 rounded-full"></div>
-        <div 
-          className="absolute top-8 left-0 h-1.5 bg-emerald-500 rounded-full transition-all duration-500" 
+        <div
+          className="absolute top-8 left-0 h-1.5 bg-emerald-500 rounded-full transition-all duration-500"
           style={{ width: `${(currentStep - 1) * 20}%` }}
         ></div>
         <div className="flex justify-between">
           {[1, 2, 3, 4, 5].map(step => (
             <div key={step} className="relative z-10">
-              <motion.div 
+              <motion.div
                 className={`w-8 h-8 rounded-full flex items-center justify-center ${
                   step <= currentStep ? 'bg-emerald-500 text-white' : 'bg-emerald-100'
                 }`}
@@ -321,6 +287,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     </div>
   );
 
+  // Main render
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-8">
       {submitted ? (
@@ -332,7 +299,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
           <FiCheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-4">Demande envoyée avec succès!</h2>
           <div className="space-y-4 max-h-96 overflow-y-auto">
-            {matchedProfessionals.map((pro, index) => (
+            {matchedProfessionals.map((pro) => (
               <motion.div
                 key={pro.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -408,14 +375,6 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
               {currentStep === 2 && (
                 <>
                   <h3 className="text-xl font-semibold">Sélectionnez votre région</h3>
-                    {/* Animated Image */}
-                    <div className="flex justify-center">
-                        <img 
-                            src="/location.jpg" 
-                            alt="Language Selection" 
-                            className="w-50 h-48 animate-fade-in" // Adjust size as needed
-                        />
-                    </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {locations.map(location => (
                       <button
@@ -442,13 +401,6 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
               {currentStep === 3 && (
                 <>
                   <h3 className="text-xl font-semibold">Langue de communication</h3>
-                    <div className="flex justify-center">
-                        <img 
-                            src="/language.jpg" 
-                            alt="Language Selection" 
-                            className="w-50 h-48 animate-fade-in" // Adjust size as needed
-                        />
-                    </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {languages.map(language => (
                       <button
@@ -472,61 +424,45 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                 </>
               )}
 
-                {currentStep === 4 && (
-                  <>
-                    <h3 className="text-xl font-semibold">Contact et description</h3>
-                    <div className="flex justify-center">
-                        <img 
-                            src="/description.jpg" 
-                            alt="Language Selection" 
-                            className="w-50 h-48 animate-fade-in" // Adjust size as needed
-                        />
-                    </div>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => handleSelect('email', e.target.value)}
-                      className="w-full p-4 border rounded-xl mb-4"
-                      placeholder="Entrez votre adresse email..."
-                      required
-                    />
-                    <textarea
-                      value={formData.problem}
-                      onChange={(e) => handleSelect('problem', e.target.value)}
-                      className="w-full p-4 border rounded-xl h-40"
-                      placeholder="Décrivez votre situation..."
-                    />
-                    <button
-                      onClick={handleNext}
-                      disabled={!formData.problem || !formData.email}
-                      className="w-full bg-emerald-500 text-white p-3 rounded-xl disabled:opacity-50"
-                    >
-                      Continuer
-                    </button>
-                  </>
-                )}
+              {currentStep === 4 && (
+                <>
+                  <h3 className="text-xl font-semibold">Contact et description</h3>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleSelect('email', e.target.value)}
+                    className="w-full p-4 border rounded-xl mb-4"
+                    placeholder="Entrez votre adresse email..."
+                    required
+                  />
+                  <textarea
+                    value={formData.problem}
+                    onChange={(e) => handleSelect('problem', e.target.value)}
+                    className="w-full p-4 border rounded-xl h-40"
+                    placeholder="Décrivez votre situation..."
+                  />
+                  <button
+                    onClick={handleNext}
+                    disabled={!formData.problem || !formData.email}
+                    className="w-full bg-emerald-500 text-white p-3 rounded-xl disabled:opacity-50"
+                  >
+                    Continuer
+                  </button>
+                </>
+              )}
 
               {currentStep === 5 && (
                 <>
                   <h3 className="text-xl font-semibold">Coordonnées</h3>
-                  <div className="flex justify-center">
-                        <img 
-                            src="/Time.jpg" 
-                            alt="Language Selection" 
-                            className="w-50 h-48 animate-fade-in" // Adjust size as needed
-                        />
-                  </div>
                   <p className="text-gray-600 mb-4">
-                    Sélectionnez les créaux horaires où vous souhaitez être contacté par le professionnel
+                    Sélectionnez les créneaux horaires où vous souhaitez être contacté par le professionnel
                   </p>
-                  
                   <AvailabilityPicker
                     availability={formData.availability}
-                    setAvailability={(avail) => 
+                    setAvailability={(avail) =>
                       setFormData(prev => ({ ...prev, availability: avail }))
                     }
                   />
-
                   <div className="flex gap-4">
                     <button
                       onClick={handlePrevious}
