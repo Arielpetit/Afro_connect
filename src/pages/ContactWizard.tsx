@@ -394,6 +394,14 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
               {currentStep === 2 && (
                 <>
                   <h3 className="text-xl font-semibold">Sélectionnez votre région</h3>
+                    {/* Animated Image */}
+                    <div className="flex justify-center">
+                        <img 
+                            src="/location.jpg" 
+                            alt="Language Selection" 
+                            className="w-50 h-48 animate-fade-in" // Adjust size as needed
+                        />
+                    </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {locations.map(location => (
                       <button
@@ -420,6 +428,13 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
               {currentStep === 3 && (
                 <>
                   <h3 className="text-xl font-semibold">Langue de communication</h3>
+                    <div className="flex justify-center">
+                        <img 
+                            src="/location.jpg" 
+                            alt="Language Selection" 
+                            className="w-50 h-48 animate-fade-in" // Adjust size as needed
+                        />
+                    </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {languages.map(language => (
                       <button
@@ -446,6 +461,13 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                 {currentStep === 4 && (
                   <>
                     <h3 className="text-xl font-semibold">Contact et description</h3>
+                    <div className="flex justify-center">
+                        <img 
+                            src="/location.jpg" 
+                            alt="Language Selection" 
+                            className="w-50 h-48 animate-fade-in" // Adjust size as needed
+                        />
+                    </div>
                     <input
                       type="email"
                       value={formData.email}
@@ -473,6 +495,13 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
               {currentStep === 5 && (
                 <>
                   <h3 className="text-xl font-semibold">Coordonnées</h3>
+                  <div className="flex justify-center">
+                        <img 
+                            src="/location.jpg" 
+                            alt="Language Selection" 
+                            className="w-50 h-48 animate-fade-in" // Adjust size as needed
+                        />
+                  </div>
                   <p className="text-gray-600 mb-4">
                     Sélectionnez les créaux horaires où vous souhaitez être contacté par le professionnel
                   </p>
