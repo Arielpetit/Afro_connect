@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send } from 'lucide-react';
+import { Send, Zap } from 'lucide-react';
 
 export function Newsletter() {
   const [email, setEmail] = useState('');
@@ -13,36 +13,63 @@ export function Newsletter() {
   };
 
   return (
-    <div className="bg-blue-600 py-12 mt-12">
-      <div className="container mx-auto px-4">
+    <div className="relative bg-gradient-to-br from-blue-900 to-green-900 py-16 overflow-hidden">
+      {/* Futuristic background effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_rgba(14,19,33,0.3)_0%,_transparent_70%)]"></div>
+        <div className="absolute animate-pulse opacity-50 top-1/4 right-1/4 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute animate-pulse opacity-50 bottom-1/4 left-1/4 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl mx-auto text-center">
-          <h3 className="text-2xl font-bold text-white mb-4">
+          <h3 className="text-3xl font-bold text-white mb-4 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-600">
             Restez informé des nouvelles propriétés et offres exclusives
           </h3>
-          <p className="text-white/90 mb-6">
-            Abonnez-vous à notre newsletter pour recevoir les dernières annonces immobilières, 
-            les tendances du marché et des offres exclusives adaptées à votre future maison de rêve.
+          <p className="text-white/80 mb-8 text-lg leading-relaxed">
+          Abonnez-vous à notre newsletter pour recevoir les dernières annonces immobilières, 
+          les tendances du marché et des offres exclusives adaptées à votre future maison de rêve.
           </p>
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Entrez votre e-mail"
-              className="flex-1 px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-white"
-              required
-            />
+          
+          <form 
+            onSubmit={handleSubmit} 
+            className="relative flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
+          >
+            <div className="relative flex-1">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Votre nexus de communication"
+                className="w-full px-5 py-4 bg-[#1e293b] text-white border border-[#334155] rounded-full 
+                  focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all duration-300
+                  placeholder-gray-500 tracking-wider"
+                required
+              />
+              <Zap className="absolute right-4 top-1/2 -translate-y-1/2 text-cyan-400 opacity-50" />
+            </div>
+            
             <button
               type="submit"
-              className="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white 
+                px-7 py-4 rounded-full font-semibold 
+                hover:from-cyan-600 hover:to-blue-700 
+                transition-all duration-300 
+                flex items-center justify-center gap-3
+                transform hover:scale-105 active:scale-95"
             >
-              S'abonner <Send className="w-4 h-4" />
+              Synchroniser <Send className="w-5 h-5" />
             </button>
           </form>
+
           {status === 'success' && (
-            <p className="text-white mt-4 animate-fade-in">
-              Merci pour votre abonnement ! 🎉 Restez à l'affût des dernières mises à jour sur votre future propriété.
-            </p>
+            <div className="mt-6 relative">
+              <p className="text-white animate-fade-in text-lg flex items-center justify-center gap-3">
+                <Zap className="text-cyan-400 animate-pulse" />
+                Synchronisation réussie ! Bienvenue dans l'écosystème immobilier du futur.
+                <Zap className="text-cyan-400 animate-pulse" />
+              </p>
+            </div>
           )}
         </div>
       </div>

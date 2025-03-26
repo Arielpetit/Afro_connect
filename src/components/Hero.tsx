@@ -17,7 +17,7 @@ export function Hero() {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/40 z-10" />
         <img
-          src="https://th.bing.com/th/id/OIP.MMsYZP7G5DqKd6Pa0IyU2QHaFD?rs=1&pid=ImgDetMain"
+          src="https://thearchitecturedesigns.com/wp-content/uploads/2022/03/things-to-Consider-When-Buying-a-House-4.jpg"
           alt="Illustration de conseil immobilier"
           className="w-full h-full object-cover object-center"
           loading="lazy"

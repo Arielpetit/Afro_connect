@@ -1,10 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { Features } from './components/Features';
-import { HowItWorks } from './components/HowItWorks';
-import { Testimonials } from './components/Testimonials';
 import { Footer } from './components/Footer';
 
 import SignupPage from './pages/SignupPage';
@@ -14,6 +10,9 @@ import ScrollToTop from './components/ScrollToTop';
 import SuggestionsPage from './pages/SuggestionsPage';
 import AdminSuggestionsPage from './pages/AdminSuggestionsPage';
 import { ProfessionalsLeadsPage } from './pages/ProfessionalsLeadsPage';
+import Home from './pages/Home';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfUse from './pages/TermsOfUse';
 
 function App() {
   return (
@@ -26,17 +25,13 @@ function App() {
             <Routes>
               <Route
                 path="/"
-                element={
-                  <>
-                    <Hero />
-                    <Features />
-                    <HowItWorks />
-                    <Testimonials />
-                  </>
+                element={<Home/>
                 }
               />
               <Route path="/register" element={<SignupPage />} />
               <Route path="/profile" element={<ProfessionalRoadmap  />} />
+              <Route path="/privacy" element={< PrivacyPolicy />} />
+              <Route path="/terms" element={< TermsOfUse />} />
               <Route path="*" element={<div>404 Page Not Found</div>} />
               <Route path="/profile/:userId" element={<ProfileDetailsPage />} />
               <Route path="/suggestions" element={<SuggestionsPage />} />

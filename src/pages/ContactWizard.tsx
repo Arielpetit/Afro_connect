@@ -27,7 +27,7 @@ export interface Professional {
 }
 
 const locations = [
-  "🏔️ Alberta", "🌲 Colombie-Britannique", "🏝️ Île-du-Prince-Édouard",
+  "🏔️ Alberta", "🌲Colombie-Britannique", "🏝️ Île-du-Prince-Édouard",
   "🌾 Manitoba", "🦞 Nouveau-Brunswick", "🌊 Nouvelle-Écosse", "❄️ Nunavut",
   "🏙️ Ontario", "🍁 Québec", "🌻 Saskatchewan", "🎣 Terre-Neuve-et-Labrador",
   "🌌 Territoires du Nord-Ouest", "⛰️ Yukon", 
@@ -203,6 +203,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     const db = getFirestore();
     const cleanLocation = formData.location.replace(/[\p{Emoji}]/gu, "").trim();
     const cleanLanguage = formData.language.replace(/[\p{Emoji}]/gu, "").trim();
+    console.log(cleanLocation, cleanLanguage);
 
     const q = query(
       collection(db, "users"),
