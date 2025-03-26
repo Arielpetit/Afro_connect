@@ -8,9 +8,11 @@ import { Testimonials } from './components/Testimonials';
 import { Footer } from './components/Footer';
 
 import SignupPage from './pages/SignupPage';
-import ProfilePage from './pages/ProfilePage';  // Assuming you have a ProfilePage component
+import {ProfessionalRoadmap} from './pages/ProfilePage';  // Assuming you have a ProfilePage component
 import ProfileDetailsPage from './pages/ProfileDetailsPage';
 import ScrollToTop from './components/ScrollToTop';
+import SuggestionsPage from './pages/SuggestionsPage';
+import AdminSuggestionsPage from './pages/AdminSuggestionsPage';
 
 function App() {
   return (
@@ -33,9 +35,11 @@ function App() {
                 }
               />
               <Route path="/register" element={<SignupPage />} />
-              <Route path="/profile" element={<ProfilePage  />} />
+              <Route path="/profile" element={<ProfessionalRoadmap  />} />
               <Route path="*" element={<div>404 Page Not Found</div>} />
               <Route path="/profile/:userId" element={<ProfileDetailsPage />} />
+              <Route path="/suggestions" element={<SuggestionsPage />} />
+              <Route path="/admin/suggestions" element={<AdminSuggestionsPage />} />
             </Routes>
           </main>
           <Footer />
