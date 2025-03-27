@@ -13,12 +13,12 @@ const AdminLoginPage = () => {
   const handleLogin = () => {
     if (username === validUsername && password === validPassword) {
       localStorage.setItem("isAdmin", "true");
-  
+      
       toast.success("Login as admin successful");
       setTimeout(() => {
         navigate("/admin");
   
-        // After navigating, check if reload is needed
+        // Ensure a page reload happens once after login
         setTimeout(() => {
           if (!sessionStorage.getItem("reloaded")) {
             sessionStorage.setItem("reloaded", "true");
@@ -30,6 +30,7 @@ const AdminLoginPage = () => {
       toast.error("Invalid username or password");
     }
   };
+  
   
   
   

@@ -1,10 +1,11 @@
-// SignupPage.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { FiUploadCloud } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
+import ReactSelect, { MultiValue } from "react-select";
 
 const expertiseOptions = [
   "Courtier hypothécaire",
@@ -33,19 +34,58 @@ const expertiseOptions = [
 ];
 
 const coverageZones = [
-  "Alberta",
-  "Colombie-Britannique",
-  "Île-du-Prince-Édouard",
-  "Manitoba",
-  "Nouveau-Brunswick",
-  "Nouvelle-Écosse",
-  "Nunavut",
-  "Ontario",
-  "Québec",
-  "Saskatchewan",
-  "Terre-Neuve-et-Labrador",
-  "Territoires du Nord-Ouest",
-  "Yukon"
+  { value: "Canada", label: "Canada" },
+  { value: "Alberta", label: "Alberta" },
+  { value: "Colombie-Britannique", label: "Colombie-Britannique" },
+  { value: "Île-du-Prince-Édouard", label: "Île-du-Prince-Édouard" },
+  { value: "Manitoba", label: "Manitoba" },
+  { value: "Nouveau-Brunswick", label: "Nouveau-Brunswick" },
+  { value: "Nouvelle-Écosse", label: "Nouvelle-Écosse" },
+  { value: "Nunavut", label: "Nunavut" },
+  { value: "Ontario", label: "Ontario" },
+  { value: "Québec", label: "Québec" },
+  { value: "Saskatchewan", label: "Saskatchewan" },
+  { value: "Terre-Neuve-et-Labrador", label: "Terre-Neuve-et-Labrador" },
+  { value: "Territoires du Nord-Ouest", label: "Territoires du Nord-Ouest" },
+  { value: "Yukon", label: "Yukon" },
+  { value: "Whitehorse", label: "Whitehorse" },
+  { value: "Banff", label: "Banff" },
+  { value: "Toronto", label: "Toronto" },
+  { value: "Montréal", label: "Montréal" },
+  { value: "Vancouver", label: "Vancouver" },
+  { value: "Winnipeg", label: "Winnipeg" },
+  { value: "Ottawa", label: "Ottawa" },
+  { value: "Halifax", label: "Halifax" },
+  { value: "Charlottetown", label: "Charlottetown" }
+];
+
+const languages = [
+  { value: "Français", label: "Français" },
+  { value: "Anglais", label: "Anglais" },
+  { value: "Créole", label: "Créole" },
+  { value: "Wolof", label: "Wolof" },
+  { value: "Lingala", label: "Lingala" },
+  { value: "Dumois", label: "Dumois" },
+  { value: "Swahili", label: "Swahili" },
+  { value: "Bambara", label: "Bambara" },
+  { value: "Yoruba", label: "Yoruba" },
+  { value: "Hausa", label: "Hausa" },
+  { value: "Twi", label: "Twi" },
+  { value: "Igbo", label: "Igbo" },
+  { value: "Ewé", label: "Ewé" },
+  { value: "Fon", label: "Fon" },
+  { value: "Kikongo", label: "Kikongo" },
+  { value: "Mandinka", label: "Mandinka" },
+  { value: "Zulu", label: "Zulu" },
+  { value: "Xhosa", label: "Xhosa" },
+  { value: "Sesotho", label: "Sesotho" },
+  { value: "Fula", label: "Fula" },
+  { value: "Shona", label: "Shona" },
+  { value: "Krio", label: "Krio" },
+  { value: "Garifuna", label: "Garifuna" },
+  { value: "Papiamento", label: "Papiamento" },
+  { value: "Saramaccan", label: "Saramaccan" },
+  { value: "Maroon Creole", label: "Maroon Creole" }
 ];
 
 const SignupPage = () => {
@@ -56,7 +96,7 @@ const SignupPage = () => {
     address: "",
     website: "",
     coverageZone: "",
-    languages: "",
+    languages: [] as Array<{ value: string; label: string }>,
     availability: "",
     experience: "",
     projectsCompleted: "",
@@ -68,21 +108,58 @@ const SignupPage = () => {
     profilePicture: null as File | null,
   });
   const [loading, setLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
 
   const navigate = useNavigate();
   const db = getFirestore();
+
+  const customSelectStyles = {
+    control: (provided: any) => ({
+      ...provided,
+      minHeight: "3rem",
+      border: "1px solid #e5e7eb",
+      borderRadius: "0.5rem",
+      "&:hover": { borderColor: "#6366f1" },
+    }),
+    multiValue: (provided: any) => ({
+      ...provided,
+      backgroundColor: "#e0e7ff",
+      borderRadius: "0.375rem",
+    }),
+    multiValueLabel: (provided: any) => ({
+      ...provided,
+      color: "#3730a3",
+    }),
+    placeholder: (provided: any) => ({
+      ...provided,
+      color: "#9ca3af",
+    }),
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const target = e.target as HTMLInputElement;
     const { name, value, files } = target;
+    
     if (files && files[0]) {
       setFormData(prev => ({ ...prev, [name]: files[0] }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
+  };
+
+  const handleCoverageZoneChange = (selectedOption: { value: string; label: string } | null) => {
+    setFormData(prev => ({
+      ...prev,
+      coverageZone: selectedOption ? selectedOption.value : ""
+    }));
+  };
+
+  const handleLanguagesChange = (selectedOptions: MultiValue<{ value: string; label: string }>) => {
+    setFormData(prev => ({
+      ...prev,
+      languages: [...selectedOptions]
+    }));
   };
 
   const convertToBase64 = (file: File): Promise<string> => {
@@ -106,6 +183,8 @@ const SignupPage = () => {
 
       const professionalData = {
         ...formData,
+        coverageZone: formData.coverageZone,
+        languages: formData.languages.map(lang => lang.value),
         profilePicture: profilePictureUrl,
         userType: "professional",
         experience: Number(formData.experience),
@@ -115,15 +194,11 @@ const SignupPage = () => {
 
       await addDoc(collection(db, "users"), professionalData);
 
-      toast.success("Registration successful");
+      toast.success("Inscription réussie !");
       navigate("/profile");
     } catch (error) {
-      console.error("Registration error:", error);
-      toast.error(
-        `Registration failed: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+      console.error("Erreur d'inscription :", error);
+      toast.error(`Échec de l'inscription : ${error instanceof Error ? error.message : "Erreur inconnue"}`);
     } finally {
       setLoading(false);
     }
@@ -254,32 +329,28 @@ const SignupPage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Zone de couverture *
               </label>
-              <select
-                name="coverageZone"
-                value={formData.coverageZone}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              <ReactSelect
+                options={coverageZones}
+                value={coverageZones.find(option => option.value === formData.coverageZone)}
+                onChange={handleCoverageZoneChange}
+                placeholder="Sélectionnez une région..."
+                styles={customSelectStyles}
+                classNamePrefix="react-select"
                 required
-              >
-                <option value="">Sélectionnez votre zone</option>
-                {coverageZones.map((zone) => (
-                  <option key={zone} value={zone}>
-                    {zone}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Langues parlées :
               </label>
-              <input
-                type="text"
-                name="languages"
+              <ReactSelect
+                options={languages}
+                isMulti
                 value={formData.languages}
-                onChange={handleChange}
-                placeholder="Ex: Français, Anglais, Espagnol"
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                onChange={handleLanguagesChange}
+                placeholder="Sélectionnez les langues..."
+                styles={customSelectStyles}
+                classNamePrefix="react-select"
               />
             </div>
             <div>
@@ -305,7 +376,7 @@ const SignupPage = () => {
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 required
               >
-                <option value="">Select your expertise</option>
+                <option value="">Sélectionnez votre expertise</option>
                 {expertiseOptions.map((option) => (
                   <option key={option} value={option}>
                     {option}
@@ -358,7 +429,7 @@ const SignupPage = () => {
               className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors mt-4"
               disabled={loading}
             >
-              {loading ? "Registering..." : "Complete Registration"}
+              {loading ? "Inscription en cours..." : "Finaliser l'inscription"}
             </button>
           </div>
         </form>

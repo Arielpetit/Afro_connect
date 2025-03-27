@@ -31,20 +31,21 @@ export interface Professional {
 
 // Predefined options for location and language
 const locations = [
-  "🏔️ Alberta", "🌲Colombie-Britannique", "🏝️ Île-du-Prince-Édouard",
+  "🇨🇦 Canada","🏔️ Alberta", "🌲 Colombie-Britannique", "🏝️ Île-du-Prince-Édouard",
   "🌾 Manitoba", "🦞 Nouveau-Brunswick", "🌊 Nouvelle-Écosse", "❄️ Nunavut",
   "🏙️ Ontario", "🍁 Québec", "🌻 Saskatchewan", "🎣 Terre-Neuve-et-Labrador",
-  "🌌 Territoires du Nord-Ouest", "⛰️ Yukon",
+  "🌌 Territoires du Nord-Ouest", "⛰️ Yukon", 
   "🏕️ Whitehorse", "🏔️ Banff", "🌆 Toronto", "🎭 Montréal", "🎡 Vancouver",
   "🏘️ Winnipeg", "🏯 Ottawa", "🌁 Halifax", "🛶 Charlottetown"
 ];
 
 const languages = [
-  "🇫🇷 Français", "🇬🇧 Anglais", "🇪🇸 Espagnol", "🇩🇪 Allemand", "🇮🇹 Italien",
-  "🇵🇹 Portugais", "🇸🇦 Arabe", "🇨🇳 Chinois", "🇷🇺 Russe", "🇯🇵 Japonais", "🇳🇱 Néerlandais",
-  "🇰🇷 Coréen", "🇮🇳 Hindi", "🇹🇷 Turc", "🇵🇭 Tagalog", "🇵🇱 Polonais", "🇬🇷 Grec",
-  "🇺🇦 Ukrainien", "🇨🇿 Tchèque", "🇸🇪 Suédois", "🇳🇴 Norvégien", "🇫🇮 Finnois",
-  "🇩🇰 Danois", "🇮🇷 Persan (Farsi)", "🇻🇳 Vietnamien", "🇮🇱 Hébreu"
+  "🇫🇷 Français", "🇬🇧 Anglais", "🇭🇹 Créole", "🇸🇳 Wolof", "🇨🇩 Lingala",
+  "🌍 Dumois", "🇨🇩 Swahili", "🇲🇱 Bambara", "🇳🇬 Yoruba", "🇳🇬 Hausa",
+  "🇬🇭 Twi", "🇳🇬 Igbo", "🇹🇬 Ewé", "🇧🇯 Fon", "🇨🇬 Kikongo",
+  "🇬🇲 Mandinka", "🇿🇦 Zulu", "🇿🇦 Xhosa", "🇱🇸 Sesotho", "🌍 Fula",
+  "🇿🇼 Shona", "🇸🇱 Krio", "🇭🇳 Garifuna", "🇦🇼 Papiamento",
+  "🌍 Saramaccan", "🌍 Maroon Creole"
 ];
 
 const daysOfWeek = [
@@ -168,24 +169,26 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   // Fetch professionals matching specialty, location, and language
   const findMatchingProfessionals = async () => {
     const db = getFirestore();
+    
+    // Clean inputs
     const cleanLocation = formData.location.replace(/[\p{Emoji}]/gu, "").trim();
     const cleanLanguage = formData.language.replace(/[\p{Emoji}]/gu, "").trim();
-
+  
+    // Build the query with array filters
     const q = query(
       collection(db, "users"),
       where("expertise", "==", formData.specialty),
       where("coverageZone", "==", cleanLocation),
-      where("languages", "==", cleanLanguage)
+      where("languages", "array-contains", cleanLanguage)
     );
-
+  
     const snapshot = await getDocs(q);
     const professionals = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       availability: doc.data().availability || []
     })) as Professional[];
-
-    // Return all professionals without filtering by availability
+  
     return professionals;
   };
 

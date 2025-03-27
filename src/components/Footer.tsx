@@ -16,7 +16,8 @@ export function Footer() {
     { label: 'Nos Services', href: '/services' },
     { label: 'Devenir Partenaire', href: '/partners' },
     { label: 'Politique de confidentialité', href: '/privacy' },
-    { label: 'Conditions d\'utilisation', href: '/terms' }
+    { label: 'Conditions d\'utilisation', href: '/terms' },
+    { label: 'admin', href: '/admin-login' }
   ];
 
   return (

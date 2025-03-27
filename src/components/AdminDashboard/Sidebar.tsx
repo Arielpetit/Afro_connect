@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, FilePlus, Settings, Menu, X } from "lucide-react";
-// import { FiMail } from "react-icons/fi";
+import { Home, FilePlus, Settings, Menu, X, FileText, Users, UserSquare } from "lucide-react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -46,14 +45,27 @@ const Sidebar = () => {
               label="Add Resource"
               isOpen={isOpen}
               onClick={() => navigate("/resource/new")}
-              active
             />
-            {/* <SidebarItem
-              icon={<FiMail size={18} className="flex-shrink-0" />}
-              label="Send Email"
+            
+            {/* New Navigation Items */}
+            <SidebarItem
+              icon={<FileText size={18} className="flex-shrink-0" />}
+              label="Suggestions"
               isOpen={isOpen}
-              onClick={() => navigate("/SendEmail")}
-            /> */}
+              onClick={() => navigate("/admin/suggestions")}
+            />
+            <SidebarItem
+              icon={<Users size={18} className="flex-shrink-0" />}
+              label="Leads"
+              isOpen={isOpen}
+              onClick={() => navigate("/admin/leads")}
+            />
+            <SidebarItem
+              icon={<UserSquare size={18} className="flex-shrink-0" />}
+              label="Professional Profiles"
+              isOpen={isOpen}
+              onClick={() => navigate("/admin/profiles")}
+            />
 
             <SidebarItem
               icon={<Settings size={18} className="flex-shrink-0" />}

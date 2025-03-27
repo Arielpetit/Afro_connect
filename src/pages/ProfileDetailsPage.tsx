@@ -125,16 +125,36 @@ const ProfileDetailsPage = () => {
                     ) : "-"
                   }
                 />
-                <InfoCard 
-                  icon={<FiMap className="w-5 h-5" />} 
-                  title="Zone de couverture" 
-                  value={user.coverageZone} 
-                />
-                <InfoCard 
-                  icon={<FiFlag className="w-5 h-5" />} 
-                  title="Langues" 
-                  value={user.languages} 
-                />
+              <InfoCard 
+                icon={<FiMap className="w-5 h-5" />} 
+                title="Zone de couverture" 
+                value={
+                  Array.isArray(user.coverageZone) ? (
+                    <div className="flex flex-col gap-1">
+                      {user.coverageZone.map((zone: string, index: number) => (
+                        <span key={index} className=" text-black-800 text-sm px-2.5 py-0.5 rounded-full w-fit">
+                          {zone}
+                        </span>
+                      ))}
+                    </div>
+                  ) : "-"
+                }
+              />
+              <InfoCard 
+                icon={<FiFlag className="w-5 h-5" />} 
+                title="Langues" 
+                value={
+                  Array.isArray(user.languages) ? (
+                    <div className="flex flex-col gap-1">
+                      {user.languages.map((lang: string, index: number) => (
+                        <span key={index} className=" text-black-800 text-sm px-2.5 py-0.5 rounded-full w-fit">
+                          {lang}
+                        </span>
+                      ))}
+                    </div>
+                  ) : "-"
+                }
+              />
                 <InfoCard 
                   icon={<FiCalendar className="w-5 h-5" />} 
                   title="Disponibilité" 
