@@ -13,6 +13,7 @@ import { ProfessionalsLeadsPage } from './pages/ProfessionalsLeadsPage';
 import Home from './pages/Home';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfUse from './pages/TermsOfUse';
+import { AboutPage } from './pages/ServicePage';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
               <Route path="/profile" element={<ProfessionalRoadmap  />} />
               <Route path="/privacy" element={< PrivacyPolicy />} />
               <Route path="/terms" element={< TermsOfUse />} />
+              <Route path="/Services" element={< AboutPage />} />
               <Route path="*" element={<div>404 Page Not Found</div>} />
               <Route path="/profile/:userId" element={<ProfileDetailsPage />} />
               <Route path="/suggestions" element={<SuggestionsPage />} />

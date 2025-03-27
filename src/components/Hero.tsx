@@ -17,7 +17,7 @@ export function Hero() {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/40 z-10" />
         <img
-          src="https://thearchitecturedesigns.com/wp-content/uploads/2022/03/things-to-Consider-When-Buying-a-House-4.jpg"
+          src="/family.jpeg"
           alt="Illustration de conseil immobilier"
           className="w-full h-full object-cover object-center"
           loading="lazy"
@@ -33,7 +33,7 @@ export function Hero() {
           className="max-w-2xl lg:max-w-3xl xl:max-w-4xl text-center md:text-left"
         >
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight md:leading-snug">
-            <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 to-green-500 bg-clip-text text-transparent">
               Experts Immobiliers
             </span>{' '}
             <br className="hidden md:block" />

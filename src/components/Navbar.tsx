@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu, X, User, Lightbulb, Home as HomeIcon } from 'lucide-react';
+import { Menu, X, User, Lightbulb, Home as HomeIcon, Briefcase } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function Navbar() {
@@ -36,6 +36,13 @@ export function Navbar() {
             >
               <HomeIcon className="w-6 h-6" />
               Accueil
+            </NavLink>
+            <NavLink 
+              to="/services" 
+              className="flex items-center gap-2 text-gray-700 hover:text-blue-500 transition-colors"
+            >
+              <Briefcase className="w-6 h-6" />
+              Nos Services
             </NavLink>
             <NavLink 
               to="/profile" 
@@ -109,6 +116,15 @@ export function Navbar() {
                     </NavLink>
                     
                     <NavLink
+                      to="/services"
+                      className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-500 transition-colors text-gray-800"
+                      onClick={closeMenu}
+                    >
+                      <Briefcase className="w-6 h-6 text-purple-500" />
+                      <span className="font-medium">Nos Services</span>
+                    </NavLink>
+                    
+                    <NavLink
                       to="/profile"
                       className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-500 transition-colors text-gray-800"
                       onClick={closeMenu}
@@ -125,6 +141,7 @@ export function Navbar() {
                       <Lightbulb className="w-6 h-6 text-orange-500" />
                       <span className="font-medium">Suggestions</span>
                     </NavLink>
+                    
                     <NavLink
                       to="/register"
                       className="block w-full bg-gradient-to-r from-blue-600 to-green-500 text-white py-3 rounded-xl font-medium text-center hover:scale-[1.02] transition-transform"
