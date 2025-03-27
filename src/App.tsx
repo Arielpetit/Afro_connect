@@ -14,6 +14,9 @@ import Home from './pages/Home';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfUse from './pages/TermsOfUse';
 import { AboutPage } from './pages/ServicePage';
+import SendEmailForm from './components/AdminDashboard/SendEmailForm';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminLoginPage from './pages/AdminLoginPage';
 
 function App() {
   return (
@@ -39,6 +42,13 @@ function App() {
               <Route path="/suggestions" element={<SuggestionsPage />} />
               <Route path="/admin/suggestions" element={<AdminSuggestionsPage />} />
               <Route path="/admin/leads" element={<ProfessionalsLeadsPage />} />
+              {/* Admin Route */}
+              <Route
+                path="/admin-login" element={<AdminLoginPage />} />
+              <Route
+                path="/admin" element={<AdminDashboardPage />} />
+              <Route
+                path="/SendEmail" element={<SendEmailForm />} />
             </Routes>
           </main>
           <Footer />
