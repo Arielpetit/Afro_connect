@@ -41,22 +41,13 @@ const coverageZones = [
   { value: "Manitoba", label: "Manitoba" },
   { value: "Nouveau-Brunswick", label: "Nouveau-Brunswick" },
   { value: "Nouvelle-Écosse", label: "Nouvelle-Écosse" },
-  { value: "Nunavut", label: "Nunavut" },
   { value: "Ontario", label: "Ontario" },
   { value: "Québec", label: "Québec" },
   { value: "Saskatchewan", label: "Saskatchewan" },
   { value: "Terre-Neuve-et-Labrador", label: "Terre-Neuve-et-Labrador" },
+  { value: "Nunavut", label: "Nunavut" },
   { value: "Territoires du Nord-Ouest", label: "Territoires du Nord-Ouest" },
-  { value: "Yukon", label: "Yukon" },
-  { value: "Whitehorse", label: "Whitehorse" },
-  { value: "Banff", label: "Banff" },
-  { value: "Toronto", label: "Toronto" },
-  { value: "Montréal", label: "Montréal" },
-  { value: "Vancouver", label: "Vancouver" },
-  { value: "Winnipeg", label: "Winnipeg" },
-  { value: "Ottawa", label: "Ottawa" },
-  { value: "Halifax", label: "Halifax" },
-  { value: "Charlottetown", label: "Charlottetown" }
+  { value: "Yukon", label: "Yukon" }
 ];
 
 const languages = [

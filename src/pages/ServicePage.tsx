@@ -67,7 +67,7 @@ export const AboutPage = () => {
           {/* Valeur Ajoutée */}
           <div className="bg-blue-50 rounded-2xl p-8 mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-              Notre Valeur Ajoutée
+              Notre valeur ajoutée
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-4">
@@ -217,7 +217,7 @@ export const AboutPage = () => {
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="flex-1">
                   <img 
-                    src="https://via.placeholder.com/600x400?text=Notre+Histoire" 
+                    src="/History.jpg" 
                     alt="Notre Histoire" 
                     className="rounded-xl shadow-lg w-full h-64 object-cover"
                   />
@@ -237,7 +237,7 @@ export const AboutPage = () => {
           {/* New Section: Témoignages */}
           <section className="py-16 bg-blue-50">
             <div className="max-w-6xl mx-auto">
-              <h2 className="text-3xl font-bold text-center mb-12">Ce Que Disent Nos Utilisateurs</h2>
+              <h2 className="text-3xl font-bold text-center mb-12">Ce que disent nos utilisateurs</h2>
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                   <p className="text-gray-600 mb-4">

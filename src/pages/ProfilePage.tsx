@@ -33,13 +33,17 @@ const categories = [
     image: "/intrepreneur_general.jpg",
   },
   {
+    name: "Comptable",
+    image: "/Comptable.jpg",
+  },
+  {
     name: "Métiers spécialisés de la construction et de l'immobilier",
     image: "/Other.jpg",
   },
   {
     name: "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé",
     image: "/cpa.jpg",
-  },
+  },  
 ];
 
 export const ProfessionalRoadmap = () => {

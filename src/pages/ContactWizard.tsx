@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, collection, query, where, getDocs, addDoc, writeBatch, doc, increment } from "firebase/firestore";
 import emailjs from "@emailjs/browser";
-import { FiCheckCircle, FiArrowLeft, FiUser, FiXCircle } from "react-icons/fi";
+import { FiCheckCircle, FiArrowLeft, FiUser, FiRotateCw, FiRefreshCw, FiSearch } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -31,13 +31,22 @@ export interface Professional {
 
 // Predefined options for location and language
 const locations = [
-  "🇨🇦 Canada","🏔️ Alberta", "🌲 Colombie-Britannique", "🏝️ Île-du-Prince-Édouard",
-  "🌾 Manitoba", "🦞 Nouveau-Brunswick", "🌊 Nouvelle-Écosse", "❄️ Nunavut",
-  "🏙️ Ontario", "🍁 Québec", "🌻 Saskatchewan", "🎣 Terre-Neuve-et-Labrador",
-  "🌌 Territoires du Nord-Ouest", "⛰️ Yukon", 
-  "🏕️ Whitehorse", "🏔️ Banff", "🌆 Toronto", "🎭 Montréal", "🎡 Vancouver",
-  "🏘️ Winnipeg", "🏯 Ottawa", "🌁 Halifax", "🛶 Charlottetown"
+  "🇨🇦 Canada",
+  "🏔️ Alberta",
+  "🌲 Colombie-Britannique",
+  "🏝️ Île-du-Prince-Édouard",
+  "🌾 Manitoba",
+  "🦞 Nouveau-Brunswick",
+  "🌊 Nouvelle-Écosse",
+  "❄️ Nunavut",
+  "🏙️ Ontario",
+  "🍁 Québec",
+  "🌻 Saskatchewan",
+  "🎣 Terre-Neuve-et-Labrador",
+  "🌌 Territoires du Nord-Ouest",
+  "⛰️ Yukon"
 ];
+
 
 const languages = [
   "🇫🇷 Français", "🇬🇧 Anglais", "🇭🇹 Créole", "🇸🇳 Wolof", "🇨🇩 Lingala",
@@ -138,6 +147,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     language: "",
     problem: "",
     email: "",
+    phoneNumber: "",
     availability: [] as string[],
   });
   const [loading, setLoading] = useState(false);
@@ -234,6 +244,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     const templateParams = {
       user_availability: formData.availability.join(', '),
       client_email: formData.email,
+      client_phone: formData.phoneNumber, // Added phone number
       specialty: formData.specialty,
       location: formData.location.replace(/[\p{Emoji}]/gu, "").trim(),
       language: formData.language.replace(/[\p{Emoji}]/gu, "").trim(),
@@ -330,21 +341,47 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center py-8"
+          className="text-center py-8 px-4"
         >
-          <FiXCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-4">Aucun professionnel trouvé</h2>
+          <motion.img 
+            src="/searching.jpg" 
+            alt="Searching" 
+            className="mx-auto mb-6 w-64 h-64"
+            animate={{ y: [0, -15, 0] }} 
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          />
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">
+            Désolé, nous n'avons pas trouvé de professionnels correspondant à vos critères
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Pas de panique ! Voici quelques suggestions pour élargir votre recherche :
+          </p>
+          <div className="space-y-4 max-w-md mx-auto">
+            <div className="bg-blue-50 p-4 rounded-xl flex items-center space-x-4">
+              <FiRefreshCw className="w-6 h-6 text-blue-500" />
+              <p className="text-left">
+                Essayez différentes zones de couverture ou langues
+              </p>
+            </div>
+            <div className="bg-green-50 p-4 rounded-xl flex items-center space-x-4">
+              <FiSearch className="w-6 h-6 text-green-500" />
+              <p className="text-left">
+                Ajustez vos critères de recherche
+              </p>
+            </div>
+          </div>
           <button
             onClick={() => {
               setNoMatch(false);
               setCurrentStep(1);
             }}
-            className="bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600"
+            className="mt-8 bg-emerald-500 text-white px-8 py-3 rounded-xl hover:bg-emerald-600 transition-colors flex items-center mx-auto space-x-2"
           >
-            Réessayer
+            <FiRotateCw className="w-5 h-5" />
+            <span>Réessayer la recherche</span>
           </button>
         </motion.div>
-      ) : (
+      )  : (
         <>
           <div className="flex justify-between mb-4">
             <button onClick={currentStep === 1 ? onBack : handlePrevious} className="text-emerald-600">
@@ -429,24 +466,32 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
 
               {currentStep === 4 && (
                 <>
-                  <h3 className="text-xl font-semibold">Contact et description</h3>
+                  <h3 className="text-xl font-semibold">Coordonnées et description</h3>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleSelect('email', e.target.value)}
                     className="w-full p-4 border rounded-xl mb-4"
-                    placeholder="Entrez votre adresse email..."
+                    placeholder="Adresse email *"
+                    required
+                  />
+                  <input
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={(e) => handleSelect('phoneNumber', e.target.value)}
+                    className="w-full p-4 border rounded-xl mb-4"
+                    placeholder="Numéro de téléphone *"
                     required
                   />
                   <textarea
                     value={formData.problem}
                     onChange={(e) => handleSelect('problem', e.target.value)}
                     className="w-full p-4 border rounded-xl h-40"
-                    placeholder="Décrivez votre situation..."
+                    placeholder="Décrivez votre situation en détail..."
                   />
                   <button
                     onClick={handleNext}
-                    disabled={!formData.problem || !formData.email}
+                    disabled={!formData.problem || !formData.email || !formData.phoneNumber}
                     className="w-full bg-emerald-500 text-white p-3 rounded-xl disabled:opacity-50"
                   >
                     Continuer

@@ -23,10 +23,11 @@ export function Navbar() {
     <nav className="bg-white shadow-sm fixed w-full z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          {/* Logo Section */}
-          <NavLink to="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-500 bg-clip-text text-transparent">
-            Afro Immobilier
-          </NavLink>
+        {/* Logo Section */}
+        <NavLink to="/">
+          <img src="/afro-Connect-removebg-preview.png" alt="Afro Immobilier" className="h-36 w-auto" />
+        </NavLink>
+
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
