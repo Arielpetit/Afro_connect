@@ -25,7 +25,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-20">
         {/* Logo Section */}
         <NavLink to="/">
-          <img src="/afro-Connect-removebg-preview.png" alt="Afro Immobilier" className="h-36 w-auto" />
+          <img src="/afro-Connect-removebg-preview.png" alt="Afro Immobilier" className="h-32 w-auto" />
         </NavLink>
 
 
