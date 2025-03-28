@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, FilePlus, Settings, Menu, X, FileText, Users, UserSquare } from "lucide-react";
+import { Home, FilePlus, Settings, Menu, X, FileText, Users, UserSquare, BarChart2 } from "lucide-react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -72,6 +72,14 @@ const Sidebar = () => {
               label="Settings"
               isOpen={isOpen}
               onClick={() => navigate("/settings")}
+            />
+            
+
+            <SidebarItem
+              icon={<BarChart2 size={18} className="flex-shrink-0" />}
+              label="Google Analytics"
+              isOpen={isOpen}
+              onClick={() => window.open("https://analytics.google.com/analytics/web/#/p483721995/reports/reportinghub?params=_u..nav%3Dmaui&collectionId=business-objectives", "_blank")}
             />
           </nav>
 
