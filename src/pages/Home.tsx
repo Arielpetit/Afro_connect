@@ -3,6 +3,8 @@ import { Hero } from "../components/Hero";
 import { Features } from "../components/Features";
 import { HowItWorks } from "../components/HowItWorks";
 import { Testimonials } from "../components/Testimonials";
+import { Statistic } from "../components/CounterItem";
+import  About1  from "../components/About"; // Add this import
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -12,6 +14,8 @@ const Home: React.FC = () => {
       {/* Main Content */}
       <Hero />
       <Features />
+      <About1 /> 
+      <Statistic />
       <HowItWorks />
       <Testimonials />
 
@@ -39,7 +43,7 @@ const Home: React.FC = () => {
         <div className="ml-2 w-2 h-2 bg-white rounded-full opacity-0 
           group-hover:opacity-100 transition-opacity duration-200" />
       </motion.a>
-
+      
       {/* Background Pattern */}
       <div className="fixed inset-0 -z-10 opacity-5 pointer-events-none 
         bg-[radial-gradient(#2563eb_1px,transparent_1px)] 
