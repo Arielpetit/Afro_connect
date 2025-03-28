@@ -1,29 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Afro Connect</title>
+
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="src/assets/images/afro.png" />
+
+    <!-- Google Tag (Google Analytics) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZEJ155Y55"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-QZEJ155Y55");
+    </script>
   </head>
   <body>
+    <!-- Google Translate Widget -->
     <div id="google_translate_element"></div>
+
+    <!-- Root div for React -->
     <div id="root"></div>
-<!-- 
-    <script type="text/javascript">
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement(
-          { pageLanguage: "en" },
-          "google_translate_element"
-        );
-      }
-    </script>
 
-    <script
-      type="text/javascript"
-      src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-    ></script> -->
-
+    <!-- Main JavaScript File -->
     <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>
