@@ -95,6 +95,7 @@ const SignupPage = () => {
     services: "",
     expertise: "",
     bio: "",
+    status: "pending",
     numeroPermis: "",
     profilePicture: null as File | null,
   });
@@ -180,6 +181,7 @@ const SignupPage = () => {
         userType: "professional",
         experience: Number(formData.experience),
         projectsCompleted: Number(formData.projectsCompleted),
+        status: "pending",
         createdAt: new Date(),
       };
 
@@ -253,7 +255,7 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Numéro de permis
+                Numéro de permis *
               </label>
               <input
                 type="text"
@@ -262,6 +264,8 @@ const SignupPage = () => {
                 onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Entrez votre numéro de permis professionnel"
+                required
+
               />
             </div>
             <div>
