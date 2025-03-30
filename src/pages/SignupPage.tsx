@@ -8,30 +8,21 @@ import { toast, ToastContainer } from "react-toastify";
 import ReactSelect, { MultiValue } from "react-select";
 
 const expertiseOptions = [
-  "Courtier hypothécaire",
-  "Courtier immobilier",
-  "Notaire",
-  "Inspecteur en bâtiment",
-  "Opérateur agréé",
-  "Entreprise de déménagement",
-  "Entrepreneur général",
-  "Évaluateur immobilier agréé",
-  "Gestionnaire de propriété",
-  "Agent immobilier",
-  "Planificateur financier spécialisé en immobilier",
-  "Conseiller en financement immobilier",
-  "Gestionnaire de projet immobilier",
-  "Développeur immobilier",
-  "Spécialiste en marketing immobilier",
-  "Agent de location",
-  "Consultant en stratégie immobilière",
-  "Architecte spécialisé en immobilier",
-  "Expert en valorisation immobilière",
-  "Avocat spécialisé en droit immobilier",
-  "Gestionnaire d'actifs immobiliers",
-  "Conseil en sécurité financière",
+  "Courtiers immobiliers",
+  "Notaires",
+  "Inspecteurs en bâtiment",
+  "Évaluateurs agréés",
+  "Électriciens",
+  "Plombiers",
+  "Hommes à tout faire (Handymen)",
+  "Conseillers en sécurité financière",
+  "Avocats spécialisés en immobilier",
+  "Comptables CPA",
+  "Comptables",
+  "Fiscalistes",
   "Autre (préciser)"
 ];
+
 
 const coverageZones = [
   { value: "Canada", label: "Canada" },
@@ -100,6 +91,7 @@ const SignupPage = () => {
     profilePicture: null as File | null,
   });
   const [loading, setLoading] = useState(false);
+  const [showOtherExpertise, setShowOtherExpertise] = useState(false);
 
   const navigate = useNavigate();
   const db = getFirestore();
@@ -138,6 +130,10 @@ const SignupPage = () => {
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
+    if (name === "expertise") {
+      setShowOtherExpertise(value === "Autre (préciser)");
+    }
+
   };
 
   const handleCoverageZoneChange = (selectedOption: { value: string; label: string } | null) => {
@@ -378,6 +374,23 @@ const SignupPage = () => {
                   </option>
                 ))}
               </select>
+
+              {showOtherExpertise && (
+                <div className="mt-4 animate-fade-in">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Veuillez préciser votre expertise *
+                  </label>
+                  <input
+                    type="text"
+                    name="expertise"
+                    value={formData.expertise}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    placeholder="Entrez votre domaine d'expertise"
+                    required
+                  />
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
