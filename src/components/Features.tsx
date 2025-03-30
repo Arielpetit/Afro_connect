@@ -48,7 +48,7 @@ export function Features() {
           className="text-center mb-8 md:mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-gray-900">
-            Pourquoi Choisir Afro Immobilier Connect Canada 🇨🇦
+            Pourquoi Choisir Afro Immobilier Connect
           </h2>
           <p className="text-gray-600 text-sm md:text-base max-w-2xl mx-auto px-4">
             Profitez des meilleurs services pour vous connecter avec des professionnels et obtenir des conseils d'experts pour faciliter votre acquisition de propriété au Canada.

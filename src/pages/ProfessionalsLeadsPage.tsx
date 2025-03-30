@@ -2,6 +2,7 @@ import { getFirestore, query, collection, where, getDocs } from "firebase/firest
 import { useState, useEffect } from "react";
 import { FiUser, FiLoader, FiTrendingUp, FiSearch } from "react-icons/fi";
 import { Professional } from "./ContactWizard";
+import { useNavigate } from "react-router-dom";
 
 export const ProfessionalsLeadsPage: React.FC = () => {
     const [professionals, setProfessionals] = useState<Professional[]>([]);
@@ -12,6 +13,7 @@ export const ProfessionalsLeadsPage: React.FC = () => {
         key: 'leadCount',
         direction: 'desc'
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProfessionals = async () => {
@@ -34,7 +36,6 @@ export const ProfessionalsLeadsPage: React.FC = () => {
         fetchProfessionals();
     }, []);
 
-    // Fixed Search Functionality
     useEffect(() => {
         if (!searchTerm) {
             setFilteredProfessionals(professionals);
@@ -43,7 +44,7 @@ export const ProfessionalsLeadsPage: React.FC = () => {
 
         const lowercasedSearch = searchTerm.toLowerCase();
         const filtered = professionals.filter(pro => 
-            (pro.displayName && typeof pro.displayName === 'string' && pro.displayName.toLowerCase().includes(lowercasedSearch)) ||
+            (pro.name && typeof pro.name === 'string' && pro.name.toLowerCase().includes(lowercasedSearch)) ||
             (pro.email && typeof pro.email === 'string' && pro.email.toLowerCase().includes(lowercasedSearch)) ||
             (pro.expertise && typeof pro.expertise === 'string' && pro.expertise.toLowerCase().includes(lowercasedSearch))
         );
@@ -69,6 +70,10 @@ export const ProfessionalsLeadsPage: React.FC = () => {
         setSearchTerm(e.target.value);
     };
 
+    const handleRowClick = (professionalId: string) => {
+        navigate(`/professionals/${professionalId}`);
+    };
+
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="flex flex-col items-center">
@@ -92,7 +97,6 @@ export const ProfessionalsLeadsPage: React.FC = () => {
                         </p>
                     </div>
                     
-                    {/* Search Bar */}
                     <div className="relative flex items-center">
                         <FiSearch className="absolute left-3 text-gray-400" />
                         <input 
@@ -111,7 +115,7 @@ export const ProfessionalsLeadsPage: React.FC = () => {
                             <tr>
                                 <th 
                                     className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition"
-                                    onClick={() => handleSort('displayName')}
+                                    onClick={() => handleSort('name')}
                                 >
                                     Professionnel
                                 </th>
@@ -133,7 +137,8 @@ export const ProfessionalsLeadsPage: React.FC = () => {
                             {sortedProfessionals.map(pro => (
                                 <tr 
                                     key={pro.id} 
-                                    className="hover:bg-gray-50 transition-colors duration-200"
+                                    className="hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+                                    onClick={() => handleRowClick(pro.id)}
                                 >
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
@@ -141,7 +146,7 @@ export const ProfessionalsLeadsPage: React.FC = () => {
                                                 <img 
                                                     className="h-12 w-12 rounded-full object-cover shadow-md"
                                                     src={pro.photoURL} 
-                                                    alt={pro.displayName || 'Professionnel'} 
+                                                    alt={pro.name || 'Professionnel'} 
                                                 />
                                             ) : (
                                                 <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
@@ -150,7 +155,7 @@ export const ProfessionalsLeadsPage: React.FC = () => {
                                             )}
                                             <div className="ml-4">
                                                 <div className="text-sm font-semibold text-gray-900">
-                                                    {pro.displayName || 'Nom inconnu'}
+                                                    {pro.name || 'Nom inconnu'}
                                                 </div>
                                                 <div className="text-sm text-gray-500">
                                                     {pro.expertise || 'Expertise non spécifiée'}

@@ -4,24 +4,24 @@ import { Quote, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const testimonials = [
   {
-    name: 'Jean Dupont',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80',
+    name: 'Kenfack ulrich',
+    image: 'https://cdn.pixabay.com/photo/2022/08/06/11/02/black-man-7368411_1280.jpg',
     text: 'Travailler avec Afro Immobilier Connect a été une expérience incroyable. Ils m\'ont aidé à trouver la propriété parfaite avec facilité et professionnalisme.',
     rating: 5,
     location: 'Ottawa, Canada',
     orderCount: '3+ propriétés achetées'
   },
   {
-    name: 'Marie Lemoine',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80',
+    name: 'Mvondo Florence',
+    image: 'https://th.bing.com/th/id/OIP.tjRuOaiiwsEu7axX1qmfmAHaLH?w=198&h=297&c=7&r=0&o=5&pid=1.7',
     text: 'J\'ai trouvé l\'appartement idéal dans mon quartier de rêve grâce à Afro Immobilier Connect. L\'équipe a veillé à ce que tout se passe sans accroc !',
     rating: 5,
     location: 'Toronto, Canada',
     orderCount: '1+ propriétés louées'
   },
   {
-    name: 'David Lefevre',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80',
+    name: 'Tchamga Ismael',
+    image: 'https://th.bing.com/th/id/OIP.L97G8SUr_mUzle7fC0wAtQHaIr?w=818&h=959&rs=1&pid=ImgDetMain',
     text: 'Le service client chez Afro Immobilier Connect était fantastique ! Ils m\'ont guidé tout au long du processus d\'achat et ont répondu à toutes mes questions.',
     rating: 5,
     location: 'Vancouver, Canada',

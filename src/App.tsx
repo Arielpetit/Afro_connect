@@ -25,6 +25,7 @@ import SendEmailForm from "./components/AdminDashboard/SendEmailForm";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import ProfessionalProfilePage from "./pages/ProffesionalProfilePage";
+import { ProfessionalLeadsDetail } from "./pages/ProfessionalLeadsDetail";
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = localStorage.getItem("isAdmin") === "true";
@@ -59,6 +60,7 @@ const AppContent = () => {
           <Route path="/send-email" element={<ProtectedRoute element={<SendEmailForm />} />} />
           <Route path="/admin/suggestions" element={<ProtectedRoute element={<AdminSuggestionsPage />} />} />
           <Route path="/admin/leads" element={<ProtectedRoute element={<ProfessionalsLeadsPage />} />} />
+          <Route path="/professionals/:professionalId" element={<ProtectedRoute element={<ProfessionalLeadsDetail />} />} />
           <Route path="/admin/profiles" element={<ProtectedRoute element={<ProfessionalProfilePage />} />} />
         </Routes>
       </main>

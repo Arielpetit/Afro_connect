@@ -227,7 +227,7 @@ export const AboutPage = () => {
                     Fondée en 2025, Afro-Immobilier Connect Canada est née de la vision de créer un espace où la communauté afro-canadienne pourrait trouver des professionnels immobiliers qui comprennent leurs besoins uniques.
                   </p>
                   <p className="text-lg text-gray-600 leading-relaxed">
-                    Notre plateforme a rapidement grandi, connectant des milliers de clients avec des experts locaux, et devenant un pilier de confiance dans le secteur immobilier canadien.
+                    Notre plateforme a rapidement grandi, connectant des dizaine de clients avec des experts locaux, et devenant un pilier de confiance dans le secteur immobilier canadien.
                   </p>
                 </div>
               </div>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, collection, query, where, getDocs, addDoc, writeBatch, doc, increment } from "firebase/firestore";
 import emailjs from "@emailjs/browser";
-import { FiCheckCircle, FiArrowLeft, FiUser, FiRotateCw, FiRefreshCw, FiSearch } from "react-icons/fi";
+import { FiCheckCircle, FiArrowLeft, FiUser, FiRotateCw, FiRefreshCw, FiSearch, FiCopy } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 // Environment variables for EmailJS configuration
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
@@ -20,7 +20,7 @@ interface WizardProps {
 // Interface for Professional data
 export interface Professional {
   id: string;
-  displayName: string;
+  name: string;
   email: string;
   bio?: string;
   photoURL?: string;
@@ -57,24 +57,21 @@ const languages = [
   "🌍 Saramaccan", "🌍 Maroon Creole"
 ];
 
-const daysOfWeek = [
-  "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"
-];
 
 // AvailabilityPicker component for selecting client availability
 const AvailabilityPicker: React.FC<{
   availability: string[];
   setAvailability: (value: string[]) => void;
 }> = ({ availability, setAvailability }) => {
-  const [selectedDay, setSelectedDay] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
 
   const addEntry = () => {
-    if (!selectedDay || !fromTime || !toTime) return;
-    const newEntry = `${selectedDay}: ${fromTime} - ${toTime}`;
+    if (!selectedDate || !fromTime || !toTime) return;
+    const newEntry = `${selectedDate}: ${fromTime} - ${toTime}`;
     setAvailability([...availability, newEntry]);
-    setSelectedDay("");
+    setSelectedDate("");
     setFromTime("");
     setToTime("");
   };
@@ -87,23 +84,22 @@ const AvailabilityPicker: React.FC<{
   return (
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row gap-2">
-        <select
-          value={selectedDay}
-          onChange={(e) => setSelectedDay(e.target.value)}
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
           className="flex-1 border rounded-lg p-2"
-        >
-          <option value="">Choisir un jour</option>
-          {daysOfWeek.map(day => (
-            <option key={day} value={day}>{day}</option>
-          ))}
-        </select>
-        <div className="flex gap-2">
+          min={new Date().toISOString().split('T')[0]}
+        />
+        <div className="flex gap-2 items-center">
+          <span className="text-gray-500 whitespace-nowrap">De</span>
           <input
             type="time"
             value={fromTime}
             onChange={(e) => setFromTime(e.target.value)}
             className="flex-1 border rounded-lg p-2"
           />
+          <span className="text-gray-500 whitespace-nowrap">à</span>
           <input
             type="time"
             value={toTime}
@@ -113,7 +109,7 @@ const AvailabilityPicker: React.FC<{
         </div>
         <button
           onClick={addEntry}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 whitespace-nowrap"
         >
           Ajouter
         </button>
@@ -154,7 +150,6 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   const [submitted, setSubmitted] = useState(false);
   const [noMatch, setNoMatch] = useState(false);
   const [matchedProfessionals, setMatchedProfessionals] = useState<Professional[]>([]);
-  const navigate = useNavigate();
 
   // Initialize EmailJS
   useEffect(() => {
@@ -207,27 +202,32 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     setLoading(true);
     try {
       const db = getFirestore();
-      await addDoc(collection(db, "contactRequests"), {
-        ...formData,
-        timestamp: new Date(),
-      });
-
       const professionals = await findMatchingProfessionals();
+      
       if (professionals.length === 0) {
         setNoMatch(true);
         return;
       }
-
+  
+      // Ajouter les emails des professionnels à la demande de contact
+      await addDoc(collection(db, "contactRequests"), {
+        ...formData,
+        professionalEmails: professionals.map(pro => pro.email), // Nouveau champ
+        timestamp: new Date(),
+      });
+  
       setMatchedProfessionals(professionals);
       await sendEmails(professionals);
       setSubmitted(true);
-      setTimeout(onBack, 10000); // Redirect after 10 seconds
+      setTimeout(onBack, 10000);
     } catch (error) {
       console.error("Submission error:", error);
     } finally {
       setLoading(false);
     }
   };
+  console.log( formData.location.replace(/[\p{Emoji}]/gu, "").trim(),
+   formData.language.replace(/[\p{Emoji}]/gu, "").trim(),);
 
   // Send emails to professionals and client
   const sendEmails = async (professionals: Professional[]) => {
@@ -236,7 +236,10 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
 
     professionals.forEach(pro => {
       const proRef = doc(db, 'users', pro.id);
-      batch.update(proRef, { leadCount: increment(1) });
+      batch.update(proRef, { 
+        leadCount: increment(1),
+        lastLeadReceived: new Date() // Optionnel: date de dernier lead
+      });
     });
 
     await batch.commit();
@@ -256,7 +259,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
         emailjs.send(SERVICE_ID, PROFESSIONAL_TEMPLATE, {
           ...templateParams,
           to_email: pro.email,
-          professional_name: pro.displayName,
+          professional_name: pro.name,
         })
       );
 
@@ -265,7 +268,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
         emailjs.send(SERVICE_ID, CLIENT_TEMPLATE, {
           ...templateParams,
           to_email: formData.email,
-          professionals: professionals.map(p => p.displayName).join(', ')
+          professionals: professionals.map(p => p.name).join(', ')
         })
       ]);
     } catch (error) {
@@ -310,32 +313,36 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center py-8"
         >
-          <FiCheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-4">Demande envoyée avec succès!</h2>
-          <div className="space-y-4 max-h-96 overflow-y-auto">
-            {matchedProfessionals.map((pro) => (
-              <motion.div
-                key={pro.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-emerald-50 rounded-lg p-4"
-              >
-                <div className="flex items-center gap-4">
-                  {pro.photoURL ? (
-                    <img src={pro.photoURL} alt={pro.displayName} className="w-12 h-12 rounded-full" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <FiUser className="text-emerald-500" />
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="font-semibold">{pro.displayName}</h3>
-                    <p className="text-sm text-gray-600">{pro.email}</p>
+        <FiCheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold mb-4">Demande envoyée avec succès!</h2>
+        <p className="text-center text-gray-700 mb-4">
+          Votre demande a bien été prise en charge. Un professionnel vous contactera dans **24 à 48 heures**.  
+          Merci de faire confiance à <span className="font-semibold text-emerald-600">Afro Immobilier Connect</span> !
+        </p>
+        <div className="space-y-4 max-h-96 overflow-y-auto">
+          {matchedProfessionals.map((pro) => (
+            <motion.div
+              key={pro.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-emerald-50 rounded-lg p-4"
+            >
+              <div className="flex items-center gap-4">
+                {pro.photoURL ? (
+                  <img src={pro.photoURL} alt={pro.name} className="w-12 h-12 rounded-full" />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <FiUser className="text-emerald-500" />
                   </div>
+                )}
+                <div>
+                  <h3 className="font-semibold">{pro.name}</h3>
+                  <p className="text-sm text-gray-600">{pro.email}</p>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
         </motion.div>
       ) : noMatch ? (
         <motion.div
@@ -350,13 +357,36 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
             animate={{ y: [0, -15, 0] }} 
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
           />
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
             Désolé, nous n'avons pas trouvé de professionnels correspondant à vos critères
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 mb-6 text-center">
             Pas de panique ! Voici quelques suggestions pour élargir votre recherche :
           </p>
-          <div className="space-y-4 max-w-md mx-auto">
+          <div className="mt-8 text-center">
+            <p className="text-gray-700 font-medium">
+              C'est grâce au partage entre professionnels que nous devenons plus forts !  
+              Aidez-nous à agrandir la communauté en partageant cette plateforme avec votre réseau.
+            </p>
+
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText("https://afro-connect.netlify.app/");
+                  alert("Lien copié avec succès !");
+                }}
+                className="bg-emerald-500 text-white px-6 py-3 rounded-xl flex items-center space-x-2 hover:bg-emerald-600 transition"
+              >
+                <FiCopy className="w-5 h-5" />
+                <span>Copier le lien</span>
+              </button>
+            </div>
+
+            <p className="mt-4 text-gray-600 text-sm italic">
+              Ensemble, nous sommes plus forts ! 💪
+            </p>
+          </div>
+          <div className="space-y-4 mt-8 max-w-md mx-auto">
             <div className="bg-blue-50 p-4 rounded-xl flex items-center space-x-4">
               <FiRefreshCw className="w-6 h-6 text-blue-500" />
               <p className="text-left">
@@ -370,6 +400,9 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
               </p>
             </div>
           </div>
+
+
+
           <button
             onClick={() => {
               setNoMatch(false);
@@ -470,7 +503,10 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   <input
                     type="email"
                     value={formData.email}
-                    onChange={(e) => handleSelect('email', e.target.value)}
+                    onChange={(e) => {
+                      const sanitizedEmail = e.target.value.trim();
+                      handleSelect('email', sanitizedEmail);
+                    }}
                     className="w-full p-4 border rounded-xl mb-4"
                     placeholder="Adresse email *"
                     required

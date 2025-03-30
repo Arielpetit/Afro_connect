@@ -179,7 +179,7 @@ const About1 = () => {
                     <div>
                       <h3 className="text-xl font-bold mb-2 text-gray-800">Nos Services</h3>
                       <p className="text-gray-600">
-                        Mise en relation directe avec des experts qualifiés (courtiers, notaires, inspecteurs) 
+                        Mise en relation directe avec des experts qualifiés 
                         selon vos besoins spécifiques. Une plateforme collaborative pour développer des activités 
                         communes et mieux servir notre communauté.
                       </p>
