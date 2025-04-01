@@ -10,13 +10,26 @@ const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const PROFESSIONAL_TEMPLATE = import.meta.env.VITE_EMAILJS_PROFESSIONAL_TEMPLATE;
 const CLIENT_TEMPLATE = import.meta.env.VITE_EMAILJS_CLIENT_TEMPLATE;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-const combinedSpecialty = "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé";
-const subSpecialties = [
-  "Comptable CPA",
-  "Avocat fiscaliste spécialisé en immobilier",
-  "Conseillers en sécurité financière",
+const combinedSpecialties = [
+  "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé",
+  "Métiers spécialisés de la construction et de l'immobilier"
 ];
 
+
+
+// Create a map of sub-specialties for each combined specialty
+const subSpecialtiesMap = {
+  [combinedSpecialties[0]]: [
+    "Comptable CPA",
+    "Avocat fiscaliste spécialisé en immobilier", 
+    "Conseillers en sécurité financière"
+  ],
+  [combinedSpecialties[1]]: [
+    "Électriciens",
+    "Plombiers",
+    "Hommes à tout faire (Handymen)"
+  ]
+};
 
 // Props for the ContactWizard component
 interface WizardProps {
@@ -157,7 +170,8 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   const [submitted, setSubmitted] = useState(false);
   const [noMatch, setNoMatch] = useState(false);
   const [matchedProfessionals, setMatchedProfessionals] = useState<Professional[]>([]);
-  const isCombinedSpecialty = specialty === combinedSpecialty;
+  const isCombinedSpecialty = combinedSpecialties.includes(specialty);
+  const currentSubSpecialties = subSpecialtiesMap[specialty] || [];
 
   // Initialize EmailJS
   useEffect(() => {
@@ -453,7 +467,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   <>
                     <h3 className="text-xl font-semibold">Choisissez votre spécialité</h3>
                     <div className="grid grid-cols-1 gap-2">
-                      {subSpecialties.map((sub) => (
+                      {currentSubSpecialties.map((sub) => ( // <-- Use here
                         <button
                           key={sub}
                           onClick={() => handleSelect('specialty', sub)}
