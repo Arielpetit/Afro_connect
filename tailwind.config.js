@@ -49,6 +49,9 @@ export default {
           '0%': { transform: 'translateX(100%)' },  // Start fully off-screen to the right
           '100%': { transform: 'translateX(-100%)' }, // Move fully off-screen to the left
         },
+        backgroundImage: {
+          'beach-pattern': "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e')",
+        }
       },
     },
   },

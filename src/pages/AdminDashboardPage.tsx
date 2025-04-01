@@ -113,6 +113,7 @@ const AdminDashboardPage = () => {
 
         // Calculate coverage zones
         const coverageData = [
+          "Canada",
           "Alberta",
           "Colombie-Britannique",
           "Île-du-Prince-Édouard",

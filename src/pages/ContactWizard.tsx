@@ -10,6 +10,13 @@ const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const PROFESSIONAL_TEMPLATE = import.meta.env.VITE_EMAILJS_PROFESSIONAL_TEMPLATE;
 const CLIENT_TEMPLATE = import.meta.env.VITE_EMAILJS_CLIENT_TEMPLATE;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const combinedSpecialty = "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé";
+const subSpecialties = [
+  "Comptable CPA",
+  "Avocat fiscaliste spécialisé en immobilier",
+  "Conseillers en sécurité financière",
+];
+
 
 // Props for the ContactWizard component
 interface WizardProps {
@@ -150,6 +157,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   const [submitted, setSubmitted] = useState(false);
   const [noMatch, setNoMatch] = useState(false);
   const [matchedProfessionals, setMatchedProfessionals] = useState<Professional[]>([]);
+  const isCombinedSpecialty = specialty === combinedSpecialty;
 
   // Initialize EmailJS
   useEffect(() => {
@@ -202,17 +210,23 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     setLoading(true);
     try {
       const db = getFirestore();
-      const professionals = await findMatchingProfessionals();
+      let professionals = await findMatchingProfessionals();
       
       if (professionals.length === 0) {
         setNoMatch(true);
         return;
       }
   
-      // Ajouter les emails des professionnels à la demande de contact
+      // Limit to maximum 2 professionals
+      if (professionals.length > 2) {
+        // You can add sorting logic here (e.g., by leadCount) before slicing
+        professionals = professionals.slice(0, 2);
+      }
+  
+      // Update contact request with limited professionals
       await addDoc(collection(db, "contactRequests"), {
         ...formData,
-        professionalEmails: professionals.map(pro => pro.email), // Nouveau champ
+        professionalEmails: professionals.map(pro => pro.email),
         timestamp: new Date(),
       });
   
@@ -233,12 +247,13 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
   const sendEmails = async (professionals: Professional[]) => {
     const db = getFirestore();
     const batch = writeBatch(db);
-
+  
+    // Only process the first 2 professionals
     professionals.forEach(pro => {
       const proRef = doc(db, 'users', pro.id);
       batch.update(proRef, { 
         leadCount: increment(1),
-        lastLeadReceived: new Date() // Optionnel: date de dernier lead
+        lastLeadReceived: new Date()
       });
     });
 
@@ -434,15 +449,41 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
               className="space-y-6"
             >
               {currentStep === 1 && (
-                <>
-                  <h3 className="text-xl font-semibold">Spécialité sélectionnée</h3>
-                  <div className="p-4 bg-emerald-50 rounded-xl">
-                    <p className="text-emerald-700">{formData.specialty}</p>
-                  </div>
-                  <button onClick={handleNext} className="w-full bg-emerald-500 text-white p-3 rounded-xl">
-                    Continuer
-                  </button>
-                </>
+                isCombinedSpecialty ? (
+                  <>
+                    <h3 className="text-xl font-semibold">Choisissez votre spécialité</h3>
+                    <div className="grid grid-cols-1 gap-2">
+                      {subSpecialties.map((sub) => (
+                        <button
+                          key={sub}
+                          onClick={() => handleSelect('specialty', sub)}
+                          className={`p-2 rounded-lg border ${
+                            formData.specialty === sub ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'
+                          }`}
+                        >
+                          {sub}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      onClick={handleNext}
+                      disabled={!formData.specialty}
+                      className="w-full bg-emerald-500 text-white p-3 rounded-xl disabled:opacity-50"
+                    >
+                      Continuer
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-xl font-semibold">Spécialité sélectionnée</h3>
+                    <div className="p-4 bg-emerald-50 rounded-xl">
+                      <p className="text-emerald-700">{formData.specialty}</p>
+                    </div>
+                    <button onClick={handleNext} className="w-full bg-emerald-500 text-white p-3 rounded-xl">
+                      Continuer
+                    </button>
+                  </>
+                )
               )}
 
               {currentStep === 2 && (

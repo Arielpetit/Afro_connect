@@ -26,6 +26,7 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import ProfessionalProfilePage from "./pages/ProffesionalProfilePage";
 import { ProfessionalLeadsDetail } from "./pages/ProfessionalLeadsDetail";
+import {ParallaxHome} from "./pages/test";
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = localStorage.getItem("isAdmin") === "true";
@@ -52,6 +53,7 @@ const AppContent = () => {
           <Route path="*" element={<div>404 Page Not Found</div>} />
           <Route path="/profile/:userId" element={<ProfileDetailsPage />} />
           <Route path="/suggestions" element={<SuggestionsPage />} />
+          <Route path="/test" element={< ParallaxHome/>} />
 
 
           {/* Admin Routes (Protected) */}
