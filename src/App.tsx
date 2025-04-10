@@ -11,7 +11,7 @@ import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 
 import SignupPage from "./pages/SignupPage";
-import { ProfessionalRoadmap } from "./pages/ProfilePage";
+import  {ProfessionalRoadmap}  from "./pages/ProfilePage";
 import ProfileDetailsPage from "./pages/ProfileDetailsPage";
 import ScrollToTop from "./components/ScrollToTop";
 import SuggestionsPage from "./pages/SuggestionsPage";
@@ -27,6 +27,7 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import ProfessionalProfilePage from "./pages/ProffesionalProfilePage";
 import { ProfessionalLeadsDetail } from "./pages/ProfessionalLeadsDetail";
 import {ParallaxHome} from "./pages/test";
+import VideoGuidePage from "./pages/VIdeoPage";
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = localStorage.getItem("isAdmin") === "true";
@@ -53,7 +54,9 @@ const AppContent = () => {
           <Route path="*" element={<div>404 Page Not Found</div>} />
           <Route path="/profile/:userId" element={<ProfileDetailsPage />} />
           <Route path="/suggestions" element={<SuggestionsPage />} />
-          <Route path="/test" element={< ParallaxHome/>} />
+          <Route path="/experts" element={<ProfessionalProfilePage />} />
+
+          <Route path="/guide" element={< VideoGuidePage/>} />
 
 
           {/* Admin Routes (Protected) */}

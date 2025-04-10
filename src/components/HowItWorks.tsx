@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Handshake, MessageSquare, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const steps = [
   {
@@ -27,6 +28,8 @@ const steps = [
 ];
 
 export function HowItWorks() {
+const navigate = useNavigate();
+
   return (
     <section className="py-16 md:py-24 bg-gray-50 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -98,12 +101,14 @@ export function HowItWorks() {
                   {/* Learn More Button */}
                   <motion.div
                     whileHover={{ x: 5 }}
+                    onClick={() => navigate('/guide')}
                     className="inline-flex items-center text-blue-600 hover:text-blue-800 
                       text-sm font-medium cursor-pointer"
                   >
                     En savoir plus
                     <ArrowRight className="ml-2 w-4 h-4 transition-transform" />
                   </motion.div>
+
                 </div>
               </div>
             </motion.div>

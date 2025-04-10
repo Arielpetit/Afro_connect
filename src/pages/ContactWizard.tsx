@@ -14,6 +14,19 @@ const combinedSpecialties = [
   "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé",
   "Métiers spécialisés de la construction et de l'immobilier"
 ];
+// Category-specific image mapping
+const categoryImages = {
+  "Courtier hypothécaire": "/courtier-hypothecaire.jpg",
+  "Courtier immobilier": "/Agent_immobilier.jpg",
+  "Notaire": "/notaire.jpg",
+  "Constructeur": "/constructeur.jpg",
+  "Évaluateurs agréés": "/Evaluateur_agree.jpg",
+  "Inspecteur en bâtiment": "/Inspecteur_en_batiment.jpg",
+  "Entrepreneur général": "/intrepreneur_general.jpg",
+  "Comptable": "/Comptable.jpg",
+  "Métiers spécialisés de la construction et de l'immobilier": "/Other.jpg",
+  "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé": "/cpa.jpg",
+};
 
 
 
@@ -178,6 +191,10 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     emailjs.init(PUBLIC_KEY);
   }, []);
 
+    // Get the appropriate image for the current specialty
+    const getCategoryImage = (categoryName: string) => {
+      return categoryImages[categoryName] || "/default-profession.jpg";
+    };
   const handleSelect = (name: string, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));
     window.scrollTo(0, 0);
@@ -422,8 +439,8 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                 Essayez différentes zones de couverture ou langues
               </p>
             </div>
-            <div className="bg-green-50 p-4 rounded-xl flex items-center space-x-4">
-              <FiSearch className="w-6 h-6 text-green-500" />
+            <div className="bg-emerald-50 p-4 rounded-xl flex items-center space-x-4">
+              <FiSearch className="w-6 h-6 text-emerald-500" />
               <p className="text-left">
                 Ajustez vos critères de recherche
               </p>
@@ -466,23 +483,33 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                 isCombinedSpecialty ? (
                   <>
                     <h3 className="text-xl font-semibold">Choisissez votre spécialité</h3>
+                    
+                    {/* Category image for combined specialty */}
+                    <div className="flex justify-center">
+                      <img 
+                        src={getCategoryImage(specialty)}
+                        alt={specialty} 
+                        className="h-48 w-auto object-contain rounded-lg shadow-md animate-fade-in"
+                      />
+                    </div>
+                    
                     <div className="grid grid-cols-1 gap-2">
-                      {currentSubSpecialties.map((sub) => ( // <-- Use here
+                      {currentSubSpecialties.map((sub) => (
                         <button
                           key={sub}
                           onClick={() => handleSelect('specialty', sub)}
-                          className={`p-2 rounded-lg border ${
-                            formData.specialty === sub ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'
+                          className={`p-4 rounded-lg border flex items-center text-left gap-3 transition-all duration-300 ${
+                            formData.specialty === sub ? 'border-emerald-500 bg-emerald-50 shadow-md' : 'border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50'
                           }`}
                         >
-                          {sub}
+                          <span>{sub}</span>
                         </button>
                       ))}
                     </div>
                     <button
                       onClick={handleNext}
                       disabled={!formData.specialty}
-                      className="w-full bg-emerald-500 text-white p-3 rounded-xl disabled:opacity-50"
+                      className="w-full bg-emerald-500 text-white p-3 rounded-xl disabled:opacity-50 hover:bg-emerald-600 transition-colors"
                     >
                       Continuer
                     </button>
@@ -490,10 +517,23 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                 ) : (
                   <>
                     <h3 className="text-xl font-semibold">Spécialité sélectionnée</h3>
-                    <div className="p-4 bg-emerald-50 rounded-xl">
-                      <p className="text-emerald-700">{formData.specialty}</p>
+                    
+                    {/* Show image for the selected specialty */}
+                    <div className="flex justify-center mb-4">
+                      <img 
+                        src={getCategoryImage(formData.specialty)}
+                        alt={formData.specialty} 
+                        className="w-50 h-48 animate-fade-in" // Adjust size as needed
+                      />
                     </div>
-                    <button onClick={handleNext} className="w-full bg-emerald-500 text-white p-3 rounded-xl">
+                    
+                    <div className="p-4 bg-emerald-50 rounded-xl flex items-center gap-4">
+                      <p className="text-emerald-700 font-medium">{formData.specialty}</p>
+                    </div>
+                    <button 
+                      onClick={handleNext} 
+                      className="w-full bg-emerald-500 text-white p-3 rounded-xl hover:bg-emerald-600 transition-colors"
+                    >
                       Continuer
                     </button>
                   </>
@@ -509,7 +549,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                         alt="Language Selection" 
                         className="w-50 h-48 animate-fade-in" // Adjust size as needed
                     />
-                    </div>
+                  </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {locations.map(location => (
                       <button

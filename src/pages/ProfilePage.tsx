@@ -1,48 +1,52 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CategoriesGrid } from "../components/CategoriesGrid";
 import { ContactWizard } from "./ContactWizard";
+import { 
+  FaHome, FaBalanceScale, FaFileSignature, FaTools, 
+  FaSearchPlus, FaHardHat, FaHammer, 
+  FaCalculator, FaBriefcase 
+} from "react-icons/fa";
 
 const categories = [
   {
     name: "Courtier hypothécaire",
-    image: "/courtier-hypothecaire.jpg",
+    icon: <FaHome className="text-2xl" />
   },
   {
     name: "Courtier immobilier",
-    image: "/Agent_immobilier.jpg",
+    icon: <FaHome className="text-2xl" />
   },
   {
     name: "Notaire",
-    image: "/notaire.jpg",
+    icon: <FaBalanceScale className="text-2xl" />
   },
   {
-    name: "Constructeur",
-    image: "/constructeur.jpg",
+    name: "spécialiste en rénovation",
+    icon: <FaHardHat className="text-2xl" />
   },
   {
     name: "Évaluateurs agréés",
-    image: "/Evaluateur_agree.jpg",
+    icon: <FaFileSignature className="text-2xl" />
   },
   {
     name: "Inspecteur en bâtiment",
-    image: "/Inspecteur_en_batiment.jpg",
+    icon: <FaSearchPlus className="text-2xl" />
   },
   {
     name: "Entrepreneur général",
-    image: "/intrepreneur_general.jpg",
+    icon: <FaTools className="text-2xl" />
   },
   {
     name: "Comptable",
-    image: "/Comptable.jpg",
+    icon: <FaCalculator className="text-2xl" />
   },
   {
     name: "Métiers spécialisés de la construction et de l'immobilier",
-    image: "/Other.jpg",
+    icon: <FaHammer className="text-2xl" />
   },
   {
     name: "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé",
-    image: "/cpa.jpg",
+    icon: <FaBriefcase className="text-2xl" />
   },  
 ];
 
@@ -53,14 +57,17 @@ export const ProfessionalRoadmap = () => {
   const handleCategoryClick = (categoryName: string) => {
     setSelectedSpecialty(categoryName);
     setShowWizard(true);
+    window.scrollTo(0, 0);
   };
 
   const handleBackFromWizard = () => {
     setShowWizard(false);
+    window.scrollTo(0, 0);
+
   };
 
   return (
-    <div className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-white py-6 px-2 sm:px-4 lg:px-6 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 z-0">
         {[...Array(15)].map((_, i) => (
@@ -114,12 +121,39 @@ export const ProfessionalRoadmap = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
+                Trouvez votre expert
               </motion.h2>
               
-              <CategoriesGrid
-                categories={categories}
-                onCategoryClick={handleCategoryClick}
-              />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+              >
+                {categories.map((category, index) => (
+                  <motion.button
+                    key={category.name}
+                    onClick={() => handleCategoryClick(category.name)}
+                    className="bg-gradient-to-br from-teal-500 to-blue-600 text-white rounded-xl shadow-md
+                    hover:shadow-lg hover:shadow-teal-200/40 transition-all duration-300 p-3 text-center flex flex-col 
+                    items-center justify-center gap-2 hover:scale-105 active:scale-95 overflow-hidden group
+                    border border-teal-300/20"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: 0,
+                      transition: { delay: 0.1 * index + 0.5 }
+                    }}
+                  >
+                    <div className="bg-white/20 p-3 rounded-full mb-2 group-hover:bg-white/30 transition-colors">
+                      {category.icon}
+                    </div>
+                    <span className="text-sm font-medium text-white group-hover:text-white/90 line-clamp-2 h-10">
+                      {category.name}
+                    </span>
+                  </motion.button>
+                ))}
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -127,3 +161,5 @@ export const ProfessionalRoadmap = () => {
     </div>
   );
 };
+
+// Note: The CategoriesGrid component is no longer needed as we're rendering buttons directly

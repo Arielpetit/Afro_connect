@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-import { FiUser, FiMail, FiBriefcase, FiClock, FiArrowLeft, FiUsers } from "react-icons/fi";
+import { FiUser, FiBriefcase, FiArrowLeft, FiUsers, FiMap } from "react-icons/fi";
+import { 
+  FaHome, FaBalanceScale, FaFileSignature, FaTools, 
+   FaSearchPlus, FaHardHat, FaHammer, 
+  FaCalculator, FaBriefcase 
+} from "react-icons/fa";
 
 // Specialist configuration
 const financialSpecialties = [
@@ -14,43 +18,29 @@ const financialSpecialties = [
 ];
 
 const categories = [
-  {
-    name: "Courtier hypothécaire",
-    image: "/courtier-hypothecaire.jpg",
-  },
-  {
-    name: "Courtier immobilier",
-    image: "/Agent_immobilier.jpg",
-  },
-  {
-    name: "Notaire",
-    image: "/notaire.jpg",
-  },
-  {
-    name: "Constructeur",
-    image: "/constructeur.jpg",
-  },
-  {
-    name: "Évaluateurs agréés",
-    image: "/Evaluateur_agree.jpg",
-  },
-  {
-    name: "Inspecteur en bâtiment",
-    image: "/Inspecteur_en_batiment.jpg",
-  },
-  {
-    name: "Entrepreneur général",
-    image: "/intrepreneur_general.jpg",
-  },
-  {
-    name: "Métiers spécialisés de la construction et de l'immobilier",
-    image: "/Other.jpg",
-  },
-  {
-    name: "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé",
-    image: "/cpa.jpg", 
-  },
+  "Courtier hypothécaire",
+  "Courtier immobilier",
+  "Notaire",
+  "spécialiste en rénovation",
+  "Évaluateurs agréés",
+  "Inspecteur en bâtiment",
+  "Entrepreneur général",
+  "Métiers spécialisés de la construction et de l'immobilier",
+  "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé",
 ];
+
+// Map categories to icons
+const categoryIcons: Record<string, React.ReactNode> = {
+  "Courtier hypothécaire": <FaHome className="text-2xl" />,
+  "Courtier immobilier": <FaHome className="text-2xl" />,
+  "Notaire": <FaBalanceScale className="text-2xl" />,
+  "spécialiste en rénovation": <FaHardHat className="text-2xl" />,
+  "Évaluateurs agréés": <FaFileSignature className="text-2xl" />,
+  "Inspecteur en bâtiment": <FaSearchPlus className="text-2xl" />,
+  "Entrepreneur général": <FaTools className="text-2xl" />,
+  "Métiers spécialisés de la construction et de l'immobilier": <FaHammer className="text-2xl" />,
+  "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé": <FaCalculator className="text-2xl" />,
+};
 
 interface User {
   id: string;
@@ -60,6 +50,7 @@ interface User {
   experience?: number;
   projectsCompleted?: number;
   profilePicture?: string;
+  coverageZone?: string;
 }
 
 interface ProfessionalBadgeProps {
@@ -73,10 +64,9 @@ const ProfessionalProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const navigate = useNavigate();
   const db = getFirestore();
 
-  const mainCategories = categories.slice(0, -2).map(c => c.name);
+  const mainCategories = categories.slice(0, -2);
 
   useEffect(() => {
     const fetchUsersData = async () => {
@@ -119,27 +109,26 @@ const ProfessionalProfilePage = () => {
       <div className="max-w-7xl mx-auto">
         {!selectedCategory && (
           <div className="mb-12 md:mb-16 text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8">
               Trouvez votre expert
             </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {categories.map(({ name, image }) => (
-                <div
-                  key={name}
-                  onClick={() => handleCategoryClick(name)}
-                  className="group cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 p-6 border border-gray-100"
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => handleCategoryClick(category)}
+                  className="bg-gradient-to-br from-teal-500 to-blue-600 text-white rounded-2xl shadow-md
+                    hover:shadow-lg hover:shadow-teal-200/40 transition-all duration-300 p-5 text-center flex flex-col 
+                    items-center justify-center gap-3 hover:scale-105 active:scale-95 overflow-hidden group
+                    border border-teal-300/20"
                 >
-                  <div className="aspect-video w-full overflow-hidden rounded-lg">
-                    <img
-                      src={image}
-                      alt={name}
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
-                    />
+                  <div className="bg-white/20 p-3 rounded-full mb-2 group-hover:bg-white/30 transition-colors">
+                    {categoryIcons[category] || <FaBriefcase className="text-2xl" />}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-800 mt-6 text-center group-hover:text-blue-600 transition-colors">
-                    {name}
-                  </h3>
-                </div>
+                  <span className="text-sm font-medium text-white group-hover:text-white/90 line-clamp-2 h-10">
+                    {category}
+                  </span>
+                </button>
               ))}
             </div>
           </div>
@@ -150,7 +139,8 @@ const ProfessionalProfilePage = () => {
             <div className="flex flex-col sm:flex-row items-center justify-between mb-8 sm:mb-12 gap-4">
               <button
                 onClick={() => setSelectedCategory(null)}
-                className="flex items-center text-blue-600 hover:text-blue-800 transition-colors text-sm sm:text-base"
+                className="flex items-center text-teal-600 hover:text-teal-800 transition-colors
+                  bg-teal-50 hover:bg-teal-100 px-4 py-2 rounded-full text-sm font-medium"
               >
                 <FiArrowLeft className="mr-2" /> Retour aux catégories
               </button>
@@ -161,13 +151,13 @@ const ProfessionalProfilePage = () => {
 
             {loading ? (
               <div className="flex justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
               </div>
             ) : error ? (
               <div className="text-center text-red-500">{error}</div>
             ) : filteredUsers.length === 0 ? (
-              <div className="text-center text-gray-600 text-lg">
-                <FiUsers className="w-16 h-16 text-indigo-500 mx-auto mb-4" />
+              <div className="text-center text-gray-600 text-lg p-8 bg-white rounded-2xl shadow-sm">
+                <FiUsers className="w-16 h-16 text-teal-500 mx-auto mb-4" />
                 <p className="mb-2">Aucun profil trouvé </p>
                 <p className="text-sm">Soyez le premier à vous inscrire dans cette catégorie!</p>
               </div>
@@ -176,10 +166,10 @@ const ProfessionalProfilePage = () => {
                 {filteredUsers.map((user) => (
                   <div
                     key={user.id}
-                    onClick={() => navigate(`/profile/${user.id}`)}
-                    className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden"
+                    className="group bg-white rounded-2xl shadow-sm hover:shadow-lg hover:shadow-teal-100 
+                      transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100"
                   >
-                    <div className="relative h-48 bg-indigo-50">
+                    <div className="relative h-48 bg-teal-50">
                       <img
                         src={user.profilePicture || "https://avatar.vercel.sh/placeholder"}
                         alt={user.name || "Professional"}
@@ -187,18 +177,14 @@ const ProfessionalProfilePage = () => {
                       />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
                         <h3 className="text-lg font-semibold text-white">{user.name}</h3>
-                        <p className="text-sm text-indigo-200">{user.expertise}</p>
+                        <p className="text-sm text-teal-100">{user.expertise}</p>
                       </div>
                     </div>
 
                     <div className="p-6 space-y-4">
                       <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                        <FiUser className="text-indigo-600" /> {user.name}
+                        <FiUser className="text-teal-600" /> {user.name}
                       </h3>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <FiMail className="flex-shrink-0" />
-                        <span className="truncate">{user.email}</span>
-                      </div>
                       <div className="space-y-2">
                         <ProfessionalBadge
                           icon={<FiBriefcase />}
@@ -206,9 +192,9 @@ const ProfessionalProfilePage = () => {
                           value={`${user.experience ?? "N/A"} années`}
                         />
                         <ProfessionalBadge
-                          icon={<FiClock />}
-                          label="Projets réalisés"
-                          value={user.projectsCompleted ? String(user.projectsCompleted) : "N/A"}
+                          icon={<FiMap />}
+                          label="Zone de couverture"
+                          value={user.coverageZone || "N/A"}
                         />
                       </div>
                     </div>
@@ -225,7 +211,7 @@ const ProfessionalProfilePage = () => {
 
 const ProfessionalBadge: React.FC<ProfessionalBadgeProps> = ({ icon, label, value }) => (
   <div className="flex items-start gap-3 text-sm">
-    <div className="p-2 bg-blue-50 rounded-lg text-blue-600">{icon}</div>
+    <div className="p-2 bg-teal-50 rounded-lg text-teal-600">{icon}</div>
     <div>
       <p className="font-medium text-gray-500">{label}</p>
       <p className="text-gray-900 font-semibold">{value}</p>
