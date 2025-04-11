@@ -3,17 +3,18 @@ import { getFirestore, collection, query, where, getDocs, addDoc, writeBatch, do
 import emailjs from "@emailjs/browser";
 import { FiCheckCircle, FiArrowLeft, FiUser, FiRotateCw, FiRefreshCw, FiSearch, FiCopy } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
-// import { useNavigate } from "react-router-dom";
 
 // Environment variables for EmailJS configuration
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const PROFESSIONAL_TEMPLATE = import.meta.env.VITE_EMAILJS_PROFESSIONAL_TEMPLATE;
 const CLIENT_TEMPLATE = import.meta.env.VITE_EMAILJS_CLIENT_TEMPLATE;
 const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
 const combinedSpecialties = [
   "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé",
-  "Métiers spécialisés de la construction et de l'immobilier"
+  "Métiers spécialisés de la construction et de l'immobilier",
 ];
+
 // Category-specific image mapping
 const categoryImages = {
   "Courtier hypothécaire": "/courtier-hypothecaire.jpg",
@@ -28,20 +29,18 @@ const categoryImages = {
   "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé": "/cpa.jpg",
 };
 
-
-
 // Create a map of sub-specialties for each combined specialty
 const subSpecialtiesMap = {
   [combinedSpecialties[0]]: [
     "Comptable CPA",
-    "Avocat fiscaliste spécialisé en immobilier", 
-    "Conseillers en sécurité financière"
+    "Avocat fiscaliste spécialisé en immobilier",
+    "Conseillers en sécurité financière",
   ],
   [combinedSpecialties[1]]: [
     "Électriciens",
     "Plombiers",
-    "Hommes à tout faire (Handymen)"
-  ]
+    "Hommes à tout faire (Handymen)",
+  ],
 };
 
 // Props for the ContactWizard component
@@ -59,7 +58,9 @@ export interface Professional {
   photoURL?: string;
   availability: string[];
   leadCount?: number;
-  expertise?: string;
+  expertise?: string[];
+  languages?: string[];
+  coverageZone?: string;
 }
 
 // Predefined options for location and language
@@ -77,21 +78,39 @@ const locations = [
   "🌻 Saskatchewan",
   "🎣 Terre-Neuve-et-Labrador",
   "🌌 Territoires du Nord-Ouest",
-  "⛰️ Yukon"
+  "⛰️ Yukon",
 ];
-
 
 const languages = [
-  "🇫🇷 Français", "🇬🇧 Anglais", "🇭🇹 Créole", "🇸🇳 Wolof", "🇨🇩 Lingala",
-  "🌍 Dumois", "🇨🇩 Swahili", "🇲🇱 Bambara", "🇳🇬 Yoruba", "🇳🇬 Hausa",
-  "🇬🇭 Twi", "🇳🇬 Igbo", "🇹🇬 Ewé", "🇧🇯 Fon", "🇨🇬 Kikongo",
-  "🇬🇲 Mandinka", "🇿🇦 Zulu", "🇿🇦 Xhosa", "🇱🇸 Sesotho", "🌍 Fula",
-  "🇿🇼 Shona", "🇸🇱 Krio", "🇭🇳 Garifuna", "🇦🇼 Papiamento",
-  "🌍 Saramaccan", "🌍 Maroon Creole"
+  "🇫🇷 Français",
+  "🇬🇧 Anglais",
+  "🇭🇹 Créole",
+  "🇸🇳 Wolof",
+  "🇨🇩 Lingala",
+  "🌍 Dumois",
+  "🇨🇩 Swahili",
+  "🇲🇱 Bambara",
+  "🇳🇬 Yoruba",
+  "🇳🇬 Hausa",
+  "🇬🇭 Twi",
+  "🇳🇬 Igbo",
+  "🇹🇬 Ewé",
+  "🇧🇯 Fon",
+  "🇨🇬 Kikongo",
+  "🇬🇲 Mandinka",
+  "🇿🇦 Zulu",
+  "🇿🇦 Xhosa",
+  "🇱🇸 Sesotho",
+  "🌍 Fula",
+  "🇿🇼 Shona",
+  "🇸🇱 Krio",
+  "🇭🇳 Garifuna",
+  "🇦🇼 Papiamento",
+  "🌍 Saramaccan",
+  "🌍 Maroon Creole",
 ];
 
-
-// AvailabilityPicker component for selecting client availability
+// AvailabilityPicker component (unchanged)
 const AvailabilityPicker: React.FC<{
   availability: string[];
   setAvailability: (value: string[]) => void;
@@ -122,7 +141,7 @@ const AvailabilityPicker: React.FC<{
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
           className="flex-1 border rounded-lg p-2"
-          min={new Date().toISOString().split('T')[0]}
+          min={new Date().toISOString().split("T")[0]}
         />
         <div className="flex gap-2 items-center">
           <span className="text-gray-500 whitespace-nowrap">De</span>
@@ -191,76 +210,135 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     emailjs.init(PUBLIC_KEY);
   }, []);
 
-    // Get the appropriate image for the current specialty
-    const getCategoryImage = (categoryName: string) => {
-      return categoryImages[categoryName] || "/default-profession.jpg";
-    };
+  const getCategoryImage = (categoryName: string) => {
+    return categoryImages[categoryName] || "/default-profession.jpg";
+  };
+
   const handleSelect = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     window.scrollTo(0, 0);
   };
 
   const handleNext = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 5));
+    setCurrentStep((prev) => Math.min(prev + 1, 5));
     window.scrollTo(0, 0);
   };
 
   const handlePrevious = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
     window.scrollTo(0, 0);
   };
+
+  // Normalize string for comparison
+  const normalizeString = (str: string) =>
+    str.replace(/[\p{Emoji}]/gu, "").trim();
 
   // Fetch professionals matching specialty, location, and language
   const findMatchingProfessionals = async () => {
     const db = getFirestore();
-    
+
     // Clean inputs
-    const cleanLocation = formData.location.replace(/[\p{Emoji}]/gu, "").trim();
-    const cleanLanguage = formData.language.replace(/[\p{Emoji}]/gu, "").trim();
-  
-    // Build the query with array filters
-    const q = query(
-      collection(db, "users"),
-      where("expertise", "==", formData.specialty),
-      where("coverageZone", "==", cleanLocation),
-      where("languages", "array-contains", cleanLanguage)
-    );
-  
-    const snapshot = await getDocs(q);
-    const professionals = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      availability: doc.data().availability || []
-    })) as Professional[];
-  
-    return professionals;
+    const cleanLocation = normalizeString(formData.location);
+    const cleanLanguage = normalizeString(formData.language);
+    const cleanSpecialty = formData.specialty; // Keep original case for exact match
+
+    console.log("Querying with:", { cleanSpecialty, cleanLocation, cleanLanguage });
+
+    let professionals: Professional[] = [];
+
+    try {
+      if (isCombinedSpecialty) {
+        // For combined specialties, query for any matching sub-specialty
+        const subSpecialties = currentSubSpecialties;
+        console.log("Sub-specialties:", subSpecialties);
+
+        // Fetch all users matching any sub-specialty
+        const q = query(
+          collection(db, "users"),
+          where("expertise", "array-contains", formData.specialty),
+          where("coverageZone", "==", cleanLocation)
+        );
+
+        const snapshot = await getDocs(q);
+        console.log("Raw query results:", snapshot.docs.map((doc) => doc.data()));
+
+        professionals = snapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+            availability: doc.data().availability || [],
+            expertise: doc.data().expertise || [],
+            languages: doc.data().languages || [],
+            coverageZone: doc.data().coverageZone || "",
+          }))
+          .filter((pro) => {
+            const langMatch = pro.languages.some(
+              (lang) => normalizeString(lang) === cleanLanguage
+            );
+            console.log(`Professional ${pro.name}: Language match = ${langMatch}`, pro);
+            return langMatch;
+          }) as Professional[];
+      } else {
+        // For regular specialties
+        const q = query(
+          collection(db, "users"),
+          where("expertise", "array-contains", cleanSpecialty),
+          where("coverageZone", "==", cleanLocation)
+        );
+
+        const snapshot = await getDocs(q);
+        console.log("Raw query results:", snapshot.docs.map((doc) => doc.data()));
+
+        professionals = snapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+            availability: doc.data().availability || [],
+            expertise: doc.data().expertise || [],
+            languages: doc.data().languages || [],
+            coverageZone: doc.data().coverageZone || "",
+          }))
+          .filter((pro) => {
+            const langMatch = pro.languages.some(
+              (lang) => normalizeString(lang) === cleanLanguage
+            );
+            console.log(`Professional ${pro.name}: Language match = ${langMatch}`, pro);
+            return langMatch;
+          }) as Professional[];
+      }
+
+      console.log("Filtered professionals:", professionals);
+      return professionals;
+    } catch (error) {
+      console.error("Query error:", error);
+      return [];
+    }
   };
 
   // Handle form submission
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const db = getFirestore();
-      let professionals = await findMatchingProfessionals();
-      
+      const professionals = await findMatchingProfessionals();
+
       if (professionals.length === 0) {
+        console.log("No professionals found after filtering.");
         setNoMatch(true);
         return;
       }
-  
+
       // Limit to maximum 2 professionals
       if (professionals.length > 2) {
-        // You can add sorting logic here (e.g., by leadCount) before slicing
-        professionals = professionals.slice(0, 2);
+        professionals.splice(2);
       }
-  
-      // Update contact request with limited professionals
+
+      const db = getFirestore();
       await addDoc(collection(db, "contactRequests"), {
         ...formData,
-        professionalEmails: professionals.map(pro => pro.email),
+        professionalEmails: professionals.map((pro) => pro.email),
         timestamp: new Date(),
       });
-  
+
       setMatchedProfessionals(professionals);
       await sendEmails(professionals);
       setSubmitted(true);
@@ -271,37 +349,34 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
       setLoading(false);
     }
   };
-  console.log( formData.location.replace(/[\p{Emoji}]/gu, "").trim(),
-   formData.language.replace(/[\p{Emoji}]/gu, "").trim(),);
 
-  // Send emails to professionals and client
+  // Send emails to professionals and client (unchanged)
   const sendEmails = async (professionals: Professional[]) => {
     const db = getFirestore();
     const batch = writeBatch(db);
-  
-    // Only process the first 2 professionals
-    professionals.forEach(pro => {
-      const proRef = doc(db, 'users', pro.id);
-      batch.update(proRef, { 
+
+    professionals.forEach((pro) => {
+      const proRef = doc(db, "users", pro.id);
+      batch.update(proRef, {
         leadCount: increment(1),
-        lastLeadReceived: new Date()
+        lastLeadReceived: new Date(),
       });
     });
 
     await batch.commit();
 
     const templateParams = {
-      user_availability: formData.availability.join(', '),
+      user_availability: formData.availability.join(", "),
       client_email: formData.email,
-      client_phone: formData.phoneNumber, // Added phone number
+      client_phone: formData.phoneNumber,
       specialty: formData.specialty,
-      location: formData.location.replace(/[\p{Emoji}]/gu, "").trim(),
-      language: formData.language.replace(/[\p{Emoji}]/gu, "").trim(),
+      location: normalizeString(formData.location),
+      language: normalizeString(formData.language),
       problem: formData.problem,
     };
 
     try {
-      const proEmails = professionals.map(pro =>
+      const proEmails = professionals.map((pro) =>
         emailjs.send(SERVICE_ID, PROFESSIONAL_TEMPLATE, {
           ...templateParams,
           to_email: pro.email,
@@ -314,16 +389,16 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
         emailjs.send(SERVICE_ID, CLIENT_TEMPLATE, {
           ...templateParams,
           to_email: formData.email,
-          professionals: professionals.map(p => p.name).join(', ')
-        })
+          professionals: professionals.map((p) => p.name).join(", "),
+        }),
       ]);
     } catch (error) {
-      console.error('Email sending failed:', error);
+      console.error("Email sending failed:", error);
       throw error;
     }
   };
 
-  // Progress bar component
+  // Progress bar component (unchanged)
   const ProgressBar = () => (
     <div className="w-full mb-8">
       <div className="relative pt-6">
@@ -333,11 +408,11 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
           style={{ width: `${(currentStep - 1) * 20}%` }}
         ></div>
         <div className="flex justify-between">
-          {[1, 2, 3, 4, 5].map(step => (
+          {[1, 2, 3, 4, 5].map((step) => (
             <div key={step} className="relative z-10">
               <motion.div
                 className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  step <= currentStep ? 'bg-emerald-500 text-white' : 'bg-emerald-100'
+                  step <= currentStep ? "bg-emerald-500 text-white" : "bg-emerald-100"
                 }`}
                 whileHover={{ scale: 1.1 }}
               >
@@ -350,7 +425,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
     </div>
   );
 
-  // Main render
+  // Main render (unchanged UI)
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-8">
       {submitted ? (
@@ -359,36 +434,36 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center py-8"
         >
-        <FiCheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold mb-4">Demande envoyée avec succès!</h2>
-        <p className="text-center text-gray-700 mb-4">
-          Votre demande a bien été prise en charge. Un professionnel vous contactera dans **24 à 48 heures**.  
-          Merci de faire confiance à <span className="font-semibold text-emerald-600">Afro Immobilier Connect</span> !
-        </p>
-        <div className="space-y-4 max-h-96 overflow-y-auto">
-          {matchedProfessionals.map((pro) => (
-            <motion.div
-              key={pro.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-emerald-50 rounded-lg p-4"
-            >
-              <div className="flex items-center gap-4">
-                {pro.photoURL ? (
-                  <img src={pro.photoURL} alt={pro.name} className="w-12 h-12 rounded-full" />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-                    <FiUser className="text-emerald-500" />
+          <FiCheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-4">Demande envoyée avec succès!</h2>
+          <p className="text-center text-gray-700 mb-4">
+            Votre demande a bien été prise en charge. Un professionnel vous contactera dans **24 à 48 heures**.
+            Merci de faire confiance à <span className="font-semibold text-emerald-600">Afro Immobilier Connect</span> !
+          </p>
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            {matchedProfessionals.map((pro) => (
+              <motion.div
+                key={pro.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-emerald-50 rounded-lg p-4"
+              >
+                <div className="flex items-center gap-4">
+                  {pro.photoURL ? (
+                    <img src={pro.photoURL} alt={pro.name} className="w-12 h-12 rounded-full" />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
+                      <FiUser className="text-emerald-500" />
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-semibold">{pro.name}</h3>
+                    <p className="text-sm text-gray-600">{pro.email}</p>
                   </div>
-                )}
-                <div>
-                  <h3 className="font-semibold">{pro.name}</h3>
-                  <p className="text-sm text-gray-600">{pro.email}</p>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       ) : noMatch ? (
         <motion.div
@@ -396,11 +471,11 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center py-8 px-4"
         >
-          <motion.img 
-            src="/searching.jpg" 
-            alt="Searching" 
+          <motion.img
+            src="/searching.jpg"
+            alt="Searching"
             className="mx-auto mb-6 w-64 h-64"
-            animate={{ y: [0, -15, 0] }} 
+            animate={{ y: [0, -15, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
           />
           <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
@@ -411,10 +486,9 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
           </p>
           <div className="mt-8 text-center">
             <p className="text-gray-700 font-medium">
-              C'est grâce au partage entre professionnels que nous devenons plus forts !  
+              C'est grâce au partage entre professionnels que nous devenons plus forts !
               Aidez-nous à agrandir la communauté en partageant cette plateforme avec votre réseau.
             </p>
-
             <div className="mt-4 flex justify-center">
               <button
                 onClick={() => {
@@ -427,7 +501,6 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                 <span>Copier le lien</span>
               </button>
             </div>
-
             <p className="mt-4 text-gray-600 text-sm italic">
               Ensemble, nous sommes plus forts ! 💪
             </p>
@@ -435,20 +508,13 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
           <div className="space-y-4 mt-8 max-w-md mx-auto">
             <div className="bg-blue-50 p-4 rounded-xl flex items-center space-x-4">
               <FiRefreshCw className="w-6 h-6 text-blue-500" />
-              <p className="text-left">
-                Essayez différentes zones de couverture ou langues
-              </p>
+              <p className="text-left">Essayez différentes zones de couverture ou langues</p>
             </div>
             <div className="bg-emerald-50 p-4 rounded-xl flex items-center space-x-4">
               <FiSearch className="w-6 h-6 text-emerald-500" />
-              <p className="text-left">
-                Ajustez vos critères de recherche
-              </p>
+              <p className="text-left">Ajustez vos critères de recherche</p>
             </div>
           </div>
-
-
-
           <button
             onClick={() => {
               setNoMatch(false);
@@ -460,17 +526,18 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
             <span>Réessayer la recherche</span>
           </button>
         </motion.div>
-      )  : (
+      ) : (
         <>
           <div className="flex justify-between mb-4">
-            <button onClick={currentStep === 1 ? onBack : handlePrevious} className="text-emerald-600">
+            <button
+              onClick={currentStep === 1 ? onBack : handlePrevious}
+              className="text-emerald-600"
+            >
               <FiArrowLeft className="inline-block" /> Retour
             </button>
             <div className="text-gray-500">Étape {currentStep}/5</div>
           </div>
-
           <ProgressBar />
-
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -483,23 +550,22 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                 isCombinedSpecialty ? (
                   <>
                     <h3 className="text-xl font-semibold">Choisissez votre spécialité</h3>
-                    
-                    {/* Category image for combined specialty */}
                     <div className="flex justify-center">
-                      <img 
+                      <img
                         src={getCategoryImage(specialty)}
-                        alt={specialty} 
+                        alt={specialty}
                         className="h-48 w-auto object-contain rounded-lg shadow-md animate-fade-in"
                       />
                     </div>
-                    
                     <div className="grid grid-cols-1 gap-2">
                       {currentSubSpecialties.map((sub) => (
                         <button
                           key={sub}
-                          onClick={() => handleSelect('specialty', sub)}
+                          onClick={() => handleSelect("specialty", sub)}
                           className={`p-4 rounded-lg border flex items-center text-left gap-3 transition-all duration-300 ${
-                            formData.specialty === sub ? 'border-emerald-500 bg-emerald-50 shadow-md' : 'border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50'
+                            formData.specialty === sub
+                              ? "border-emerald-500 bg-emerald-50 shadow-md"
+                              : "border-gray-200 hover:border-emerald-300 hover:bg-emerald-50/50"
                           }`}
                         >
                           <span>{sub}</span>
@@ -517,21 +583,18 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                 ) : (
                   <>
                     <h3 className="text-xl font-semibold">Spécialité sélectionnée</h3>
-                    
-                    {/* Show image for the selected specialty */}
                     <div className="flex justify-center mb-4">
-                      <img 
+                      <img
                         src={getCategoryImage(formData.specialty)}
-                        alt={formData.specialty} 
-                        className="w-50 h-48 animate-fade-in" // Adjust size as needed
+                        alt={formData.specialty}
+                        className="w-50 h-48 animate-fade-in"
                       />
                     </div>
-                    
                     <div className="p-4 bg-emerald-50 rounded-xl flex items-center gap-4">
                       <p className="text-emerald-700 font-medium">{formData.specialty}</p>
                     </div>
-                    <button 
-                      onClick={handleNext} 
+                    <button
+                      onClick={handleNext}
                       className="w-full bg-emerald-500 text-white p-3 rounded-xl hover:bg-emerald-600 transition-colors"
                     >
                       Continuer
@@ -539,24 +602,25 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   </>
                 )
               )}
-
               {currentStep === 2 && (
                 <>
                   <h3 className="text-xl font-semibold">Sélectionnez votre région</h3>
                   <div className="flex justify-center">
-                    <img 
-                        src="/location.jpg" 
-                        alt="Language Selection" 
-                        className="w-50 h-48 animate-fade-in" // Adjust size as needed
+                    <img
+                      src="/location.jpg"
+                      alt="Location Selection"
+                      className="w-50 h-48 animate-fade-in"
                     />
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {locations.map(location => (
+                    {locations.map((location) => (
                       <button
                         key={location}
-                        onClick={() => handleSelect('location', location)}
+                        onClick={() => handleSelect("location", location)}
                         className={`p-2 rounded-lg border ${
-                          formData.location === location ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'
+                          formData.location === location
+                            ? "border-emerald-500 bg-emerald-50"
+                            : "border-gray-200"
                         }`}
                       >
                         {location}
@@ -572,24 +636,25 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   </button>
                 </>
               )}
-
               {currentStep === 3 && (
                 <>
                   <h3 className="text-xl font-semibold">Langue de communication</h3>
                   <div className="flex justify-center">
-                    <img 
-                        src="/language.jpg" 
-                        alt="Language Selection" 
-                        className="w-50 h-48 animate-fade-in" // Adjust size as needed
+                    <img
+                      src="/language.jpg"
+                      alt="Language Selection"
+                      className="w-50 h-48 animate-fade-in"
                     />
-                    </div>
+                  </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {languages.map(language => (
+                    {languages.map((language) => (
                       <button
                         key={language}
-                        onClick={() => handleSelect('language', language)}
+                        onClick={() => handleSelect("language", language)}
                         className={`p-2 rounded-lg border ${
-                          formData.language === language ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'
+                          formData.language === language
+                            ? "border-emerald-500 bg-emerald-50"
+                            : "border-gray-200"
                         }`}
                       >
                         {language}
@@ -605,23 +670,22 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   </button>
                 </>
               )}
-
               {currentStep === 4 && (
                 <>
                   <h3 className="text-xl font-semibold">Coordonnées et description</h3>
                   <div className="flex justify-center">
-                    <img 
-                        src="/description.jpg" 
-                        alt="Language Selection" 
-                        className="w-50 h-48 animate-fade-in" // Adjust size as needed
+                    <img
+                      src="/description.jpg"
+                      alt="Description Selection"
+                      className="w-50 h-48 animate-fade-in"
                     />
-                    </div>
+                  </div>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => {
                       const sanitizedEmail = e.target.value.trim();
-                      handleSelect('email', sanitizedEmail);
+                      handleSelect("email", sanitizedEmail);
                     }}
                     className="w-full p-4 border rounded-xl mb-4"
                     placeholder="Adresse email *"
@@ -630,14 +694,14 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   <input
                     type="tel"
                     value={formData.phoneNumber}
-                    onChange={(e) => handleSelect('phoneNumber', e.target.value)}
+                    onChange={(e) => handleSelect("phoneNumber", e.target.value)}
                     className="w-full p-4 border rounded-xl mb-4"
                     placeholder="Numéro de téléphone *"
                     required
                   />
                   <textarea
                     value={formData.problem}
-                    onChange={(e) => handleSelect('problem', e.target.value)}
+                    onChange={(e) => handleSelect("problem", e.target.value)}
                     className="w-full p-4 border rounded-xl h-40"
                     placeholder="Décrivez votre situation en détail..."
                   />
@@ -650,24 +714,23 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                   </button>
                 </>
               )}
-
               {currentStep === 5 && (
                 <>
                   <h3 className="text-xl font-semibold">Coordonnées</h3>
                   <div className="flex justify-center">
-                    <img 
-                        src="/Time.jpg" 
-                        alt="Language Selection" 
-                        className="w-50 h-48 animate-fade-in" // Adjust size as needed
+                    <img
+                      src="/Time.jpg"
+                      alt="Time Selection"
+                      className="w-50 h-48 animate-fade-in"
                     />
-                    </div>
+                  </div>
                   <p className="text-gray-600 mb-4">
                     Sélectionnez les créneaux horaires où vous souhaitez être contacté par le professionnel
                   </p>
                   <AvailabilityPicker
                     availability={formData.availability}
                     setAvailability={(avail) =>
-                      setFormData(prev => ({ ...prev, availability: avail }))
+                      setFormData((prev) => ({ ...prev, availability: avail }))
                     }
                   />
                   <div className="flex gap-4">
@@ -684,9 +747,24 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                     >
                       {loading ? (
                         <span className="flex items-center justify-center">
-                          <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                          <svg
+                            className="animate-spin h-5 w-5 mr-3"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                              fill="none"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
                           </svg>
                           Envoi...
                         </span>

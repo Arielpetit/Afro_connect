@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, FilePlus, Settings, Menu, X, FileText, Users, UserSquare, BarChart2 } from "lucide-react";
+import { 
+  Home, FilePlus, Settings, Menu, X, FileText, Users, 
+  UserSquare, BarChart2, Calendar 
+} from "lucide-react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -46,8 +49,13 @@ const Sidebar = () => {
               isOpen={isOpen}
               onClick={() => navigate("/resource/new")}
             />
-            
-            {/* New Navigation Items */}
+            {/* New Events Button */}
+            <SidebarItem
+              icon={<Calendar size={18} className="flex-shrink-0" />}
+              label="Events"
+              isOpen={isOpen}
+              onClick={() => navigate("/event-form")}
+            />
             <SidebarItem
               icon={<FileText size={18} className="flex-shrink-0" />}
               label="Suggestions"
@@ -66,15 +74,12 @@ const Sidebar = () => {
               isOpen={isOpen}
               onClick={() => navigate("/admin/profiles")}
             />
-
             <SidebarItem
               icon={<Settings size={18} className="flex-shrink-0" />}
               label="Settings"
               isOpen={isOpen}
               onClick={() => navigate("/settings")}
             />
-            
-
             <SidebarItem
               icon={<BarChart2 size={18} className="flex-shrink-0" />}
               label="Google Analytics"
@@ -95,7 +100,7 @@ const Sidebar = () => {
   );
 };
 
-// Sidebar Item Component
+// Sidebar Item Component (keep this the same)
 const SidebarItem = ({
   icon,
   label,

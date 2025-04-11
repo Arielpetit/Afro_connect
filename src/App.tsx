@@ -27,8 +27,8 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import ProfessionalProfilePage from "./pages/ProffesionalProfilePage";
 import { ProfessionalLeadsDetail } from "./pages/ProfessionalLeadsDetail";
 import VideoGuidePage from "./pages/VIdeoPage";
-import { EventForm } from "./components/EventForm";
-import { EventsPage } from "./pages/EventsPage";
+import  EventForm  from "./components/EventForm";
+import  EventsPage  from "./pages/EventsPage";
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = localStorage.getItem("isAdmin") === "true";

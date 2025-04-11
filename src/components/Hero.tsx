@@ -90,16 +90,6 @@ export function Hero() {
               <Search className="w-5 h-5 text-blue-300" />
               Contacter un expert
             </motion.button>
-            
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/experts')}
-              className="px-7 py-4 bg-gradient-to-r from-green-600/80 to-emerald-500/80 hover:from-green-600/90 hover:to-emerald-500/90 backdrop-blur-md text-white rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-green-600/20"
-            >
-              <Users className="w-5 h-5" />
-              Contacter la liste de nos experts
-            </motion.button>
           </motion.div>
           
           {/* Trust indicators */}

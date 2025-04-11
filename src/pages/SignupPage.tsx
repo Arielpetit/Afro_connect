@@ -7,22 +7,22 @@ import { FiUploadCloud } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 import ReactSelect, { MultiValue } from "react-select";
 
+// Updated expertiseOptions to match ReactSelect format
 const expertiseOptions = [
-  "Courtiers immobiliers",
-  "Notaires",
-  "Inspecteurs en bâtiment",
-  "Évaluateurs agréés",
-  "Électriciens",
-  "Plombiers",
-  "Hommes à tout faire (Handymen)",
-  "Conseillers en sécurité financière",
-  "Avocats spécialisés en immobilier",
-  "Comptables CPA",
-  "Comptables",
-  "Fiscalistes",
-  "Autre (préciser)"
+  { value: "Courtiers immobiliers", label: "Courtiers immobiliers" },
+  { value: "Notaires", label: "Notaires" },
+  { value: "Inspecteurs en bâtiment", label: "Inspecteurs en bâtiment" },
+  { value: "Évaluateurs agréés", label: "Évaluateurs agréés" },
+  { value: "Électriciens", label: "Électriciens" },
+  { value: "Plombiers", label: "Plombiers" },
+  { value: "Hommes à tout faire (Handymen)", label: "Hommes à tout faire (Handymen)" },
+  { value: "Conseillers en sécurité financière", label: "Conseillers en sécurité financière" },
+  { value: "Avocats spécialisés en immobilier", label: "Avocats spécialisés en immobilier" },
+  { value: "Comptables CPA", label: "Comptables CPA" },
+  { value: "Comptables", label: "Comptables" },
+  { value: "Fiscalistes", label: "Fiscalistes" },
+  { value: "Autre (préciser)", label: "Autre (préciser)" },
 ];
-
 
 const coverageZones = [
   { value: "Canada", label: "Canada" },
@@ -38,7 +38,7 @@ const coverageZones = [
   { value: "Terre-Neuve-et-Labrador", label: "Terre-Neuve-et-Labrador" },
   { value: "Nunavut", label: "Nunavut" },
   { value: "Territoires du Nord-Ouest", label: "Territoires du Nord-Ouest" },
-  { value: "Yukon", label: "Yukon" }
+  { value: "Yukon", label: "Yukon" },
 ];
 
 const languages = [
@@ -67,7 +67,7 @@ const languages = [
   { value: "Garifuna", label: "Garifuna" },
   { value: "Papiamento", label: "Papiamento" },
   { value: "Saramaccan", label: "Saramaccan" },
-  { value: "Maroon Creole", label: "Maroon Creole" }
+  { value: "Maroon Creole", label: "Maroon Creole" },
 ];
 
 const SignupPage = () => {
@@ -84,14 +84,13 @@ const SignupPage = () => {
     projectsCompleted: "",
     company: "",
     services: "",
-    expertise: "",
+    expertise: [] as Array<{ value: string; label: string }>, // Changed to array
     bio: "",
     status: "pending",
     numeroPermis: "",
     profilePicture: null as File | null,
   });
   const [loading, setLoading] = useState(false);
-  const [showOtherExpertise, setShowOtherExpertise] = useState(false);
 
   const navigate = useNavigate();
   const db = getFirestore();
@@ -124,29 +123,33 @@ const SignupPage = () => {
   ) => {
     const target = e.target as HTMLInputElement;
     const { name, value, files } = target;
-    
-    if (files && files[0]) {
-      setFormData(prev => ({ ...prev, [name]: files[0] }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
-    if (name === "expertise") {
-      setShowOtherExpertise(value === "Autre (préciser)");
-    }
 
+    if (files && files[0]) {
+      setFormData((prev) => ({ ...prev, [name]: files[0] }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleCoverageZoneChange = (selectedOption: { value: string; label: string } | null) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      coverageZone: selectedOption ? selectedOption.value : ""
+      coverageZone: selectedOption ? selectedOption.value : "",
     }));
   };
 
   const handleLanguagesChange = (selectedOptions: MultiValue<{ value: string; label: string }>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      languages: [...selectedOptions]
+      languages: [...selectedOptions],
+    }));
+  };
+
+  // New handler for expertise
+  const handleExpertiseChange = (selectedOptions: MultiValue<{ value: string; label: string }>) => {
+    setFormData((prev) => ({
+      ...prev,
+      expertise: [...selectedOptions],
     }));
   };
 
@@ -172,7 +175,8 @@ const SignupPage = () => {
       const professionalData = {
         ...formData,
         coverageZone: formData.coverageZone,
-        languages: formData.languages.map(lang => lang.value),
+        languages: formData.languages.map((lang) => lang.value),
+        expertise: formData.expertise.map((exp) => exp.value), // Map expertise to values
         profilePicture: profilePictureUrl,
         userType: "professional",
         experience: Number(formData.experience),
@@ -187,7 +191,9 @@ const SignupPage = () => {
       navigate("/profile");
     } catch (error) {
       console.error("Erreur d'inscription :", error);
-      toast.error(`Échec de l'inscription : ${error instanceof Error ? error.message : "Erreur inconnue"}`);
+      toast.error(
+        `Échec de l'inscription : ${error instanceof Error ? error.message : "Erreur inconnue"}`
+      );
     } finally {
       setLoading(false);
     }
@@ -205,10 +211,7 @@ const SignupPage = () => {
           Inscription Professionnelle
         </h2>
 
-        <form
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          onSubmit={handleSubmit}
-        >
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -261,7 +264,6 @@ const SignupPage = () => {
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Entrez votre numéro de permis professionnel"
                 required
-
               />
             </div>
             <div>
@@ -292,7 +294,7 @@ const SignupPage = () => {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Adresse physique *
+                Adresse de l'entreprise *
               </label>
               <input
                 type="text"
@@ -322,7 +324,7 @@ const SignupPage = () => {
               </label>
               <ReactSelect
                 options={coverageZones}
-                value={coverageZones.find(option => option.value === formData.coverageZone)}
+                value={coverageZones.find((option) => option.value === formData.coverageZone)}
                 onChange={handleCoverageZoneChange}
                 placeholder="Sélectionnez une région..."
                 styles={customSelectStyles}
@@ -346,6 +348,21 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
+                Expertise *
+              </label>
+              <ReactSelect
+                options={expertiseOptions}
+                isMulti
+                value={formData.expertise}
+                onChange={handleExpertiseChange}
+                placeholder="Sélectionnez vos expertises..."
+                styles={customSelectStyles}
+                classNamePrefix="react-select"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Disponibilité (jours et heures de service) :
               </label>
               <textarea
@@ -355,42 +372,6 @@ const SignupPage = () => {
                 placeholder="Ex: Lundi: 9h-17h, Mardi: 9h-17h, etc."
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-24"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Expertise *
-              </label>
-              <select
-                name="expertise"
-                value={formData.expertise}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                required
-              >
-                <option value="">Sélectionnez votre expertise</option>
-                {expertiseOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-
-              {showOtherExpertise && (
-                <div className="mt-4 animate-fade-in">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Veuillez préciser votre expertise *
-                  </label>
-                  <input
-                    type="text"
-                    name="expertise"
-                    value={formData.expertise}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    placeholder="Entrez votre domaine d'expertise"
-                    required
-                  />
-                </div>
-              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>

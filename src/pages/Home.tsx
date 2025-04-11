@@ -7,12 +7,14 @@ import { Statistic } from "../components/CounterItem";
 import  About1  from "../components/About"; // Add this import
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { ServicesSection } from "../components/ServicesSection";
 
 const Home: React.FC = () => {
   return (
     <div className="relative">
       {/* Main Content */}
       <Hero />
+      <ServicesSection />
       <Features />
       <About1 /> 
       <Statistic />

@@ -1,88 +1,220 @@
-// components/Events/EventsPage.tsx
-import { useEffect, useState } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../firebase';
-import { Event } from '../Types/event';
-import { motion, AnimatePresence } from 'framer-motion';
+// EventsPage.tsx
+import { useEffect, useState } from "react";
+import { db } from "../firebase";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { motion, AnimatePresence } from "framer-motion";
 
-export const EventsPage = () => {
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  duration: string;
+  speaker: string;
+  registrationLink: string;
+  category: string;
+  image: string;
+}
+
+const EventsPage = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({});
+
+  const categories = [
+    { id: "all", name: "Tous" },
+    { id: "webinar", name: "Webinaires" },
+    { id: "workshop", name: "Ateliers" },
+    { id: "conference", name: "Conférences" },
+    { id: "networking", name: "Réseautage" },
+  ];
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const eventsQuery = query(collection(db, 'events'), orderBy('date', 'desc'));
-        const snapshot = await getDocs(eventsQuery);
-        const eventsData = snapshot.docs.map(doc => ({
+        const q = query(collection(db, "events"), orderBy("date", "desc"));
+        const querySnapshot = await getDocs(q);
+        const eventsList = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         })) as Event[];
-        setEvents(eventsData);
+        setEvents(eventsList);
       } catch (error) {
-        console.error('Error fetching events:', error);
+        console.error("Error fetching events:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchEvents();
   }, []);
 
-  if (loading) {
-    return <div className="text-center py-8">Loading events...</div>;
-  }
+  const toggleDescription = (eventId: string) => {
+    setExpandedDescriptions(prev => ({
+      ...prev,
+      [eventId]: !prev[eventId]
+    }));
+  };
+
+  const filteredEvents = events.filter(event => {
+    const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.speaker.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || event.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' };
+    return new Date(dateString).toLocaleDateString('fr-FR', options);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Upcoming Events & Webinars</h1>
-        
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Événements à venir</h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Webinaires, ateliers et conférences pour développer votre expertise immobilière
+          </p>
+        </div>
+
+        <div className="mb-8 space-y-4">
+          <div className="relative max-w-md mx-auto">
+            <input
+              type="text"
+              placeholder="Rechercher des événements..."
+              className="w-full px-6 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <svg
+              className="absolute right-3 top-3 h-6 w-6 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-2">
+            {categories.map(category => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`px-4 py-2 rounded-full transition-colors ${
+                  selectedCategory === category.id
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+                    : "bg-white text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <AnimatePresence>
-          {events.length === 0 ? (
-            <div className="text-center text-gray-500">No upcoming events scheduled</div>
+          {loading ? (
+            <div className="text-center py-12">Chargement...</div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((event) => (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {filteredEvents.map(event => (
                 <motion.div
                   key={event.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
                 >
-                  <div className="p-6">
-                    <div className="mb-4">
-                      <h3 className="text-xl font-semibold text-gray-800">{event.title}</h3>
-                      <p className="text-sm text-gray-500 mt-1">
-                        {new Date(event.date).toLocaleDateString()} • {event.time}
-                      </p>
-                    </div>
-
-                    <p className="text-gray-600 mb-4 line-clamp-3">{event.description}</p>
-
-                    <div className="border-t pt-4">
-                      <div className="mb-2">
-                        <span className="font-medium text-gray-700">Speaker:</span>
-                        <p className="text-gray-600">{event.speaker}</p>
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={event.image || '/default-event.jpg'}
+                      alt={event.title}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/default-event.jpg';
+                      }}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 p-4">
+                      <div className="text-sm font-medium text-white">
+                        {formatDate(event.date)}
                       </div>
-
-                      <a
-                        href={event.registrationLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block w-full text-center bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-                      >
-                        Register Now
-                      </a>
                     </div>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="mb-4 flex items-center justify-between">
+                      <span className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-600">
+                        {categories.find(c => c.id === event.category)?.name}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
+                    
+                    <div className="mb-4">
+                      <div className="flex items-center text-gray-600 mb-2">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {event.time} • {event.duration} minutes
+                      </div>
+                      
+                      <div className="flex items-center text-gray-600">
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        {event.speaker}
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <p className={`text-gray-600 ${expandedDescriptions[event.id] ? '' : 'line-clamp-3'}`}>
+                        {event.description}
+                      </p>
+                      {event.description.length > 100 && (
+                        <button
+                          onClick={() => toggleDescription(event.id)}
+                          className="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2"
+                        >
+                          {expandedDescriptions[event.id] ? 'Voir moins' : 'Voir plus'}
+                        </button>
+                      )}
+                    </div>
+
+                    <a
+                      href={event.registrationLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all"
+                    >
+                      S'inscrire maintenant
+                    </a>
                   </div>
                 </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
+
+        {!loading && filteredEvents.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-4 text-6xl">📅</div>
+            <h3 className="text-gray-900 font-medium mb-2">Aucun événement trouvé</h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              Essayez de modifier vos filtres ou consultez nos événements passés
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
+export default EventsPage;

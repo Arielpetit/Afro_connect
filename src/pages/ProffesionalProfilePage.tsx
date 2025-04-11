@@ -1,10 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { FiUser, FiBriefcase, FiArrowLeft, FiUsers, FiMap } from "react-icons/fi";
-import { 
-  FaHome, FaBalanceScale, FaFileSignature, FaTools, 
-  FaSearchPlus, FaHardHat, FaHammer, 
-  FaCalculator, FaBriefcase 
+import {
+  FiUser,
+  FiBriefcase,
+  FiArrowLeft,
+  FiUsers,
+  FiMap,
+} from "react-icons/fi";
+import {
+  FaHome,
+  FaBalanceScale,
+  FaFileSignature,
+  FaTools,
+  FaSearchPlus,
+  FaHardHat,
+  FaHammer,
+  FaCalculator,
+  FaBriefcase,
 } from "react-icons/fa";
 
 // Specialist configuration
@@ -15,7 +27,7 @@ const financialSpecialties = [
   "Avocat spécialisé en droit immobilier",
   "Gestionnaire d'actifs immobiliers",
   "Conseiller en sécurité financière",
-  "Comptables CPA"
+  "Comptables CPA",
 ];
 
 const categories = [
@@ -35,73 +47,77 @@ const categoryColors = {
   "Courtier hypothécaire": {
     gradient: "from-blue-600 to-indigo-700",
     shadow: "shadow-blue-300/25",
-    border: "border-blue-400/20"
+    border: "border-blue-400/20",
   },
   "Courtier immobilier": {
     gradient: "from-teal-600 to-emerald-700",
     shadow: "shadow-teal-300/25",
-    border: "border-teal-400/20"
+    border: "border-teal-400/20",
   },
-  "Notaire": {
+  Notaire: {
     gradient: "from-purple-600 to-fuchsia-700",
     shadow: "shadow-purple-300/25",
-    border: "border-purple-400/20"
+    border: "border-purple-400/20",
   },
   "spécialiste en rénovation": {
     gradient: "from-orange-600 to-amber-700",
-    shadow: "shadow-orange-300/25", 
-    border: "border-orange-400/20"
+    shadow: "shadow-orange-300/25",
+    border: "border-orange-400/20",
   },
   "Évaluateurs agréés": {
     gradient: "from-green-600 to-lime-700",
     shadow: "shadow-green-300/25",
-    border: "border-green-400/20"
+    border: "border-green-400/20",
   },
   "Inspecteur en bâtiment": {
     gradient: "from-red-600 to-rose-700",
     shadow: "shadow-red-300/25",
-    border: "border-red-400/20"
+    border: "border-red-400/20",
   },
   "Entrepreneur général": {
     gradient: "from-pink-600 to-rose-700",
     shadow: "shadow-pink-300/25",
-    border: "border-pink-400/20"
+    border: "border-pink-400/20",
   },
-  "Comptables": {
+  Comptables: {
     gradient: "from-amber-500 to-yellow-600",
     shadow: "shadow-amber-300/25",
-    border: "border-amber-400/20"
+    border: "border-amber-400/20",
   },
   "Métiers spécialisés de la construction et de l'immobilier": {
     gradient: "from-indigo-600 to-violet-700",
     shadow: "shadow-indigo-300/25",
-    border: "border-indigo-400/20"
+    border: "border-indigo-400/20",
   },
   "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé": {
     gradient: "from-slate-600 to-gray-700",
     shadow: "shadow-slate-300/25",
-    border: "border-slate-400/20"
+    border: "border-slate-400/20",
   },
 };
 
 const categoryIcons: Record<string, React.ReactNode> = {
   "Courtier hypothécaire": <FaHome className="text-2xl" />,
   "Courtier immobilier": <FaHome className="text-2xl" />,
-  "Notaire": <FaBalanceScale className="text-2xl" />,
+  Notaire: <FaBalanceScale className="text-2xl" />,
   "spécialiste en rénovation": <FaHardHat className="text-2xl" />,
   "Évaluateurs agréés": <FaFileSignature className="text-2xl" />,
   "Inspecteur en bâtiment": <FaSearchPlus className="text-2xl" />,
   "Entrepreneur général": <FaTools className="text-2xl" />,
-  "Comptables": <FaCalculator className="text-2xl" />,
-  "Métiers spécialisés de la construction et de l'immobilier": <FaHammer className="text-2xl" />,
-  "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé": <FaCalculator className="text-2xl" />,
+  Comptables: <FaCalculator className="text-2xl" />,
+  "Métiers spécialisés de la construction et de l'immobilier": (
+    <FaHammer className="text-2xl" />
+  ),
+  "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé": (
+    <FaCalculator className="text-2xl" />
+  ),
 };
 
 interface User {
   id: string;
   name?: string;
   email?: string;
-  expertise?: string;
+  expertise?: string[]; // Array of strings
   experience?: number;
   projectsCompleted?: number;
   profilePicture?: string;
@@ -122,9 +138,10 @@ const ProfessionalProfilePage = () => {
   const db = getFirestore();
 
   const mainCategories = categories.filter(
-    (cat) => 
-      cat !== "Métiers spécialisés de la construction et de l'immobilier" && 
-      cat !== "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé"
+    (cat) =>
+      cat !== "Métiers spécialisés de la construction et de l'immobilier" &&
+      cat !==
+        "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé"
   );
 
   useEffect(() => {
@@ -133,10 +150,14 @@ const ProfessionalProfilePage = () => {
         const querySnapshot = await getDocs(collection(db, "users"));
         const usersList: User[] = [];
         querySnapshot.forEach((doc) => {
-          usersList.push({ id: doc.id, ...doc.data() });
+          const userData = { id: doc.id, ...doc.data() };
+          console.log("Fetched user:", userData); // Debug: Log each user
+          usersList.push(userData);
         });
         setUsers(usersList);
+        console.log("All users:", usersList); // Debug: Log full user list
       } catch (err) {
+        console.error("Error fetching users:", err);
         setError("Échec du chargement des profils. Veuillez réessayer plus tard.");
       } finally {
         setLoading(false);
@@ -147,24 +168,50 @@ const ProfessionalProfilePage = () => {
 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
+    console.log("Selected category:", category); // Debug: Log selected category
   };
+
+  // Normalize expertise and category for comparison
+  const normalizeString = (str: string) =>
+    str.toLowerCase().replace(/s$/, "").trim();
 
   const filteredUsers = selectedCategory
     ? users.filter((user) => {
-        if (!user.expertise) return false;
-
-        if (selectedCategory === "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé") {
-          return financialSpecialties.includes(user.expertise);
+        if (!user.expertise || !Array.isArray(user.expertise)) {
+          console.log("User skipped (no/invalid expertise):", user); // Debug
+          return false;
         }
 
-        if (selectedCategory === "Métiers spécialisés de la construction et de l'immobilier") {
-          return (
-            !categories.includes(user.expertise) &&
-            !financialSpecialties.includes(user.expertise)
+        const normalizedExpertise = user.expertise.map(normalizeString);
+        const normalizedCategory = normalizeString(selectedCategory);
+
+        if (
+          selectedCategory ===
+          "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé"
+        ) {
+          const matches = normalizedExpertise.some((exp) =>
+            financialSpecialties.map(normalizeString).includes(exp)
           );
+          console.log(`User ${user.name} financial match:`, matches); // Debug
+          return matches;
         }
 
-        return user.expertise.toLowerCase() === selectedCategory.toLowerCase();
+        if (
+          selectedCategory ===
+          "Métiers spécialisés de la construction et de l'immobilier"
+        ) {
+          const matches = normalizedExpertise.some(
+            (exp) =>
+              !categories.map(normalizeString).includes(exp) &&
+              !financialSpecialties.map(normalizeString).includes(exp)
+          );
+          console.log(`User ${user.name} trades match:`, matches); // Debug
+          return matches;
+        }
+
+        const matches = normalizedExpertise.includes(normalizedCategory);
+        console.log(`User ${user.name} category match:`, matches); // Debug
+        return matches;
       })
     : users;
 
@@ -181,13 +228,19 @@ const ProfessionalProfilePage = () => {
                 <button
                   key={category}
                   onClick={() => handleCategoryClick(category)}
-                  className={`bg-gradient-to-br ${categoryColors[category].gradient} text-white rounded-2xl shadow-md
-                    hover:shadow-lg ${categoryColors[category].shadow} transition-all duration-300 p-5 text-center flex flex-col 
+                  className={`bg-gradient-to-br ${
+                    categoryColors[category].gradient
+                  } text-white rounded-2xl shadow-md
+                    hover:shadow-lg ${
+                      categoryColors[category].shadow
+                    } transition-all duration-300 p-5 text-center flex flex-col 
                     items-center justify-center gap-3 hover:scale-105 active:scale-95 overflow-hidden group
                     border ${categoryColors[category].border}`}
                 >
                   <div className="bg-white/20 p-3 rounded-full mb-2 group-hover:bg-white/30 transition-colors">
-                    {categoryIcons[category] || <FaBriefcase className="text-2xl" />}
+                    {categoryIcons[category] || (
+                      <FaBriefcase className="text-2xl" />
+                    )}
                   </div>
                   <span className="text-sm font-medium text-white group-hover:text-white/90 line-clamp-2 h-10">
                     {category}
@@ -223,7 +276,9 @@ const ProfessionalProfilePage = () => {
               <div className="text-center text-gray-600 text-lg p-8 bg-white rounded-2xl shadow-sm">
                 <FiUsers className="w-16 h-16 text-teal-500 mx-auto mb-4" />
                 <p className="mb-2">Aucun profil trouvé </p>
-                <p className="text-sm">Soyez le premier à vous inscrire dans cette catégorie!</p>
+                <p className="text-sm">
+                  Soyez le premier à vous inscrire dans cette catégorie!
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -235,20 +290,29 @@ const ProfessionalProfilePage = () => {
                   >
                     <div className="relative h-48 bg-teal-50 flex items-center justify-center">
                       <img
-                        src={user.profilePicture || "https://avatar.vercel.sh/placeholder"}
+                        src={
+                          user.profilePicture ||
+                          "https://avatar.vercel.sh/placeholder"
+                        }
                         alt={user.name || "Professional"}
                         className="w-full h-full object-contain object-center"
-                        style={{ transform: 'scale(0.9)' }}
+                        style={{ transform: "scale(0.9)" }}
                       />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                        <h3 className="text-lg font-semibold text-white">{user.name}</h3>
-                        <p className="text-sm text-teal-100">{user.expertise}</p>
+                        <h3 className="text-lg font-semibold text-white">
+                          {user.name || "N/A"}
+                        </h3>
+                        <p className="text-sm text-teal-100">
+                          {user.expertise && user.expertise.length > 0
+                            ? user.expertise.join(", ")
+                            : "Aucune expertise"}
+                        </p>
                       </div>
                     </div>
 
                     <div className="p-6 space-y-4">
                       <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                        <FiUser className="text-teal-600" /> {user.name}
+                        <FiUser className="text-teal-600" /> {user.name || "N/A"}
                       </h3>
                       <div className="space-y-2">
                         <ProfessionalBadge
@@ -274,7 +338,11 @@ const ProfessionalProfilePage = () => {
   );
 };
 
-const ProfessionalBadge: React.FC<ProfessionalBadgeProps> = ({ icon, label, value }) => (
+const ProfessionalBadge: React.FC<ProfessionalBadgeProps> = ({
+  icon,
+  label,
+  value,
+}) => (
   <div className="flex items-start gap-3 text-sm">
     <div className="p-2 bg-teal-50 rounded-lg text-teal-600">{icon}</div>
     <div>
