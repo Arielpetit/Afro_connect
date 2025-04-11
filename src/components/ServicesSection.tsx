@@ -23,28 +23,28 @@ export function ServicesSection() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
             viewport={{ once: true }}
             className="flex flex-row items-center gap-4 md:gap-8"
-            onClick={() => navigate('/events')}
+            onClick={() => navigate('/experts')}
           >
             <div className="w-1/2 cursor-pointer">
               <div className="p-2 md:p-6 flex justify-center items-center h-32 md:h-64">
                 <img 
-                  src="/webiner.jpg" 
-                  alt="Webinar" 
+                  src="/liste.jpg" 
+                  alt="Liste des professionnels" 
                   className="h-full w-auto object-contain transition-transform duration-500 hover:scale-105"
                 />
               </div>
             </div>
             <div className="w-1/2 py-2 md:py-4">
-              <h3 className="text-sm md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Nos Webinars</h3>
-              <p className="text-xs md:text-base text-gray-600 mb-2 md:mb-4">Participez à nos formations en ligne et développez vos connaissances dans le domaine immobilier.</p>
+              <h3 className="text-sm md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Liste des professionnels</h3>
+              <p className="text-xs md:text-base text-gray-600 mb-2 md:mb-4">Consultez notre annuaire d'experts immobiliers certifiés.</p>
               <button 
-                onClick={() => navigate('/events')} 
-                className="px-2 py-1 md:px-4 md:py-2 text-xs md:text-base bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
+                onClick={() => navigate('/experts')} 
+                className="px-2 py-1 md:px-4 md:py-2 text-xs md:text-base bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors"
               >
-                Voir le programme
+                Voir l'annuaire
               </button>
             </div>
           </motion.div>
@@ -83,28 +83,28 @@ export function ServicesSection() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="flex flex-row items-center gap-4 md:gap-8"
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate('/events')}
           >
             <div className="w-1/2 cursor-pointer">
               <div className="p-2 md:p-6 flex justify-center items-center h-32 md:h-64">
                 <img 
-                  src="/liste.jpg" 
-                  alt="Liste des professionnels" 
+                  src="/webiner.jpg" 
+                  alt="Webinar" 
                   className="h-full w-auto object-contain transition-transform duration-500 hover:scale-105"
                 />
               </div>
             </div>
             <div className="w-1/2 py-2 md:py-4">
-              <h3 className="text-sm md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Liste des professionnels</h3>
-              <p className="text-xs md:text-base text-gray-600 mb-2 md:mb-4">Consultez notre annuaire d'experts immobiliers certifiés.</p>
+              <h3 className="text-sm md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">Nos Webinars</h3>
+              <p className="text-xs md:text-base text-gray-600 mb-2 md:mb-4">Participez à nos formations en ligne et développez vos connaissances dans le domaine immobilier.</p>
               <button 
-                onClick={() => navigate('/experts')} 
-                className="px-2 py-1 md:px-4 md:py-2 text-xs md:text-base bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors"
+                onClick={() => navigate('/events')} 
+                className="px-2 py-1 md:px-4 md:py-2 text-xs md:text-base bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
               >
-                Voir l'annuaire
+                Voir le programme
               </button>
             </div>
           </motion.div>
