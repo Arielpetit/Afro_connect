@@ -50,6 +50,59 @@ const categories = [
   },  
 ];
 
+const categoryColors = {
+  "Courtier hypothécaire": {
+    gradient: "from-blue-600 to-indigo-700",
+    shadow: "shadow-blue-300/25",
+    border: "border-blue-400/20"
+  },
+  "Courtier immobilier": {
+    gradient: "from-teal-600 to-emerald-700",
+    shadow: "shadow-teal-300/25",
+    border: "border-teal-400/20"
+  },
+  "Notaire": {
+    gradient: "from-purple-600 to-fuchsia-700",
+    shadow: "shadow-purple-300/25",
+    border: "border-purple-400/20"
+  },
+  "spécialiste en rénovation": {
+    gradient: "from-orange-600 to-amber-700",
+    shadow: "shadow-orange-300/25", 
+    border: "border-orange-400/20"
+  },
+  "Évaluateurs agréés": {
+    gradient: "from-green-600 to-lime-700",
+    shadow: "shadow-green-300/25",
+    border: "border-green-400/20"
+  },
+  "Inspecteur en bâtiment": {
+    gradient: "from-red-600 to-rose-700",
+    shadow: "shadow-red-300/25",
+    border: "border-red-400/20"
+  },
+  "Entrepreneur général": {
+    gradient: "from-pink-600 to-rose-700",
+    shadow: "shadow-pink-300/25",
+    border: "border-pink-400/20"
+  },
+  "Comptable": {
+    gradient: "from-amber-500 to-yellow-600",
+    shadow: "shadow-amber-300/25",
+    border: "border-amber-400/20"
+  },
+  "Métiers spécialisés de la construction et de l'immobilier": {
+    gradient: "from-indigo-600 to-violet-700",
+    shadow: "shadow-indigo-300/25",
+    border: "border-indigo-400/20"
+  },
+  "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé": {
+    gradient: "from-slate-600 to-gray-700",
+    shadow: "shadow-slate-300/25",
+    border: "border-slate-400/20"
+  },
+};
+
 export const ProfessionalRoadmap = () => {
   const [showWizard, setShowWizard] = useState(false);
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
@@ -63,7 +116,6 @@ export const ProfessionalRoadmap = () => {
   const handleBackFromWizard = () => {
     setShowWizard(false);
     window.scrollTo(0, 0);
-
   };
 
   return (
@@ -134,10 +186,10 @@ export const ProfessionalRoadmap = () => {
                   <motion.button
                     key={category.name}
                     onClick={() => handleCategoryClick(category.name)}
-                    className="bg-gradient-to-br from-teal-500 to-blue-600 text-white rounded-xl shadow-md
-                    hover:shadow-lg hover:shadow-teal-200/40 transition-all duration-300 p-3 text-center flex flex-col 
-                    items-center justify-center gap-2 hover:scale-105 active:scale-95 overflow-hidden group
-                    border border-teal-300/20"
+                    className={`bg-gradient-to-br ${categoryColors[category.name].gradient} text-white rounded-xl shadow-md
+                      hover:shadow-lg ${categoryColors[category.name].shadow} transition-all duration-300 p-3 text-center 
+                      flex flex-col items-center justify-center gap-2 hover:scale-105 active:scale-95 overflow-hidden group
+                      border ${categoryColors[category.name].border}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ 
                       opacity: 1, 
@@ -161,5 +213,3 @@ export const ProfessionalRoadmap = () => {
     </div>
   );
 };
-
-// Note: The CategoriesGrid component is no longer needed as we're rendering buttons directly

@@ -26,8 +26,9 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import ProfessionalProfilePage from "./pages/ProffesionalProfilePage";
 import { ProfessionalLeadsDetail } from "./pages/ProfessionalLeadsDetail";
-import {ParallaxHome} from "./pages/test";
 import VideoGuidePage from "./pages/VIdeoPage";
+import { EventForm } from "./components/EventForm";
+import { EventsPage } from "./pages/EventsPage";
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = localStorage.getItem("isAdmin") === "true";
@@ -55,6 +56,7 @@ const AppContent = () => {
           <Route path="/profile/:userId" element={<ProfileDetailsPage />} />
           <Route path="/suggestions" element={<SuggestionsPage />} />
           <Route path="/experts" element={<ProfessionalProfilePage />} />
+          <Route path="/events" element={< EventsPage/>} />
 
           <Route path="/guide" element={< VideoGuidePage/>} />
 
@@ -62,6 +64,7 @@ const AppContent = () => {
           {/* Admin Routes (Protected) */}
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<ProtectedRoute element={<AdminDashboardPage />} />} />
+          <Route path="/event-form" element={<ProtectedRoute element={<EventForm />} />} />
           <Route path="/send-email" element={<ProtectedRoute element={<SendEmailForm />} />} />
           <Route path="/admin/suggestions" element={<ProtectedRoute element={<AdminSuggestionsPage />} />} />
           <Route path="/admin/leads" element={<ProtectedRoute element={<ProfessionalsLeadsPage />} />} />

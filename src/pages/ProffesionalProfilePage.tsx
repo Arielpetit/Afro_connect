@@ -3,7 +3,7 @@ import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { FiUser, FiBriefcase, FiArrowLeft, FiUsers, FiMap } from "react-icons/fi";
 import { 
   FaHome, FaBalanceScale, FaFileSignature, FaTools, 
-   FaSearchPlus, FaHardHat, FaHammer, 
+  FaSearchPlus, FaHardHat, FaHammer, 
   FaCalculator, FaBriefcase 
 } from "react-icons/fa";
 
@@ -14,7 +14,8 @@ const financialSpecialties = [
   "Expert en valorisation immobilière",
   "Avocat spécialisé en droit immobilier",
   "Gestionnaire d'actifs immobiliers",
-  "Conseil en sécurité financière"
+  "Conseiller en sécurité financière",
+  "Comptables CPA"
 ];
 
 const categories = [
@@ -25,11 +26,64 @@ const categories = [
   "Évaluateurs agréés",
   "Inspecteur en bâtiment",
   "Entrepreneur général",
+  "Comptables",
   "Métiers spécialisés de la construction et de l'immobilier",
   "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé",
 ];
 
-// Map categories to icons
+const categoryColors = {
+  "Courtier hypothécaire": {
+    gradient: "from-blue-600 to-indigo-700",
+    shadow: "shadow-blue-300/25",
+    border: "border-blue-400/20"
+  },
+  "Courtier immobilier": {
+    gradient: "from-teal-600 to-emerald-700",
+    shadow: "shadow-teal-300/25",
+    border: "border-teal-400/20"
+  },
+  "Notaire": {
+    gradient: "from-purple-600 to-fuchsia-700",
+    shadow: "shadow-purple-300/25",
+    border: "border-purple-400/20"
+  },
+  "spécialiste en rénovation": {
+    gradient: "from-orange-600 to-amber-700",
+    shadow: "shadow-orange-300/25", 
+    border: "border-orange-400/20"
+  },
+  "Évaluateurs agréés": {
+    gradient: "from-green-600 to-lime-700",
+    shadow: "shadow-green-300/25",
+    border: "border-green-400/20"
+  },
+  "Inspecteur en bâtiment": {
+    gradient: "from-red-600 to-rose-700",
+    shadow: "shadow-red-300/25",
+    border: "border-red-400/20"
+  },
+  "Entrepreneur général": {
+    gradient: "from-pink-600 to-rose-700",
+    shadow: "shadow-pink-300/25",
+    border: "border-pink-400/20"
+  },
+  "Comptables": {
+    gradient: "from-amber-500 to-yellow-600",
+    shadow: "shadow-amber-300/25",
+    border: "border-amber-400/20"
+  },
+  "Métiers spécialisés de la construction et de l'immobilier": {
+    gradient: "from-indigo-600 to-violet-700",
+    shadow: "shadow-indigo-300/25",
+    border: "border-indigo-400/20"
+  },
+  "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé": {
+    gradient: "from-slate-600 to-gray-700",
+    shadow: "shadow-slate-300/25",
+    border: "border-slate-400/20"
+  },
+};
+
 const categoryIcons: Record<string, React.ReactNode> = {
   "Courtier hypothécaire": <FaHome className="text-2xl" />,
   "Courtier immobilier": <FaHome className="text-2xl" />,
@@ -38,6 +92,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
   "Évaluateurs agréés": <FaFileSignature className="text-2xl" />,
   "Inspecteur en bâtiment": <FaSearchPlus className="text-2xl" />,
   "Entrepreneur général": <FaTools className="text-2xl" />,
+  "Comptables": <FaCalculator className="text-2xl" />,
   "Métiers spécialisés de la construction et de l'immobilier": <FaHammer className="text-2xl" />,
   "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé": <FaCalculator className="text-2xl" />,
 };
@@ -66,7 +121,11 @@ const ProfessionalProfilePage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const db = getFirestore();
 
-  const mainCategories = categories.slice(0, -2);
+  const mainCategories = categories.filter(
+    (cat) => 
+      cat !== "Métiers spécialisés de la construction et de l'immobilier" && 
+      cat !== "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé"
+  );
 
   useEffect(() => {
     const fetchUsersData = async () => {
@@ -91,16 +150,21 @@ const ProfessionalProfilePage = () => {
   };
 
   const filteredUsers = selectedCategory
-    ? users.filter(user => {
-        if (selectedCategory === "Métiers spécialisés de la construction et de l'immobilier") {
-          return user.expertise && 
-            !mainCategories.includes(user.expertise) &&
-            !financialSpecialties.includes(user.expertise);
-        }
+    ? users.filter((user) => {
+        if (!user.expertise) return false;
+
         if (selectedCategory === "Comptable CPA, Avocat fiscaliste spécialisé en immobilier, conseiller en sécurité financière spécialisé") {
-          return user.expertise && financialSpecialties.includes(user.expertise);
+          return financialSpecialties.includes(user.expertise);
         }
-        return user.expertise?.toLowerCase() === selectedCategory.toLowerCase();
+
+        if (selectedCategory === "Métiers spécialisés de la construction et de l'immobilier") {
+          return (
+            !categories.includes(user.expertise) &&
+            !financialSpecialties.includes(user.expertise)
+          );
+        }
+
+        return user.expertise.toLowerCase() === selectedCategory.toLowerCase();
       })
     : users;
 
@@ -117,10 +181,10 @@ const ProfessionalProfilePage = () => {
                 <button
                   key={category}
                   onClick={() => handleCategoryClick(category)}
-                  className="bg-gradient-to-br from-teal-500 to-blue-600 text-white rounded-2xl shadow-md
-                    hover:shadow-lg hover:shadow-teal-200/40 transition-all duration-300 p-5 text-center flex flex-col 
+                  className={`bg-gradient-to-br ${categoryColors[category].gradient} text-white rounded-2xl shadow-md
+                    hover:shadow-lg ${categoryColors[category].shadow} transition-all duration-300 p-5 text-center flex flex-col 
                     items-center justify-center gap-3 hover:scale-105 active:scale-95 overflow-hidden group
-                    border border-teal-300/20"
+                    border ${categoryColors[category].border}`}
                 >
                   <div className="bg-white/20 p-3 rounded-full mb-2 group-hover:bg-white/30 transition-colors">
                     {categoryIcons[category] || <FaBriefcase className="text-2xl" />}
@@ -169,11 +233,12 @@ const ProfessionalProfilePage = () => {
                     className="group bg-white rounded-2xl shadow-sm hover:shadow-lg hover:shadow-teal-100 
                       transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100"
                   >
-                    <div className="relative h-48 bg-teal-50">
+                    <div className="relative h-48 bg-teal-50 flex items-center justify-center">
                       <img
                         src={user.profilePicture || "https://avatar.vercel.sh/placeholder"}
                         alt={user.name || "Professional"}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="w-full h-full object-contain object-center"
+                        style={{ transform: 'scale(0.9)' }}
                       />
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
                         <h3 className="text-lg font-semibold text-white">{user.name}</h3>
