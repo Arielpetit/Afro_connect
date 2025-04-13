@@ -54,7 +54,7 @@ const Sidebar = () => {
               icon={<Calendar size={18} className="flex-shrink-0" />}
               label="Events"
               isOpen={isOpen}
-              onClick={() => navigate("/event-form")}
+              onClick={() => navigate("/admin/events/new")}
             />
             <SidebarItem
               icon={<FileText size={18} className="flex-shrink-0" />}

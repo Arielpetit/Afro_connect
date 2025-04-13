@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { addDoc, collection, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db, Timestamp } from "../firebase";
 import { motion } from "framer-motion";
 
 interface Event {
@@ -17,6 +17,7 @@ interface Event {
   registrationLink: string;
   category: string;
   image: string;
+  createdAt?: Timestamp;
 }
 
 const EventFormPage = () => {
@@ -35,6 +36,7 @@ const EventFormPage = () => {
     image: "",
   });
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const eventCategories = [
     { id: "webinar", name: "Webinaire" },
@@ -44,26 +46,49 @@ const EventFormPage = () => {
   ];
 
   useEffect(() => {
-    if (eventId) {
-      const fetchEvent = async () => {
-        try {
-          const docRef = doc(db, "events", eventId);
-          const docSnap = await getDoc(docRef);
+    const fetchEvent = async () => {
+      if (!eventId) {
+        setLoading(false);
+        return;
+      }
 
-          if (docSnap.exists()) {
-            setEvent(docSnap.data() as Event);
-          } else {
-            toast.error("Événement non trouvé");
-            navigate("/admin");
-          }
-        } catch (error) {
-          console.error("Error fetching event:", error);
-          toast.error("Échec du chargement de l'événement");
+      try {
+        const docRef = doc(db, "events", eventId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const eventDate = data.date.toDate();
+          
+          setEvent({
+            title: data.title || "",
+            description: data.description || "",
+            date: eventDate.toISOString().split('T')[0],
+            time: eventDate.toLocaleTimeString('en-GB', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            }),
+            duration: data.duration?.toString() || "60",
+            speaker: data.speaker || "",
+            speakerBio: data.speakerBio || "",
+            registrationLink: data.registrationLink || "",
+            category: data.category || "webinar",
+            image: data.image || "",
+          });
+        } else {
+          toast.error("Événement non trouvé");
+          navigate("/admin");
         }
-      };
+      } catch (error) {
+        console.error("Error fetching event:", error);
+        toast.error("Échec du chargement de l'événement");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      fetchEvent();
-    }
+    fetchEvent();
   }, [eventId, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,12 +97,16 @@ const EventFormPage = () => {
 
     try {
       if (eventId) {
-        await updateDoc(doc(db, "events", eventId), event);
+        await updateDoc(doc(db, "events", eventId), {
+          ...event,
+          date: Timestamp.fromDate(new Date(`${event.date}T${event.time}`)),
+        });
         toast.success("Événement mis à jour avec succès");
       } else {
         await addDoc(collection(db, "events"), {
           ...event,
-          createdAt: new Date(),
+          date: Timestamp.fromDate(new Date(`${event.date}T${event.time}`)),
+          createdAt: Timestamp.now(),
         });
         toast.success("Événement créé avec succès");
       }
@@ -89,6 +118,27 @@ const EventFormPage = () => {
       setSubmitting(false);
     }
   };
+
+  const handleDelete = async () => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer définitivement cet événement ?")) {
+      try {
+        await deleteDoc(doc(db, "events", eventId!));
+        toast.success("Événement supprimé avec succès");
+        navigate("/admin");
+      } catch (error) {
+        console.error("Error deleting event:", error);
+        toast.error("Échec de la suppression");
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -200,13 +250,13 @@ const EventFormPage = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Lien de l'image</label>
                 <input
-                    type="url"
-                    value={event.image}
-                    onChange={(e) => setEvent({ ...event, image: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="https://example.com/image.jpg"
+                  type="url"
+                  value={event.image}
+                  onChange={(e) => setEvent({ ...event, image: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="https://example.com/image.jpg"
                 />
-               </div>
+              </div>
             </div>
 
             <div>
@@ -219,11 +269,22 @@ const EventFormPage = () => {
               />
             </div>
 
-            <div className="border-t pt-6">
+            <div className="border-t pt-6 flex gap-4">
+              {eventId && (
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="flex-1 bg-red-100 text-red-700 hover:bg-red-200 font-medium py-4 rounded-lg transition-all"
+                >
+                  Supprimer l'événement
+                </button>
+              )}
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-4 rounded-lg transition-all"
+                className={`flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-4 rounded-lg transition-all ${
+                  eventId ? "flex-[2]" : "w-full"
+                }`}
               >
                 {submitting ? "Envoi en cours..." : (eventId ? "Mettre à jour" : "Publier l'événement")}
               </button>

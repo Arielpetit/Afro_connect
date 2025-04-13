@@ -1,8 +1,10 @@
 // EventsPage.tsx
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, deleteDoc, doc } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface Event {
   id: string;
@@ -18,11 +20,18 @@ interface Event {
 }
 
 const EventsPage = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedDescriptions, setExpandedDescriptions] = useState<Record<string, boolean>>({});
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const adminStatus = localStorage.getItem("isAdmin");
+    setIsAdmin(adminStatus === "true");
+  }, []);
 
   const categories = [
     { id: "all", name: "Tous" },
@@ -50,6 +59,19 @@ const EventsPage = () => {
     };
     fetchEvents();
   }, []);
+
+  const handleDeleteEvent = async (eventId: string) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet événement ?")) {
+      try {
+        await deleteDoc(doc(db, "events", eventId));
+        setEvents(prev => prev.filter(event => event.id !== eventId));
+        toast.success("Événement supprimé avec succès");
+      } catch (error) {
+        console.error("Error deleting event:", error);
+        toast.error("Échec de la suppression");
+      }
+    }
+  };
 
   const toggleDescription = (eventId: string) => {
     setExpandedDescriptions(prev => ({
@@ -154,6 +176,28 @@ const EventsPage = () => {
                       <span className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-600">
                         {categories.find(c => c.id === event.category)?.name}
                       </span>
+                      {isAdmin && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => navigate(`/admin/events/${event.id}`)}
+                            className="p-1.5 hover:bg-blue-50 rounded-md text-blue-600 hover:text-blue-700 transition-colors"
+                            title="Modifier"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteEvent(event.id)}
+                            className="p-1.5 hover:bg-red-50 rounded-md text-red-600 hover:text-red-700 transition-colors"
+                            title="Supprimer"
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>

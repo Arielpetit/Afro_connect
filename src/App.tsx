@@ -64,7 +64,8 @@ const AppContent = () => {
           {/* Admin Routes (Protected) */}
           <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<ProtectedRoute element={<AdminDashboardPage />} />} />
-          <Route path="/event-form" element={<ProtectedRoute element={<EventForm />} />} />
+          <Route path="/admin/events/new" element={<ProtectedRoute element={<EventForm />} />} />
+          <Route path="/admin/events/:eventId" element={<ProtectedRoute element={<EventForm />} />} />
           <Route path="/send-email" element={<ProtectedRoute element={<SendEmailForm />} />} />
           <Route path="/admin/suggestions" element={<ProtectedRoute element={<AdminSuggestionsPage />} />} />
           <Route path="/admin/leads" element={<ProtectedRoute element={<ProfessionalsLeadsPage />} />} />

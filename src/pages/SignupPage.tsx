@@ -9,20 +9,24 @@ import ReactSelect, { MultiValue } from "react-select";
 
 // Updated expertiseOptions to match ReactSelect format
 const expertiseOptions = [
-  { value: "Courtiers immobiliers", label: "Courtiers immobiliers" },
-  { value: "Notaires", label: "Notaires" },
-  { value: "Inspecteurs en bâtiment", label: "Inspecteurs en bâtiment" },
-  { value: "Évaluateurs agréés", label: "Évaluateurs agréés" },
-  { value: "Électriciens", label: "Électriciens" },
-  { value: "Plombiers", label: "Plombiers" },
-  { value: "Hommes à tout faire (Handymen)", label: "Hommes à tout faire (Handymen)" },
-  { value: "Conseillers en sécurité financière", label: "Conseillers en sécurité financière" },
   { value: "Avocats spécialisés en immobilier", label: "Avocats spécialisés en immobilier" },
-  { value: "Comptables CPA", label: "Comptables CPA" },
   { value: "Comptables", label: "Comptables" },
+  { value: "Comptables CPA", label: "Comptables CPA" },
+  { value: "Conseillers en sécurité financière", label: "Conseillers en sécurité financière" },
+  { value: "Courtier hypothécaire", label: "Courtiers hypothécaires" },
+  { value: "Courtier immobilier", label: "Courtiers immobiliers" },
+  { value: "Entrepreneur général", label: "Entrepreneurs généraux" },
+  { value: "Électriciens", label: "Électriciens" },
+  { value: "Évaluateurs agréés", label: "Évaluateurs agréés" },
   { value: "Fiscalistes", label: "Fiscalistes" },
-  { value: "Autre (préciser)", label: "Autre (préciser)" },
+  { value: "Hommes à tout faire (Handymen)", label: "Hommes à tout faire (Handymen)" },
+  { value: "Inspecteur en bâtiment", label: "Inspecteurs en bâtiment" },
+  { value: "Notaire", label: "Notaires" },
+  { value: "Plombiers", label: "Plombiers" },
+  { value: "Spécialiste en rénovation", label: "Spécialistes en rénovation" },
 ];
+
+
 
 const coverageZones = [
   { value: "Canada", label: "Canada" },
@@ -347,9 +351,10 @@ const SignupPage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Expertise *
-              </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Expertise(s) * (une ou plusieurs)
+            </label>
+
               <ReactSelect
                 options={expertiseOptions}
                 isMulti
