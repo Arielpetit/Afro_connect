@@ -54,7 +54,7 @@ const categoryColors = {
     shadow: "shadow-teal-300/25",
     border: "border-teal-400/20",
   },
-  Notaire: {
+  "Notaire": {
     gradient: "from-purple-600 to-fuchsia-700",
     shadow: "shadow-purple-300/25",
     border: "border-purple-400/20",
@@ -79,7 +79,7 @@ const categoryColors = {
     shadow: "shadow-pink-300/25",
     border: "border-pink-400/20",
   },
-  Comptables: {
+  "Comptables": {
     gradient: "from-amber-500 to-yellow-600",
     shadow: "shadow-amber-300/25",
     border: "border-amber-400/20",
@@ -122,6 +122,7 @@ interface User {
   projectsCompleted?: number;
   profilePicture?: string;
   coverageZone?: string;
+  status?: string;
 }
 
 interface ProfessionalBadgeProps {
@@ -154,7 +155,8 @@ const ProfessionalProfilePage = () => {
           console.log("Fetched user:", userData); // Debug: Log each user
           usersList.push(userData);
         });
-        setUsers(usersList);
+        setUsers(usersList.filter(user => user.status !== "pending"));
+        console.log("All users:", usersList);
         console.log("All users:", usersList); // Debug: Log full user list
       } catch (err) {
         console.error("Error fetching users:", err);

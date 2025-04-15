@@ -1,7 +1,7 @@
 // EventsPage.tsx
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { collection, getDocs, query, orderBy, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, deleteDoc, doc, Timestamp } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -10,10 +10,10 @@ interface Event {
   id: string;
   title: string;
   description: string;
-  date: string;
-  time: string;
+  date: Timestamp;
   duration: string;
   speaker: string;
+  speakerBio: string;
   registrationLink: string;
   category: string;
   image: string;
@@ -46,10 +46,21 @@ const EventsPage = () => {
       try {
         const q = query(collection(db, "events"), orderBy("date", "desc"));
         const querySnapshot = await getDocs(q);
-        const eventsList = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Event[];
+        const eventsList = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            title: data.title || "",
+            description: data.description || "",
+            date: data.date,
+            duration: data.duration || "60",
+            speaker: data.speaker || "",
+            speakerBio: data.speakerBio || "",
+            registrationLink: data.registrationLink || "",
+            category: data.category || "webinar",
+            image: data.image || "",
+          } as Event;
+        });
         setEvents(eventsList);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -87,9 +98,19 @@ const EventsPage = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (date: Date) => {
     const options: Intl.DateTimeFormatOptions = { weekday: 'short', day: 'numeric', month: 'short' };
-    return new Date(dateString).toLocaleDateString('fr-FR', options);
+    return date.toLocaleDateString('fr-FR', options);
+  };
+
+  const formatDuration = (duration: string) => {
+    const minutes = parseInt(duration, 10);
+    if (minutes >= 60) {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      return `${hours}h${remainingMinutes.toString().padStart(2, '0')}`;
+    }
+    return `${minutes} minutes`;
   };
 
   return (
@@ -147,102 +168,117 @@ const EventsPage = () => {
               animate={{ opacity: 1 }}
               className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
             >
-              {filteredEvents.map(event => (
-                <motion.div
-                  key={event.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
-                >
-                  <div className="relative h-48 overflow-hidden">
+              {filteredEvents.map(event => {
+                const eventDate = event.date.toDate();
+                const timeString = eventDate.toLocaleTimeString('fr-FR', { 
+                  hour: '2-digit', 
+                  minute: '2-digit', 
+                  hour12: false 
+                });
+
+                return (
+                  <motion.div
+                    key={event.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+                  >
+                    <div className="relative h-48 overflow-hidden">
                     <img
                       src={event.image || '/default-event.jpg'}
                       alt={event.title}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = '/default-event.jpg';
                       }}
                     />
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 p-4">
-                      <div className="text-sm font-medium text-white">
-                        {formatDate(event.date)}
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="p-6">
-                    <div className="mb-4 flex items-center justify-between">
-                      <span className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-600">
-                        {categories.find(c => c.id === event.category)?.name}
-                      </span>
-                      {isAdmin && (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => navigate(`/admin/events/${event.id}`)}
-                            className="p-1.5 hover:bg-blue-50 rounded-md text-blue-600 hover:text-blue-700 transition-colors"
-                            title="Modifier"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => handleDeleteEvent(event.id)}
-                            className="p-1.5 hover:bg-red-50 rounded-md text-red-600 hover:text-red-700 transition-colors"
-                            title="Supprimer"
-                          >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 p-4">
+                        <div className="text-sm font-medium text-white">
+                          {formatDate(eventDate)}
                         </div>
-                      )}
+                      </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
-                    
-                    <div className="mb-4">
-                      <div className="flex items-center text-gray-600 mb-2">
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        {event.time} • {event.duration} minutes
+                    <div className="p-6">
+                      <div className="mb-4 flex items-center justify-between">
+                        <span className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-600">
+                          {categories.find(c => c.id === event.category)?.name}
+                        </span>
+                        {isAdmin && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => navigate(`/admin/events/${event.id}`)}
+                              className="p-1.5 hover:bg-blue-50 rounded-md text-blue-600 hover:text-blue-700 transition-colors"
+                              title="Modifier"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteEvent(event.id)}
+                              className="p-1.5 hover:bg-red-50 rounded-md text-red-600 hover:text-red-700 transition-colors"
+                              title="Supprimer"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        )}
                       </div>
+
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
                       
-                      <div className="flex items-center text-gray-600">
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        {event.speaker}
+                      <div className="mb-4">
+                        <div className="flex items-center text-gray-600 mb-2">
+                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-14 0 9 9 0 0114 0z" />
+                          </svg>
+                          {timeString} • {formatDuration(event.duration)}
+                        </div>
+                        
+                        <div className="flex items-center text-gray-600">
+                          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                          <div>
+                            <div className="font-medium">{event.speaker}</div>
+                            {event.speakerBio && (
+                              <div className="text-sm text-gray-500 mt-1">{event.speakerBio}</div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="mb-6">
-                      <p className={`text-gray-600 ${expandedDescriptions[event.id] ? '' : 'line-clamp-3'}`}>
-                        {event.description}
-                      </p>
-                      {event.description.length > 100 && (
-                        <button
-                          onClick={() => toggleDescription(event.id)}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2"
-                        >
-                          {expandedDescriptions[event.id] ? 'Voir moins' : 'Voir plus'}
-                        </button>
-                      )}
-                    </div>
+                      <div className="mb-6">
+                        <p className={`text-gray-600 ${expandedDescriptions[event.id] ? '' : 'line-clamp-3'}`}>
+                          {event.description}
+                        </p>
+                        {event.description.length > 100 && (
+                          <button
+                            onClick={() => toggleDescription(event.id)}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium mt-2"
+                          >
+                            {expandedDescriptions[event.id] ? 'Voir moins' : 'Voir plus'}
+                          </button>
+                        )}
+                      </div>
 
-                    <a
-                      href={event.registrationLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full inline-block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all"
-                    >
-                      S'inscrire maintenant
-                    </a>
-                  </div>
-                </motion.div>
-              ))}
+                      <a
+                        href={event.registrationLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all"
+                      >
+                        S'inscrire maintenant
+                      </a>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>
