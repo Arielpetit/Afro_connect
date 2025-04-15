@@ -37,6 +37,7 @@ const EventFormPage = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(false);
 
   const eventCategories = [
     { id: "webinar", name: "Webinaire" },
@@ -90,6 +91,23 @@ const EventFormPage = () => {
 
     fetchEvent();
   }, [eventId, navigate]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageLoading(true);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEvent({ ...event, image: reader.result as string });
+        setImageLoading(false);
+      };
+      reader.onerror = () => {
+        toast.error("Erreur lors du chargement de l'image");
+        setImageLoading(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -247,16 +265,23 @@ const EventFormPage = () => {
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Lien de l'image</label>
-                <input
-                  type="url"
-                  value={event.image}
-                  onChange={(e) => setEvent({ ...event, image: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/image.jpg"
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Image de l'événement</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+              {event.image && (
+                <img 
+                  src={event.image} 
+                  alt="Aperçu de l'image" 
+                  className="mt-4 max-h-48 w-full object-contain rounded-lg"
                 />
-              </div>
+              )}
             </div>
 
             <div>
@@ -281,12 +306,14 @@ const EventFormPage = () => {
               )}
               <button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || imageLoading}
                 className={`flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-4 rounded-lg transition-all ${
                   eventId ? "flex-[2]" : "w-full"
-                }`}
+                } ${(submitting || imageLoading) ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                {submitting ? "Envoi en cours..." : (eventId ? "Mettre à jour" : "Publier l'événement")}
+                {submitting ? "Envoi en cours..." : 
+                 imageLoading ? "Chargement de l'image..." :
+                 (eventId ? "Mettre à jour" : "Publier l'événement")}
               </button>
             </div>
           </form>
