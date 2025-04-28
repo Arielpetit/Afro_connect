@@ -119,22 +119,24 @@ export const ProfessionalRoadmap = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-6 px-2 sm:px-4 lg:px-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-green-50 py-6 px-2 sm:px-4 lg:px-6 relative overflow-hidden">
       {/* Animated background elements */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 pointer-events-none">
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute bg-blue-100/20 rounded-full"
+            className="absolute bg-blue-100/30 backdrop-blur-md rounded-full shadow-xl"
             style={{
-              width: Math.random() * 50 + 20 + 'px',
-              height: Math.random() * 50 + 20 + 'px',
-              top: Math.random() * 100 + '%',
-              left: Math.random() * 100 + '%',
+              width: Math.random() * 60 + 40 + 'px',
+              height: Math.random() * 60 + 40 + 'px',
+              top: Math.random() * 90 + '%',
+              left: Math.random() * 90 + '%',
+              filter: "blur(2px)",
+              zIndex: 0,
             }}
             animate={{
-              scale: [0, 1, 0],
-              opacity: [0, 0.2, 0],
+              scale: [0.8, 1.2, 0.8],
+              opacity: [0.12, 0.22, 0.12],
             }}
             transition={{
               duration: Math.random() * 10 + 10,
@@ -168,7 +170,7 @@ export const ProfessionalRoadmap = () => {
               exit={{ opacity: 0 }}
             >
               <motion.h2 
-                className="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-blue-600 to-green-500 bg-clip-text text-transparent"
+                className="text-4xl md:text-5xl font-extrabold text-center mb-12 bg-gradient-to-r from-blue-700 via-green-500 to-emerald-400 bg-clip-text text-transparent drop-shadow-lg"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
@@ -180,16 +182,19 @@ export const ProfessionalRoadmap = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5"
               >
                 {categories.map((category, index) => (
                   <motion.button
                     key={category.name}
                     onClick={() => handleCategoryClick(category.name)}
-                    className={`bg-gradient-to-br ${categoryColors[category.name].gradient} text-white rounded-xl shadow-md
-                      hover:shadow-lg ${categoryColors[category.name].shadow} transition-all duration-300 p-3 text-center 
-                      flex flex-col items-center justify-center gap-2 hover:scale-105 active:scale-95 overflow-hidden group
-                      border ${categoryColors[category.name].border}`}
+                    className={`bg-gradient-to-br ${categoryColors[category.name].gradient} text-white rounded-2xl shadow-lg
+                      hover:shadow-2xl ${categoryColors[category.name].shadow} transition-all duration-300 p-4 text-center 
+                      flex flex-col items-center justify-center gap-2 hover:scale-105 active:scale-97 overflow-hidden group
+                      border-2 ${categoryColors[category.name].border}
+                      backdrop-blur-md bg-opacity-80 hover:bg-opacity-90
+                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
+                      relative before:absolute before:inset-0 before:rounded-2xl before:bg-white/10 before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ 
                       opacity: 1, 
@@ -197,10 +202,10 @@ export const ProfessionalRoadmap = () => {
                       transition: { delay: 0.1 * index + 0.5 }
                     }}
                   >
-                    <div className="bg-white/20 p-3 rounded-full mb-2 group-hover:bg-white/30 transition-colors">
+                    <div className="bg-white/30 p-4 rounded-full mb-2 group-hover:bg-white/40 transition-colors shadow-inner">
                       {category.icon}
                     </div>
-                    <span className="text-sm font-medium text-white group-hover:text-white/90 line-clamp-2 h-10">
+                    <span className="text-base font-semibold text-white group-hover:text-white/90 line-clamp-2 h-12 drop-shadow-sm">
                       {category.name}
                     </span>
                   </motion.button>
