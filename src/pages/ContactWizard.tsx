@@ -3,6 +3,7 @@ import { getFirestore, collection, query, where, getDocs, addDoc, writeBatch, do
 import emailjs from "@emailjs/browser";
 import { FiCheckCircle, FiArrowLeft, FiUser, FiRotateCw, FiRefreshCw, FiSearch, FiCopy } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 // Environment variables for EmailJS configuration
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
@@ -115,6 +116,7 @@ const AvailabilityPicker: React.FC<{
   availability: string[];
   setAvailability: (value: string[]) => void;
 }> = ({ availability, setAvailability }) => {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState("");
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
@@ -142,16 +144,17 @@ const AvailabilityPicker: React.FC<{
           onChange={(e) => setSelectedDate(e.target.value)}
           className="flex-1 border rounded-lg p-2"
           min={new Date().toISOString().split("T")[0]}
+          aria-label={t('contact.wizard.dateLabel')}
         />
         <div className="flex gap-2 items-center">
-          <span className="text-gray-500 whitespace-nowrap">De</span>
+          <span className="text-gray-500 whitespace-nowrap">{t('contact.wizard.fromLabel')}</span>
           <input
             type="time"
             value={fromTime}
             onChange={(e) => setFromTime(e.target.value)}
             className="flex-1 border rounded-lg p-2"
           />
-          <span className="text-gray-500 whitespace-nowrap">à</span>
+          <span className="text-gray-500 whitespace-nowrap">{t('contact.wizard.toLabel')}</span>
           <input
             type="time"
             value={toTime}
@@ -163,7 +166,7 @@ const AvailabilityPicker: React.FC<{
           onClick={addEntry}
           className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 whitespace-nowrap"
         >
-          Ajouter
+          {t('contact.wizard.addSlot')}
         </button>
       </div>
       <ul className="space-y-2">
@@ -174,10 +177,13 @@ const AvailabilityPicker: React.FC<{
           >
             <span>{entry}</span>
             <button
-              onClick={() => removeEntry(index)}
+              onClick={() => {
+                const updated = availability.filter((_, i) => i !== index);
+                setAvailability(updated);
+              }}
               className="text-red-500 hover:text-red-700"
             >
-              Supprimer
+              {t('contact.wizard.removeSlot')}
             </button>
           </li>
         ))}
@@ -188,6 +194,7 @@ const AvailabilityPicker: React.FC<{
 
 // Main ContactWizard component
 export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     specialty,
@@ -435,10 +442,9 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
           className="text-center py-8"
         >
           <FiCheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-4">Demande envoyée avec succès!</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('contact.wizard.success')}</h2>
           <p className="text-center text-gray-700 mb-4">
-            Votre demande a bien été prise en charge. Un professionnel vous contactera dans **24 à 48 heures**.
-            Merci de faire confiance à <span className="font-semibold text-emerald-600">Afro Immobilier Connect</span> !
+            {t('contact.wizard.successMessage')}
           </p>
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {matchedProfessionals.map((pro) => (
@@ -479,40 +485,39 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
           />
           <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">
-            Désolé, nous n'avons pas trouvé de professionnels correspondant à vos critères
+            {t('contact.wizard.noMatch.title')}
           </h2>
           <p className="text-gray-600 mb-6 text-center">
-            Pas de panique ! Voici quelques suggestions pour élargir votre recherche :
+            {t('contact.wizard.noMatch.suggestion')}
           </p>
           <div className="mt-8 text-center">
             <p className="text-gray-700 font-medium">
-              C'est grâce au partage entre professionnels que nous devenons plus forts !
-              Aidez-nous à agrandir la communauté en partageant cette plateforme avec votre réseau.
+              {t('contact.wizard.shareMessage')}
             </p>
             <div className="mt-4 flex justify-center">
               <button
                 onClick={() => {
                   navigator.clipboard.writeText("https://afro-connect.netlify.app/");
-                  alert("Lien copié avec succès !");
+                  alert(t('contact.wizard.linkCopied'));
                 }}
                 className="bg-emerald-500 text-white px-6 py-3 rounded-xl flex items-center space-x-2 hover:bg-emerald-600 transition"
               >
                 <FiCopy className="w-5 h-5" />
-                <span>Copier le lien</span>
+                <span>{t('contact.wizard.copyLink')}</span>
               </button>
             </div>
             <p className="mt-4 text-gray-600 text-sm italic">
-              Ensemble, nous sommes plus forts ! 💪
+              {t('contact.wizard.together')}
             </p>
           </div>
           <div className="space-y-4 mt-8 max-w-md mx-auto">
             <div className="bg-blue-50 p-4 rounded-xl flex items-center space-x-4">
               <FiRefreshCw className="w-6 h-6 text-blue-500" />
-              <p className="text-left">Essayez différentes zones de couverture ou langues</p>
+              <p className="text-left">{t('contact.wizard.tryDifferent')}</p>
             </div>
             <div className="bg-emerald-50 p-4 rounded-xl flex items-center space-x-4">
               <FiSearch className="w-6 h-6 text-emerald-500" />
-              <p className="text-left">Ajustez vos critères de recherche</p>
+              <p className="text-left">{t('contact.wizard.adjustCriteria')}</p>
             </div>
           </div>
           <button
@@ -523,7 +528,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
             className="mt-8 bg-emerald-500 text-white px-8 py-3 rounded-xl hover:bg-emerald-600 transition-colors flex items-center mx-auto space-x-2"
           >
             <FiRotateCw className="w-5 h-5" />
-            <span>Réessayer la recherche</span>
+            <span>{t('contact.wizard.retrySearch')}</span>
           </button>
         </motion.div>
       ) : (
@@ -533,9 +538,11 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
               onClick={currentStep === 1 ? onBack : handlePrevious}
               className="text-emerald-600"
             >
-              <FiArrowLeft className="inline-block" /> Retour
+              <FiArrowLeft className="inline-block" /> {t('contact.wizard.back')}
             </button>
-            <div className="text-gray-500">Étape {currentStep}/5</div>
+            <div className="text-gray-500">
+              {t('contact.wizard.stepIndicator', { current: currentStep })}
+            </div>
           </div>
           <ProgressBar />
           <AnimatePresence mode="wait">
@@ -549,7 +556,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
               {currentStep === 1 && (
                 isCombinedSpecialty ? (
                   <>
-                    <h3 className="text-xl font-semibold">Choisissez votre spécialité</h3>
+                    <h3 className="text-xl font-semibold">{t('contact.wizard.step1')}</h3>
                     <div className="flex justify-center">
                       <img
                         src={getCategoryImage(specialty)}
@@ -577,12 +584,12 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                       disabled={!formData.specialty}
                       className="w-full bg-emerald-500 text-white p-3 rounded-xl disabled:opacity-50 hover:bg-emerald-600 transition-colors"
                     >
-                      Continuer
+                      {t('contact.wizard.continue')}
                     </button>
                   </>
                 ) : (
                   <>
-                    <h3 className="text-xl font-semibold">Spécialité sélectionnée</h3>
+                    <h3 className="text-xl font-semibold">{t('contact.wizard.step1')}</h3>
                     <div className="flex justify-center mb-4">
                       <img
                         src={getCategoryImage(formData.specialty)}
@@ -597,18 +604,18 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                       onClick={handleNext}
                       className="w-full bg-emerald-500 text-white p-3 rounded-xl hover:bg-emerald-600 transition-colors"
                     >
-                      Continuer
+                      {t('contact.wizard.continue')}
                     </button>
                   </>
                 )
               )}
               {currentStep === 2 && (
                 <>
-                  <h3 className="text-xl font-semibold">Sélectionnez votre région</h3>
+                  <h3 className="text-xl font-semibold">{t('contact.wizard.step2')}</h3>
                   <div className="flex justify-center">
                     <img
                       src="/location.jpg"
-                      alt="Location Selection"
+                      alt={t('contact.wizard.locationImage')}
                       className="w-50 h-48 animate-fade-in"
                     />
                   </div>
@@ -632,17 +639,17 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                     disabled={!formData.location}
                     className="w-full bg-emerald-500 text-white p-3 rounded-xl disabled:opacity-50"
                   >
-                    Continuer
+                    {t('contact.wizard.continue')}
                   </button>
                 </>
               )}
               {currentStep === 3 && (
                 <>
-                  <h3 className="text-xl font-semibold">Langue de communication</h3>
+                  <h3 className="text-xl font-semibold">{t('contact.wizard.step3')}</h3>
                   <div className="flex justify-center">
                     <img
                       src="/language.jpg"
-                      alt="Language Selection"
+                      alt={t('contact.wizard.languageImage')}
                       className="w-50 h-48 animate-fade-in"
                     />
                   </div>
@@ -666,13 +673,13 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                     disabled={!formData.language}
                     className="w-full bg-emerald-500 text-white p-3 rounded-xl disabled:opacity-50"
                   >
-                    Continuer
+                    {t('contact.wizard.continue')}
                   </button>
                 </>
               )}
               {currentStep === 4 && (
                 <>
-                  <h3 className="text-xl font-semibold">Coordonnées et description</h3>
+                  <h3 className="text-xl font-semibold">{t('contact.wizard.step4')}</h3>
                   <div className="flex justify-center">
                     <img
                       src="/description.jpg"
@@ -710,13 +717,13 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                     disabled={!formData.problem || !formData.email || !formData.phoneNumber}
                     className="w-full bg-emerald-500 text-white p-3 rounded-xl disabled:opacity-50"
                   >
-                    Continuer
+                    {t('contact.wizard.continue')}
                   </button>
                 </>
               )}
               {currentStep === 5 && (
                 <>
-                  <h3 className="text-xl font-semibold">Coordonnées</h3>
+                  <h3 className="text-xl font-semibold">{t('contact.wizard.availabilityTitle')}</h3>
                   <div className="flex justify-center">
                     <img
                       src="/Time.jpg"
@@ -725,7 +732,7 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                     />
                   </div>
                   <p className="text-gray-600 mb-4">
-                    Sélectionnez les créneaux horaires où vous souhaitez être contacté par le professionnel
+                    {t('contact.wizard.availabilityDesc')}
                   </p>
                   <AvailabilityPicker
                     availability={formData.availability}
@@ -733,44 +740,19 @@ export const ContactWizard: React.FC<WizardProps> = ({ specialty, onBack }) => {
                       setFormData((prev) => ({ ...prev, availability: avail }))
                     }
                   />
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 mt-6">
                     <button
                       onClick={handlePrevious}
                       className="w-1/2 bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors"
                     >
-                      Retour
+                      {t('contact.wizard.back')}
                     </button>
                     <button
                       onClick={handleSubmit}
                       disabled={!formData.availability.length || loading}
                       className="w-1/2 bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      {loading ? (
-                        <span className="flex items-center justify-center">
-                          <svg
-                            className="animate-spin h-5 w-5 mr-3"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                              fill="none"
-                            />
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                          </svg>
-                          Envoi...
-                        </span>
-                      ) : (
-                        "Confirmer la demande"
-                      )}
+                      {loading ? t('contact.wizard.sending') : t('contact.wizard.confirmRequest')}
                     </button>
                   </div>
                 </>

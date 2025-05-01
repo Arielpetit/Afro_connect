@@ -1,9 +1,11 @@
-import { ArrowRight, Search, Users } from 'lucide-react';
+import { ArrowRight, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 export function Hero() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <motion.div
@@ -22,7 +24,7 @@ export function Hero() {
         <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/70 to-black/50 z-10" />
         <img
           src="/family.jpeg"
-          alt="Illustration de conseil immobilier"
+          alt="Real estate consulting illustration"
           className="w-full h-full object-cover object-center"
           loading="lazy"
         />
@@ -48,23 +50,23 @@ export function Hero() {
             transition={{ delay: 0.2, duration: 1 }}
             className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-sm font-medium text-blue-300 mb-6"
           >
-            Experts immobiliers à votre service
+            {t('home.hero.expertTag')}
           </motion.span>
           
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight md:leading-snug">
             <span className="bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
-              Experts Immobiliers
+              {t('home.hero.title.part1')}
             </span>{' '}
             <br className="hidden md:block" />
-            pour votre prochain projet
+            {t('home.hero.title.part2')}
+            <br />
+            {t('home.hero.title.part3')}
           </h1>
           
           <p className="text-base md:text-lg text-gray-200 mb-10 md:mb-12 max-w-prose mx-auto md:mx-0 opacity-90 leading-relaxed">
-            Conseil professionnel en acquisitions immobilières, accompagnement juridique 
-            et stratégies d'investissement sur-mesure pour réaliser vos projets avec confiance.
+            {t('home.hero.description')}
           </p>
 
-          {/* Buttons with enhanced animation */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -77,7 +79,7 @@ export function Hero() {
               onClick={() => navigate('/register')}
               className="px-7 py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-blue-600/30"
             >
-              Enregistrez-vous en tant que professionnel
+              {t('home.hero.buttons.register')}
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </motion.button>
             
@@ -88,11 +90,10 @@ export function Hero() {
               className="px-7 py-4 bg-white/10 hover:bg-white/15 backdrop-blur-md border border-white/20 hover:border-white/30 text-white rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-black/10"
             >
               <Search className="w-5 h-5 text-blue-300" />
-              Contacter un expert
+              {t('home.hero.buttons.contact')}
             </motion.button>
           </motion.div>
           
-          {/* Trust indicators */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -101,15 +102,15 @@ export function Hero() {
           >
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-blue-400" />
-              <span>20+ Experts certifiés</span>
+              <span>{t('home.hero.trustIndicators.experts')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-400" />
-              <span>Conseils personnalisés</span>
+              <span>{t('home.hero.trustIndicators.advice')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-amber-400" />
-              <span>Satisfaction garantie</span>
+              <span>{t('home.hero.trustIndicators.satisfaction')}</span>
             </div>
           </motion.div>
         </motion.div>

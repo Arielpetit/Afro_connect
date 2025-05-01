@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Send, Zap } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function Newsletter() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
@@ -24,11 +26,10 @@ export function Newsletter() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl mx-auto text-center">
           <h3 className="text-3xl font-bold text-white mb-4 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-600">
-            Restez informé des nouvelles propriétés et offres exclusives
+            {t('newsletter.title')}
           </h3>
           <p className="text-white/80 mb-8 text-lg leading-relaxed">
-          Abonnez-vous à notre newsletter pour recevoir les dernières annonces immobilières, 
-          les tendances du marché et des offres exclusives adaptées à votre future maison de rêve.
+            {t('newsletter.description')}
           </p>
           
           <form 
@@ -40,7 +41,7 @@ export function Newsletter() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Votre nexus de communication"
+                placeholder={t('newsletter.emailPlaceholder')}
                 className="w-full px-5 py-4 bg-[#1e293b] text-white border border-[#334155] rounded-full 
                   focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all duration-300
                   placeholder-gray-500 tracking-wider"
@@ -58,7 +59,7 @@ export function Newsletter() {
                 flex items-center justify-center gap-3
                 transform hover:scale-105 active:scale-95"
             >
-              Synchroniser <Send className="w-5 h-5" />
+              {t('newsletter.subscribeButton')} <Send className="w-5 h-5" />
             </button>
           </form>
 
@@ -66,7 +67,7 @@ export function Newsletter() {
             <div className="mt-6 relative">
               <p className="text-white animate-fade-in text-lg flex items-center justify-center gap-3">
                 <Zap className="text-cyan-400 animate-pulse" />
-                Synchronisation réussie ! Bienvenue dans l'écosystème immobilier du futur.
+                {t('newsletter.successMessage')}
                 <Zap className="text-cyan-400 animate-pulse" />
               </p>
             </div>

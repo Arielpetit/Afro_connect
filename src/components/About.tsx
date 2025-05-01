@@ -1,8 +1,11 @@
 import { Users, Handshake, Target, ChevronRight } from 'lucide-react';
 import { motion } from "framer-motion";
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const About1 = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative py-20 bg-white overflow-hidden">
       <div className="container mx-auto px-4">
@@ -39,7 +42,7 @@ const About1 = () => {
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <img
-                    src="https://perfectagent.com.au/wp-content/uploads/2020/02/realtor.jpg"
+                    src="https://th.bing.com/th/id/OIP.6u8Q9sJfIry08VR5kSVp5wHaFj?rs=1&pid=ImgDetMain"
                     alt="Community network"
                     className="w-full rounded-2xl shadow-xl border border-cyan-400/20"
                   />
@@ -96,7 +99,7 @@ const About1 = () => {
                     type: "spring"
                   }}
                 >
-                  Qui Sommes-Nous?
+                  {t('home.about.whoWeAre')}
                 </motion.h2>
 
                 <motion.div 
@@ -125,9 +128,11 @@ const About1 = () => {
                   >
                     <Target className="w-8 h-8 text-cyan-500 flex-shrink-0" />
                     <div>
-                      <h3 className="text-xl font-bold mb-2 text-gray-800">Notre Mission</h3>
+                      <h3 className="text-xl font-bold mb-2 text-gray-800">
+                        {t('home.about.mission.title')}
+                      </h3>
                       <p className="text-gray-600">
-                        Connecter les professionnels et clients afro-canadiens de l’immobilier via un réseau qualifié et adapté à leurs réalités.
+                        {t('home.about.mission.description')}
                       </p>
                     </div>
                   </motion.div>
@@ -151,9 +156,11 @@ const About1 = () => {
                   >
                     <Handshake className="w-8 h-8 text-purple-500 flex-shrink-0" />
                     <div>
-                      <h3 className="text-xl font-bold mb-2 text-gray-800">Nos Valeurs</h3>
+                      <h3 className="text-xl font-bold mb-2 text-gray-800">
+                        {t('home.about.values.title')}
+                      </h3>
                       <p className="text-gray-600">
-                        Confiance, accessibilité et entraide, favorisant les collaborations authentiques et le partage de connaissances.
+                        {t('home.about.values.description')}
                       </p>
                     </div>
                   </motion.div>
@@ -177,11 +184,11 @@ const About1 = () => {
                   >
                     <Users className="w-8 h-8 text-purple-500 flex-shrink-0" />
                     <div>
-                      <h3 className="text-xl font-bold mb-2 text-gray-800">Nos Services</h3>
+                      <h3 className="text-xl font-bold mb-2 text-gray-800">
+                        {t('home.about.services.title')}
+                      </h3>
                       <p className="text-gray-600">
-                        Mise en relation directe avec des experts qualifiés 
-                        selon vos besoins spécifiques. Une plateforme collaborative pour développer des activités 
-                        communes et mieux servir notre communauté.
+                        {t('home.about.services.description')}
                       </p>
                     </div>
                   </motion.div>
@@ -197,7 +204,7 @@ const About1 = () => {
                   whileInView={{ opacity: 1 }}
                   transition={{ delay: 1.2 }}
                 >
-                  <span>En savoir plus</span>
+                  <span>{t('home.about.learnMore')}</span>
                   <ChevronRight className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </motion.div>
               </Link>

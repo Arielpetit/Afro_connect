@@ -5,6 +5,7 @@ import { db } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { FaBed, FaBath, FaRuler, FaMapMarkerAlt, FaEuroSign, FaSearch, FaFilter } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 interface RentalProperty {
   id: string;
@@ -42,6 +43,7 @@ export const RentalListings = () => {
   });
   const [isFiltering, setIsFiltering] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchProperties();
@@ -100,14 +102,14 @@ export const RentalListings = () => {
   };
 
   const handleDeleteListing = async (propertyId: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette annonce ?")) {
+    if (window.confirm(t('rental.listings.deleteConfirm'))) {
       try {
         await deleteDoc(doc(db, "rentals", propertyId));
         setFilteredProperties(prev => prev.filter(property => property.id !== propertyId));
-        toast.success("Annonce supprimée avec succès");
+        toast.success(t('rental.listings.deleteSuccess'));
       } catch (error) {
         console.error("Error deleting property:", error);
-        toast.error("Échec de la suppression");
+        toast.error(t('rental.listings.deleteError'));
       }
     }
   };
@@ -116,8 +118,12 @@ export const RentalListings = () => {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-10 text-center">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Trouvez votre logement idéal</h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">Découvrez notre sélection de propriétés à louer dans toute la France</p>
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
+          {t('rental.listings.title')}
+        </h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          {t('rental.listings.subtitle')}
+        </p>
       </div>
       
       {/* Search Filters */}
@@ -129,32 +135,38 @@ export const RentalListings = () => {
           className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
         >
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Filtrer les annonces</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {t('rental.listings.filterTitle')}
+            </h2>
             {isFiltering && (
               <button
                 onClick={resetFilters}
                 className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
               >
-                Réinitialiser les filtres
+                {t('rental.listings.resetFilters')}
               </button>
             )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Localisation</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('rental.listings.location')}
+              </label>
               <div className="relative">
                 <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   className="pl-12 w-full h-12 rounded-xl border-2 border-blue-200 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
-                  placeholder="Ville ou adresse"
+                  placeholder={t('rental.listings.locationPlaceholder')}
                   value={filters.location}
                   onChange={(e) => setFilters({...filters, location: e.target.value})}
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Prix min (€)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('rental.listings.minPrice')}
+              </label>
               <input
                 type="number"
                 className="w-full h-12 rounded-xl border-2 border-blue-200 focus:ring-blue-500 focus:border-blue-500 shadow-sm px-4"
@@ -163,7 +175,9 @@ export const RentalListings = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Prix max (€)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('rental.listings.maxPrice')}
+              </label>
               <input
                 type="number"
                 className="w-full h-12 rounded-xl border-2 border-blue-200 focus:ring-blue-500 focus:border-blue-500 shadow-sm px-4"
@@ -172,7 +186,9 @@ export const RentalListings = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Chambres min</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('rental.listings.bedrooms')}
+              </label>
               <input
                 type="number"
                 className="w-full h-12 rounded-xl border-2 border-blue-200 focus:ring-blue-500 focus:border-blue-500 shadow-sm px-4"
@@ -188,7 +204,9 @@ export const RentalListings = () => {
                 checked={filters.furnished}
                 onChange={(e) => setFilters({...filters, furnished: e.target.checked})}
               />
-              <label htmlFor="furnished" className="text-gray-700 font-medium">Meublé</label>
+              <label htmlFor="furnished" className="text-gray-700 font-medium">
+                {t('rental.listings.furnished')}
+              </label>
             </div>
             <div className="flex items-center space-x-3 pt-8">
               <input
@@ -198,7 +216,9 @@ export const RentalListings = () => {
                 checked={filters.petsAllowed}
                 onChange={(e) => setFilters({...filters, petsAllowed: e.target.checked})}
               />
-              <label htmlFor="petsAllowed" className="text-gray-700 font-medium">Animaux acceptés</label>
+              <label htmlFor="petsAllowed" className="text-gray-700 font-medium">
+                {t('rental.listings.petsAllowed')}
+              </label>
             </div>
           </div>
           
@@ -209,7 +229,7 @@ export const RentalListings = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-medium flex items-center space-x-2 transition-colors duration-200"
             >
               <FaFilter className="text-lg" />
-              <span>Appliquer les filtres</span>
+              <span>{t('rental.listings.applyFilters')}</span>
             </button>
           </div>
         </motion.div>
@@ -223,12 +243,18 @@ export const RentalListings = () => {
           </div>
         ) : filteredProperties.length === 0 ? (
           <div className="text-center py-16">
-            <h3 className="text-2xl font-semibold text-gray-700 mb-2">Aucun résultat trouvé</h3>
-            <p className="text-gray-500">Essayez d'ajuster vos filtres pour voir plus de propriétés</p>
+            <h3 className="text-2xl font-semibold text-gray-700 mb-2">
+              {t('rental.listings.noResults')}
+            </h3>
+            <p className="text-gray-500">
+              {t('rental.listings.noResultsSuggestion')}
+            </p>
           </div>
         ) : (
           <>
-            <p className="text-gray-700 mb-6 font-medium">{filteredProperties.length} propriété(s) trouvée(s)</p>
+            <p className="text-gray-700 mb-6 font-medium">
+              {t('rental.listings.results', { count: filteredProperties.length })}
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProperties.map((property, index) => (
                 <motion.div
@@ -253,7 +279,7 @@ export const RentalListings = () => {
                           handleDeleteListing(property.id);
                         }}
                         className="absolute top-4 right-4 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors shadow-lg"
-                        title="Supprimer l'annonce"
+                        title={t('rental.listings.deleteTitle')}
                       >
                         <svg 
                           className="w-5 h-5" 
@@ -274,12 +300,14 @@ export const RentalListings = () => {
                       <div className="flex items-center font-semibold">
                         <FaEuroSign className="mr-1" />
                         <span>{property.price}</span>
-                        <span className="text-sm font-normal ml-1">/mois</span>
+                        <span className="text-sm font-normal ml-1">{t('rental.listings.perMonth')}</span>
                       </div>
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">{property.title}</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                      {property.title}
+                    </h3>
                     <div className="flex items-center text-gray-600 mb-4">
                       <FaMapMarkerAlt className="mr-2 text-blue-600" />
                       <span>{property.location.city}</span>

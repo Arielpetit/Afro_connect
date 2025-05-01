@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Menu, X, User, Lightbulb, Home as HomeIcon, Briefcase, Search } from 'lucide-react';
+import { LanguageSwitcher } from './LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useTranslation();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
@@ -11,12 +14,12 @@ export function Navbar() {
   // Consistent rental links for both desktop and mobile
   const rentalLinks = [
     {
-      name: "Rechercher un logement",
+      name: t('navbar.searchRental'),
       to: "/rental/search",
       icon: <Search className="w-5 h-5" />
     },
     {
-      name: "Publier une annonce",
+      name: t('navbar.postRental'),
       to: "/rental/add",
       icon: <HomeIcon className="w-5 h-5" />
     }
@@ -38,21 +41,21 @@ export function Navbar() {
               className="flex items-center gap-2 text-gray-700 hover:text-blue-500 transition-colors"
             >
               <HomeIcon className="w-6 h-6" />
-              Accueil
+              {t('navbar.home')}
             </NavLink>
             <NavLink 
               to="/services" 
               className="flex items-center gap-2 text-gray-700 hover:text-blue-500 transition-colors"
             >
               <Briefcase className="w-6 h-6" />
-              Nos Services
+              {t('navbar.services')}
             </NavLink>
             <NavLink 
               to="/profile" 
               className="flex items-center gap-2 text-gray-700 hover:text-blue-500 transition-colors"
             >
               <User className="w-6 h-6" />
-              Experts
+              {t('navbar.experts')}
             </NavLink>
             
             {/* Rental Links - Desktop */}
@@ -74,24 +77,28 @@ export function Navbar() {
                 to="/register" 
                 className="bg-gradient-to-r from-blue-600 to-green-500 text-white px-6 py-2.5 rounded-full font-medium hover:scale-105 transition-all"
               >
-                Enregistrez-vous
+                {t('navbar.register')}
               </NavLink>
               <NavLink 
                 to="/suggestions" 
                 className="bg-gradient-to-r from-green-500 to-blue-600 text-white px-6 py-2.5 rounded-full font-medium hover:scale-105 transition-all"
               >
-                Suggestions
+                {t('navbar.suggestions')}
               </NavLink>
             </div>
+            <LanguageSwitcher />
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <button 
-            onClick={toggleMenu} 
-            className="md:hidden text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            {isMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
-          </button>
+          {/* Mobile Controls */}
+          <div className="flex items-center gap-4 md:hidden">
+            <LanguageSwitcher />
+            <button 
+              onClick={toggleMenu} 
+              className="text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              {isMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Sidebar */}
@@ -121,7 +128,7 @@ export function Navbar() {
                     onClick={closeMenu}
                   >
                     <HomeIcon className="w-6 h-6 text-blue-600" />
-                    <span className="font-medium">Accueil</span>
+                    <span className="font-medium">{t('navbar.home')}</span>
                   </NavLink>
                   
                   <NavLink
@@ -130,7 +137,7 @@ export function Navbar() {
                     onClick={closeMenu}
                   >
                     <Briefcase className="w-6 h-6 text-purple-500" />
-                    <span className="font-medium">Nos Services</span>
+                    <span className="font-medium">{t('navbar.services')}</span>
                   </NavLink>
                   
                   <NavLink
@@ -139,7 +146,7 @@ export function Navbar() {
                     onClick={closeMenu}
                   >
                     <User className="w-6 h-6 text-green-500" />
-                    <span className="font-medium">Experts</span>
+                    <span className="font-medium">{t('navbar.experts')}</span>
                   </NavLink>
                   
                   {/* Rental Links - Mobile */}
@@ -161,7 +168,7 @@ export function Navbar() {
                     onClick={closeMenu}
                   >
                     <Lightbulb className="w-6 h-6 text-orange-500" />
-                    <span className="font-medium">Suggestions</span>
+                    <span className="font-medium">{t('navbar.suggestions')}</span>
                   </NavLink>
                   
                   <NavLink
@@ -169,7 +176,7 @@ export function Navbar() {
                     className="block w-full bg-gradient-to-r from-blue-600 to-green-500 text-white py-3 rounded-xl font-medium text-center hover:scale-105 transition-transform mt-4"
                     onClick={closeMenu}
                   >
-                    Enregistrez-vous
+                    {t('navbar.register')}
                   </NavLink>
                 </nav>
               </div>

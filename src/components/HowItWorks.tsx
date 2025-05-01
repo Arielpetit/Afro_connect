@@ -2,33 +2,35 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, Handshake, MessageSquare, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const steps = [
-  {
-    icon: Search,
-    title: 'Trouvez des Experts Immobiliers',
-    description: 'Cherchez des consultants immobiliers expérimentés spécialisés dans votre domaine d\'intérêt.',
-    color: 'bg-blue-500',
-    gradient: 'from-blue-500 to-blue-600'
-  },
-  {
-    icon: Handshake,
-    title: 'Obtenez des Conseils Professionnels',
-    description: 'Planifiez des consultations avec des experts pour recevoir des conseils et orientations personnalisés.',
-    color: 'bg-green-500',
-    gradient: 'from-green-500 to-green-600'
-  },
-  {
-    icon: MessageSquare,
-    title: 'Contactez un Expert',
-    description: 'Contactez votre expert sélectionné pour discuter de vos besoins et explorer les options disponibles.',
-    color: 'bg-purple-500',
-    gradient: 'from-purple-500 to-purple-600'
-  },
-];
+import { useTranslation } from 'react-i18next';
 
 export function HowItWorks() {
-const navigate = useNavigate();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const steps = [
+    {
+      icon: Search,
+      title: t('home.howItWorks.step1.title'),
+      description: t('home.howItWorks.step1.description'),
+      color: 'bg-blue-500',
+      gradient: 'from-blue-500 to-blue-600'
+    },
+    {
+      icon: Handshake,
+      title: t('home.howItWorks.step2.title'),
+      description: t('home.howItWorks.step2.description'),
+      color: 'bg-green-500',
+      gradient: 'from-green-500 to-green-600'
+    },
+    {
+      icon: MessageSquare,
+      title: t('home.howItWorks.step3.title'),
+      description: t('home.howItWorks.step3.description'),
+      color: 'bg-purple-500',
+      gradient: 'from-purple-500 to-purple-600'
+    }
+  ];
 
   return (
     <section className="py-16 md:py-24 bg-gray-50 relative overflow-hidden">
@@ -51,10 +53,10 @@ const navigate = useNavigate();
           className="text-center mb-12 md:mb-20"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900">
-            Comment ça fonctionne
+            {t('home.howItWorks.title')}
           </h2>
           <p className="text-gray-600 md:text-lg max-w-xl mx-auto">
-            Découvrez un processus simple et transparent pour trouver les meilleurs experts immobiliers
+            {t('home.howItWorks.subtitle')}
           </p>
         </motion.div>
 
@@ -72,8 +74,6 @@ const navigate = useNavigate();
               viewport={{ once: true, margin: "-50px" }}
               className="relative group"
             >
-
-
               <div className="h-full bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 {/* Icon Container */}
                 <motion.div
@@ -108,7 +108,6 @@ const navigate = useNavigate();
                     En savoir plus
                     <ArrowRight className="ml-2 w-4 h-4 transition-transform" />
                   </motion.div>
-
                 </div>
               </div>
             </motion.div>

@@ -4,12 +4,15 @@ import { Features } from "../components/Features";
 import { HowItWorks } from "../components/HowItWorks";
 import { Testimonials } from "../components/Testimonials";
 import { Statistic } from "../components/CounterItem";
-import  About1  from "../components/About"; // Add this import
+import About1 from "../components/About";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { ServicesSection } from "../components/ServicesSection";
+import { useTranslation } from 'react-i18next';
 
 const Home: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="relative">
       {/* Main Content */}
@@ -41,7 +44,9 @@ const Home: React.FC = () => {
         }}
       >
         <FaWhatsapp className="text-2xl md:text-3xl mr-2 animate-ping-slow" />
-        <span className="font-semibold text-sm md:text-lg">Groupe WhatsApp</span>
+        <span className="font-semibold text-sm md:text-lg">
+          {t('home.whatsapp.buttonText')}
+        </span>
         <div className="ml-2 w-2 h-2 bg-white rounded-full opacity-0 
           group-hover:opacity-100 transition-opacity duration-200" />
       </motion.a>

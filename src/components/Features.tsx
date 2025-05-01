@@ -1,39 +1,42 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Clock, User, Building, ChevronRight } from 'lucide-react';
-
-const features = [
-  {
-    icon: MapPin,
-    title: 'Recherche Basée sur la Localisation',
-    description: 'Trouvez des professionnels offrant des conseils selon vos préférences de localisation et de quartier au Canada.',
-    color: 'from-green-400 to-green-600',
-    accent: 'text-green-500'
-  },
-  {
-    icon: Clock,
-    title: 'Consultations Rapides',
-    description: 'Planifiez vos consultations avec des professionnels à votre convenance, même pendant les week-ends.',
-    color: 'from-yellow-400 to-yellow-600',
-    accent: 'text-yellow-500'
-  },
-  {
-    icon: Building,
-    title: 'Professionnels Immobiliers Experts',
-    description: 'Connectez-vous avec des experts immobiliers qualifiés pour vous guider dans vos démarches d\'acquisition de propriétés.',
-    color: 'from-blue-400 to-blue-600',
-    accent: 'text-blue-500'
-  },
-  {
-    icon: User,
-    title: 'Expérience Personnalisée',
-    description: 'Des recommandations personnalisées selon vos besoins, préférences et historique de recherche.',
-    color: 'from-purple-400 to-purple-600',
-    accent: 'text-purple-500'
-  }
-];
+import { useTranslation } from 'react-i18next';
 
 export function Features() {
+  const { t } = useTranslation();
+  
+  const features = [
+    {
+      icon: MapPin,
+      title: t('home.features.feature1.title'),
+      description: t('home.features.feature1.description'),
+      color: 'from-green-400 to-green-600',
+      accent: 'text-green-500'
+    },
+    {
+      icon: Clock,
+      title: t('home.features.feature2.title'),
+      description: t('home.features.feature2.description'),
+      color: 'from-yellow-400 to-yellow-600',
+      accent: 'text-yellow-500'
+    },
+    {
+      icon: Building,
+      title: t('home.features.feature3.title'),
+      description: t('home.features.feature3.description'),
+      color: 'from-blue-400 to-blue-600',
+      accent: 'text-blue-500'
+    },
+    {
+      icon: User,
+      title: t('home.features.feature4.title'),
+      description: t('home.features.feature4.description'),
+      color: 'from-purple-400 to-purple-600',
+      accent: 'text-purple-500'
+    }
+  ];
+
   return (
     <section className="py-12 md:py-20 bg-white relative overflow-hidden">
       {/* Original Background Gradient */}
@@ -48,10 +51,10 @@ export function Features() {
           className="text-center mb-8 md:mb-16"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-gray-900">
-            Pourquoi Choisir Afro Immobilier Connect
+            {t('home.features.title')}
           </h2>
           <p className="text-gray-600 text-sm md:text-base max-w-2xl mx-auto px-4">
-            Profitez des meilleurs services pour vous connecter avec des professionnels et obtenir des conseils d'experts pour faciliter votre acquisition de propriété au Canada.
+            {t('home.features.subtitle')}
           </p>
         </motion.div>
 
@@ -103,7 +106,7 @@ export function Features() {
                     whileTap={{ scale: 0.95 }}
                     className="flex items-center text-sm md:text-base font-medium group-hover:text-blue-600 transition-colors"
                   >
-                    <span>En savoir plus</span>
+                    <span>{t('home.features.learnMore')}</span>
                     <ChevronRight className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </motion.div>
                 </div>

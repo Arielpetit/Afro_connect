@@ -1,36 +1,38 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Quote, Star, ChevronLeft, ChevronRight } from 'lucide-react';
-
-const testimonials = [
-  {
-    name: 'Kenfack ulrich',
-    image: 'https://cdn.pixabay.com/photo/2022/08/06/11/02/black-man-7368411_1280.jpg',
-    text: 'Travailler avec Afro Immobilier Connect a été une expérience incroyable. Ils m\'ont aidé à trouver la propriété parfaite avec facilité et professionnalisme.',
-    rating: 5,
-    location: 'Ottawa, Canada',
-    orderCount: '3+ propriétés achetées'
-  },
-  {
-    name: 'Mvondo Florence',
-    image: 'https://th.bing.com/th/id/OIP.tjRuOaiiwsEu7axX1qmfmAHaLH?w=198&h=297&c=7&r=0&o=5&pid=1.7',
-    text: 'J\'ai trouvé l\'appartement idéal dans mon quartier de rêve grâce à Afro Immobilier Connect. L\'équipe a veillé à ce que tout se passe sans accroc !',
-    rating: 5,
-    location: 'Toronto, Canada',
-    orderCount: '1+ propriétés louées'
-  },
-  {
-    name: 'Tchamga Ismael',
-    image: 'https://th.bing.com/th/id/OIP.L97G8SUr_mUzle7fC0wAtQHaIr?w=818&h=959&rs=1&pid=ImgDetMain',
-    text: 'Le service client chez Afro Immobilier Connect était fantastique ! Ils m\'ont guidé tout au long du processus d\'achat et ont répondu à toutes mes questions.',
-    rating: 5,
-    location: 'Vancouver, Canada',
-    orderCount: '2+ propriétés vendues'
-  }
-];
+import { useTranslation } from 'react-i18next';
 
 export function Testimonials() {
+  const { t } = useTranslation();
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  const testimonials = [
+    {
+      name: 'Kenfack ulrich',
+      image: 'https://cdn.pixabay.com/photo/2022/08/06/11/02/black-man-7368411_1280.jpg',
+      text: t('home.testimonials.testimonial1'),
+      rating: 5,
+      location: 'Ottawa, Canada',
+      orderCount: t('home.testimonials.propertiesPurchased', { count: '3+' })
+    },
+    {
+      name: 'Mvondo Florence',
+      image: 'https://th.bing.com/th/id/OIP.tjRuOaiiwsEu7axX1qmfmAHaLH?w=198&h=297&c=7&r=0&o=5&pid=1.7',
+      text: t('home.testimonials.testimonial2'),
+      rating: 5,
+      location: 'Toronto, Canada',
+      orderCount: t('home.testimonials.propertiesRented', { count: '1+' })
+    },
+    {
+      name: 'Tchamga Ismael',
+      image: 'https://th.bing.com/th/id/OIP.L97G8SUr_mUzle7fC0wAtQHaIr?w=818&h=959&rs=1&pid=ImgDetMain',
+      text: t('home.testimonials.testimonial3'),
+      rating: 5,
+      location: 'Vancouver, Canada',
+      orderCount: t('home.testimonials.propertiesSold', { count: '2+' })
+    }
+  ];
 
   const nextTestimonial = () => {
     setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
@@ -51,10 +53,10 @@ export function Testimonials() {
           className="text-center mb-12 md:mb-20"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900">
-            Ce que disent nos clients
+            {t('home.testimonials.title')}
           </h2>
           <p className="text-gray-600 md:text-lg max-w-xl mx-auto">
-            Découvrez les témoignages de nos clients satisfaits
+            {t('home.testimonials.subtitle')}
           </p>
         </motion.div>
 

@@ -1,19 +1,21 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Trophy, Users, Handshake, BadgeCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CounterItemProps {
   end: number;
   suffix?: string;
-  label: string;
-  description: string;
+  translationKey: string;
+  descriptionKey: string;
   icon: React.ReactNode;
 }
 
-const CounterItem: React.FC<CounterItemProps> = ({ end, suffix = '', label, description, icon }) => {
+const CounterItem: React.FC<CounterItemProps> = ({ end, suffix = '', translationKey, descriptionKey, icon }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (isInView) {
@@ -50,40 +52,42 @@ const CounterItem: React.FC<CounterItemProps> = ({ end, suffix = '', label, desc
       <h6 className="text-4xl font-bold text-deep-purple-accent-400">
         {count}{suffix}
       </h6>
-      <p className="mb-2 font-bold text-md">{label}</p>
-      <p className="text-gray-700">{description}</p>
+      <p className="mb-2 font-bold text-md">{t(`counter.${translationKey}`)}</p>
+      <p className="text-gray-700">{t(`counter.${descriptionKey}`)}</p>
     </motion.div>
   );
 };
 
 export const Statistic = () => {
+  const { t } = useTranslation();
+  
   const stats = [
     { 
       icon: <Trophy />,
       end: 127,
-      label: 'Projets Complétés',
-      description: 'Solutions immobilières réussies pour notre communauté'
+      translationKey: 'completedProjects',
+      descriptionKey: 'completedProjectsDesc'
     },
     { 
       icon: <Users />,
       end: 250,
       suffix: '+',
-      label: 'Clients Satisfaits',
-      description: 'Confiance accordée par nos clients à travers le Canada'
+      translationKey: 'satisfiedClients',
+      descriptionKey: 'satisfiedClientsDesc'
     },
     { 
       icon: <Handshake />,
       end: 45,
       suffix: '+',
-      label: 'Partenaires',
-      description: 'Professionnels qualifiés dans notre réseau d\'experts'
+      translationKey: 'partners',
+      descriptionKey: 'partnersDesc'
     },
     { 
       icon: <BadgeCheck />,
       end: 99,
       suffix: '%',
-      label: 'Satisfaction',
-      description: 'Taux de réussite dans les transactions immobilières'
+      translationKey: 'satisfaction',
+      descriptionKey: 'satisfactionDesc'
     }
   ];
 
@@ -103,8 +107,8 @@ export const Statistic = () => {
             key={index}
             end={stat.end}
             suffix={stat.suffix}
-            label={stat.label}
-            description={stat.description}
+            translationKey={stat.translationKey}
+            descriptionKey={stat.descriptionKey}
             icon={stat.icon}
           />
         ))}

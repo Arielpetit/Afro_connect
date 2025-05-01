@@ -6,6 +6,7 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { FiUploadCloud } from "react-icons/fi";
 import { toast, ToastContainer } from "react-toastify";
 import ReactSelect, { MultiValue } from "react-select";
+import { useTranslation } from 'react-i18next';
 
 // Updated expertiseOptions to match ReactSelect format
 const expertiseOptions = [
@@ -75,6 +76,7 @@ const languages = [
 ];
 
 const SignupPage = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -212,14 +214,14 @@ const SignupPage = () => {
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-          Inscription Professionnelle
+          {t('signup.title')}
         </h2>
 
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nom de l’entreprise / Nom du professionnel *
+                {t('signup.form.companyName')} *
               </label>
               <input
                 type="text"
@@ -232,7 +234,7 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Adresse e-mail *
+                {t('signup.form.email')} *
               </label>
               <input
                 type="email"
@@ -245,7 +247,7 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Numéro de téléphone *
+                {t('signup.form.phone')} *
               </label>
               <input
                 type="tel"
@@ -258,7 +260,7 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Numéro de permis *
+                {t('signup.form.licenseNumber')} *
               </label>
               <input
                 type="text"
@@ -266,21 +268,20 @@ const SignupPage = () => {
                 value={formData.numeroPermis}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                placeholder="Entrez votre numéro de permis professionnel"
                 required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Photo de Profil *
+                {t('signup.form.profilePicture')} *
               </label>
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-indigo-500 transition-colors">
                 {formData.profilePicture ? (
-                  <span className="text-indigo-600">Image selected</span>
+                  <span className="text-indigo-600">{t('signup.form.imageSelected')}</span>
                 ) : (
                   <div className="flex flex-col items-center">
                     <FiUploadCloud className="w-6 h-6 text-gray-400 mb-2" />
-                    <span className="text-gray-500">Click to upload</span>
+                    <span className="text-gray-500">{t('signup.form.clickToUpload')}</span>
                   </div>
                 )}
                 <input
@@ -298,7 +299,7 @@ const SignupPage = () => {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Adresse de l'entreprise *
+                {t('signup.form.address')} *
               </label>
               <input
                 type="text"
@@ -311,26 +312,26 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Site web (si disponible) :
+                {t('signup.form.website')}
               </label>
               <input
                 type="text"
                 name="website"
                 value={formData.website}
                 onChange={handleChange}
-                placeholder="https://votresite.com"
+                placeholder="https://yourwebsite.com"
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Zone de couverture *
+                {t('signup.form.coverageZone')} *
               </label>
               <ReactSelect
                 options={coverageZones}
                 value={coverageZones.find((option) => option.value === formData.coverageZone)}
                 onChange={handleCoverageZoneChange}
-                placeholder="Sélectionnez une région..."
+                placeholder={t('signup.form.selectRegion')}
                 styles={customSelectStyles}
                 classNamePrefix="react-select"
                 required
@@ -338,29 +339,28 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Langues parlées :
+                {t('signup.form.languages')}
               </label>
               <ReactSelect
                 options={languages}
                 isMulti
                 value={formData.languages}
                 onChange={handleLanguagesChange}
-                placeholder="Sélectionnez les langues..."
+                placeholder={t('signup.form.selectLanguages')}
                 styles={customSelectStyles}
                 classNamePrefix="react-select"
               />
             </div>
             <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Expertise(s) * (une ou plusieurs)
-            </label>
-
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('signup.form.expertise')} *
+              </label>
               <ReactSelect
                 options={expertiseOptions}
                 isMulti
                 value={formData.expertise}
                 onChange={handleExpertiseChange}
-                placeholder="Sélectionnez vos expertises..."
+                placeholder={t('signup.form.selectExpertise')}
                 styles={customSelectStyles}
                 classNamePrefix="react-select"
                 required
@@ -368,20 +368,20 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Disponibilité (jours et heures de service) :
+                {t('signup.form.availability')}
               </label>
               <textarea
                 name="availability"
                 value={formData.availability}
                 onChange={handleChange}
-                placeholder="Ex: Lundi: 9h-17h, Mardi: 9h-17h, etc."
+                placeholder={t('signup.form.availabilityPlaceholder')}
                 className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-24"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Années d'expérience
+                  {t('signup.form.experience')}
                 </label>
                 <input
                   type="number"
@@ -393,7 +393,7 @@ const SignupPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Projets réalisés
+                  {t('signup.form.completedProjects')}
                 </label>
                 <input
                   type="number"
@@ -408,7 +408,7 @@ const SignupPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description des services offerts (max. 250 mots) *
+                {t('signup.form.services')} *
               </label>
               <textarea
                 name="bio"
@@ -423,7 +423,7 @@ const SignupPage = () => {
               className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors mt-4"
               disabled={loading}
             >
-              {loading ? "Inscription en cours..." : "Finaliser l'inscription"}
+              {loading ? t('signup.form.submitting') : t('signup.form.submit')}
             </button>
           </div>
         </form>
