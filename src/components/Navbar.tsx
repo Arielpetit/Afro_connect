@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu, X, User, Lightbulb, Home as HomeIcon, Briefcase } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, User, Lightbulb, Home as HomeIcon, Briefcase, Search } from 'lucide-react';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,25 +8,28 @@ export function Navbar() {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
 
-  const sidebarVariants = {
-    open: { x: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } },
-    closed: { x: '100%', transition: { type: 'spring', stiffness: 300, damping: 30 } }
-  };
-
-  const backdropVariants = {
-    open: { opacity: 1 },
-    closed: { opacity: 0 }
-  };
+  // Consistent rental links for both desktop and mobile
+  const rentalLinks = [
+    {
+      name: "Rechercher un logement",
+      to: "/rental/search",
+      icon: <Search className="w-5 h-5" />
+    },
+    {
+      name: "Publier une annonce",
+      to: "/rental/add",
+      icon: <HomeIcon className="w-5 h-5" />
+    }
+  ];
 
   return (
     <nav className="bg-white shadow-sm fixed w-full z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-        {/* Logo Section */}
-        <NavLink to="/">
-          <img src="/afro-Connect-removebg-preview.png" alt="Afro Immobilier" className="h-32 w-auto" />
-        </NavLink>
-
+          {/* Logo Section */}
+          <NavLink to="/">
+            <img src="/afro-Connect-removebg-preview.png" alt="Afro Immobilier" className="h-32 w-auto" />
+          </NavLink>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
@@ -52,7 +54,22 @@ export function Navbar() {
               <User className="w-6 h-6" />
               Experts
             </NavLink>
-            <div className="flex gap-4">
+            
+            {/* Rental Links - Desktop */}
+            <div className="flex items-center space-x-4">
+              {rentalLinks.map((link) => (
+                <NavLink
+                  key={link.name}
+                  to={link.to}
+                  className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  {link.icon}
+                  <span className="ml-2">{link.name}</span>
+                </NavLink>
+              ))}
+            </div>
+            
+            <div className="flex gap-4 ml-4">
               <NavLink 
                 to="/register" 
                 className="bg-gradient-to-r from-blue-600 to-green-500 text-white px-6 py-2.5 rounded-full font-medium hover:scale-105 transition-all"
@@ -78,85 +95,87 @@ export function Navbar() {
         </div>
 
         {/* Mobile Sidebar */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <>
-              <motion.div
-                variants={backdropVariants}
-                initial="closed"
-                animate="open"
-                exit="closed"
-                className="fixed inset-0 bg-black/50 z-40 md:hidden"
-                onClick={closeMenu}
-              />
-              
-              <motion.div
-                variants={sidebarVariants}
-                initial="closed"
-                animate="open"
-                exit="closed"
-                className="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl z-50 md:hidden"
-              >
-                <div className="p-6 h-full flex flex-col">
-                  <div className="flex justify-between items-center mb-8">
-                    <span className="font-bold text-lg text-gray-800">Menu</span>
-                    <X 
-                      className="w-7 h-7 cursor-pointer text-gray-600 hover:text-red-500 transition-colors" 
-                      onClick={closeMenu} 
-                    />
-                  </div>
-
-                  <nav className="space-y-4 flex-1">
-                    <NavLink
-                      to="/"
-                      className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-500 transition-colors text-gray-800"
-                      onClick={closeMenu}
-                    >
-                      <HomeIcon className="w-6 h-6 text-blue-600" />
-                      <span className="font-medium">Accueil</span>
-                    </NavLink>
-                    
-                    <NavLink
-                      to="/services"
-                      className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-500 transition-colors text-gray-800"
-                      onClick={closeMenu}
-                    >
-                      <Briefcase className="w-6 h-6 text-purple-500" />
-                      <span className="font-medium">Nos Services</span>
-                    </NavLink>
-                    
-                    <NavLink
-                      to="/profile"
-                      className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-500 transition-colors text-gray-800"
-                      onClick={closeMenu}
-                    >
-                      <User className="w-6 h-6 text-green-500" />
-                      <span className="font-medium">Experts</span>
-                    </NavLink>
-                    
-                    <NavLink
-                      to="/suggestions"
-                      className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-500 transition-colors text-gray-800"
-                      onClick={closeMenu}
-                    >
-                      <Lightbulb className="w-6 h-6 text-orange-500" />
-                      <span className="font-medium">Suggestions</span>
-                    </NavLink>
-                    
-                    <NavLink
-                      to="/register"
-                      className="block w-full bg-gradient-to-r from-blue-600 to-green-500 text-white py-3 rounded-xl font-medium text-center hover:scale-[1.02] transition-transform"
-                      onClick={closeMenu}
-                    >
-                      Enregistrez-vous
-                    </NavLink>
-                  </nav>
-
+        {isMenuOpen && (
+          <>
+            <div
+              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              onClick={closeMenu}
+            />
+            
+            <div
+              className="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl z-50 md:hidden"
+            >
+              <div className="p-6 h-full flex flex-col">
+                <div className="flex justify-between items-center mb-8">
+                  <span className="font-bold text-lg text-gray-800">Menu</span>
+                  <X 
+                    className="w-7 h-7 cursor-pointer text-gray-600 hover:text-red-500 transition-colors" 
+                    onClick={closeMenu} 
+                  />
                 </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+
+                <nav className="space-y-4 flex-1">
+                  <NavLink
+                    to="/"
+                    className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors text-gray-800"
+                    onClick={closeMenu}
+                  >
+                    <HomeIcon className="w-6 h-6 text-blue-600" />
+                    <span className="font-medium">Accueil</span>
+                  </NavLink>
+                  
+                  <NavLink
+                    to="/services"
+                    className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors text-gray-800"
+                    onClick={closeMenu}
+                  >
+                    <Briefcase className="w-6 h-6 text-purple-500" />
+                    <span className="font-medium">Nos Services</span>
+                  </NavLink>
+                  
+                  <NavLink
+                    to="/profile"
+                    className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors text-gray-800"
+                    onClick={closeMenu}
+                  >
+                    <User className="w-6 h-6 text-green-500" />
+                    <span className="font-medium">Experts</span>
+                  </NavLink>
+                  
+                  {/* Rental Links - Mobile */}
+                  {rentalLinks.map((link) => (
+                    <NavLink
+                      key={link.name}
+                      to={link.to}
+                      className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors text-gray-800"
+                      onClick={closeMenu}
+                    >
+                      <span className="text-blue-500">{link.icon}</span>
+                      <span className="font-medium">{link.name}</span>
+                    </NavLink>
+                  ))}
+                  
+                  <NavLink
+                    to="/suggestions"
+                    className="flex items-center gap-4 p-3 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors text-gray-800"
+                    onClick={closeMenu}
+                  >
+                    <Lightbulb className="w-6 h-6 text-orange-500" />
+                    <span className="font-medium">Suggestions</span>
+                  </NavLink>
+                  
+                  <NavLink
+                    to="/register"
+                    className="block w-full bg-gradient-to-r from-blue-600 to-green-500 text-white py-3 rounded-xl font-medium text-center hover:scale-105 transition-transform mt-4"
+                    onClick={closeMenu}
+                  >
+                    Enregistrez-vous
+                  </NavLink>
+                </nav>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </nav>
   );

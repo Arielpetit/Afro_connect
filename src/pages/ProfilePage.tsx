@@ -4,8 +4,9 @@ import { ContactWizard } from "./ContactWizard";
 import { 
   FaHome, FaBalanceScale, FaFileSignature, FaTools, 
   FaSearchPlus, FaHardHat, FaHammer, 
-  FaCalculator, FaBriefcase 
+  FaCalculator, FaBriefcase, FaPlus 
 } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 
 const categories = [
   {
@@ -177,6 +178,23 @@ export const ProfessionalRoadmap = () => {
               >
                 Trouvez votre expert
               </motion.h2>
+              
+              <div className="flex justify-center gap-6 mb-12">
+                <Link
+                  to="/rental/search"
+                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors shadow-lg"
+                >
+                  <FaHome />
+                  <span>Rechercher un logement</span>
+                </Link>
+                <Link
+                  to="/rental/add"
+                  className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors shadow-lg"
+                >
+                  <FaPlus />
+                  <span>Ajouter un logement</span>
+                </Link>
+              </div>
               
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

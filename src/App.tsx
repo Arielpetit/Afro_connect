@@ -29,6 +29,9 @@ import { ProfessionalLeadsDetail } from "./pages/ProfessionalLeadsDetail";
 import VideoGuidePage from "./pages/VIdeoPage";
 import  EventForm  from "./components/EventForm";
 import  EventsPage  from "./pages/EventsPage";
+import { AddRentalProperty } from './components/rental/AddRentalProperty';
+import { RentalListings } from './components/rental/RentalListings';
+import { RentalDetail } from './components/rental/RentalDetail';
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = localStorage.getItem("isAdmin") === "true";
@@ -60,6 +63,9 @@ const AppContent = () => {
 
           <Route path="/guide" element={< VideoGuidePage/>} />
 
+          <Route path="/rental/add" element={<AddRentalProperty />} />
+          <Route path="/rental/listings" element={<RentalListings />} />
+          <Route path="/rental/:id" element={<RentalDetail />} />
 
           {/* Admin Routes (Protected) */}
           <Route path="/admin-login" element={<AdminLoginPage />} />
